@@ -1,0 +1,116 @@
+.container {
+  padding: 20px;
+}
+
+.shift-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Add space between boxes */
+}
+
+.shift-box {
+  flex: 1 1 calc(50% - 10px); /* Adjust size and space */
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.shift-box p {
+  margin: 0;
+}
+
+.booking-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.booking-form {
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.booking-form form {
+  margin-bottom: 0;
+}
+
+.booking-form .btn-primary {
+  width: 100%;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.status-box {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+}
+
+.booked-status {
+  background-color: red;
+  color: white;
+}
+
+.pending-status {
+  background-color: yellow;
+  color: black;
+}
+
+.selected-shift {
+  background-color: green;
+  color: white;
+}
+
+.disabled-shift {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.edit-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.edit-form {
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.edit-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  color: #007bff; /* Màu xanh cho icon sửa đổi */
+}

@@ -1,0 +1,90 @@
+.dashboard-container {
+  padding: 30px;
+  background-color: #f7f8fc;
+
+  .header-image {
+    width: 100%;
+    height: 300px; /* Tăng chiều cao */
+    border-radius: 15px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .search-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4a4a4a;
+    margin-bottom: 20px;
+  }
+
+  .search-card {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  c-card-body {
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 15px;
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f8f9fa;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+
+      &:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+      }
+    }
+
+    button {
+      font-size: 18px;
+      font-weight: bold;
+      padding: 12px 30px;
+      border-radius: 25px;
+      background-color: #007bff;
+      color: #fff;
+      transition: background-color 0.3s, box-shadow 0.3s;
+
+      &:hover {
+        background-color: #0056b3;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header-image {
+      height: 200px;
+    }
+
+    .search-title {
+      font-size: 24px;
+    }
+  }
+}

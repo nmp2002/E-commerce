@@ -1,0 +1,98 @@
+<c-card class="mb-4">
+  <c-card-body>
+    <c-row>
+      <c-col sm="5">
+        <h4 class="card-title mb-0" id="revenue">
+          Doanh thu cho sân: <strong>{{ selectedFieldName }}</strong> <!-- Hiển thị tên sân -->
+        </h4>
+        <div class="small text-medium-emphasis">
+          {{ selectedPeriod === 'Year' ? '2024' : 'January - December 2024' }}
+        </div>
+      </c-col>
+      <c-col class="d-none d-md-block" sm="7" *ngIf="selectedFieldId !== null">
+        <button cButton class="float-end" color="primary">
+          <svg cIcon name="cilCloudDownload"></svg>
+        </button>
+        <form [formGroup]="revenueRadioGroup">
+          <div class="btn-group float-end me-3" role="group">
+            <input class="btn-check" formControlName="revenueRadio" type="radio" value="Day" id="dayRadio"
+              (change)="setRevenuePeriod('Day')" />
+            <label class="btn btn-outline-secondary" for="dayRadio">Tuần</label>
+
+            <input class="btn-check" formControlName="revenueRadio" type="radio" value="Month" id="monthRadio"
+              (change)="setRevenuePeriod('Month')" />
+            <label class="btn btn-outline-secondary" for="monthRadio">Tháng</label>
+
+            <input class="btn-check" formControlName="revenueRadio" type="radio" value="Year" id="yearRadio"
+              (change)="setRevenuePeriod('Year')" />
+            <label class="btn btn-outline-secondary" for="yearRadio">Năm</label>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+    <c-row *ngIf="loading">
+      <c-col>
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row *ngIf="selectedFieldId === null">
+      <c-col>
+        <div class="alert alert-warning mt-4">
+          Vui lòng chọn một sân trước khi chọn khoảng thời gian.
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row *ngIf="selectedPeriod === 'Month' && selectedFieldId !== null">
+      <c-col>
+        <label for="monthSelector">Chọn tháng:</label>
+        <input type="month" id="monthSelector" [(ngModel)]="selectedMonth" class="form-control"
+          (change)="loadRevenueData()" />
+      </c-col>
+    </c-row>
+    <c-row *ngIf="selectedPeriod === 'Day' && selectedFieldId !== null">
+      <c-col>
+        <label for="weekSelector">Chọn tuần:</label>
+        <input type="week" id="weekSelector" [(ngModel)]="selectedWeek" class="form-control"
+          (change)="loadRevenueData()" />
+      </c-col>
+    </c-row>
+
+    <c-row>
+      <c-col>
+        <div *ngIf="fields.length > 0" class="mt-4">
+          <h5>Doanh thu của các sân</h5>
+          <ul class="list-group">
+            <li *ngFor="let field of fields" class="list-group-item">
+              <strong>{{ field.fieldName }}</strong>: {{ totalRevenue[field.id ?? 0] | currency:'VND' }}
+              <!-- Chỉ hiển thị thông tin nếu sân này đang được chọn -->
+              <ng-container *ngIf="selectedFieldId === field.id">
+                <p *ngIf="selectedPeriod === 'Day'">Tổng doanh thu tuần: {{ totalWeeklyRevenue | currency: 'VND' }}</p>
+                <p *ngIf="selectedPeriod === 'Month'">Tổng doanh thu tháng: {{ totalMonthlyRevenue | currency: 'VND' }}
+                </p>
+                <p *ngIf="selectedPeriod === 'Year'">Tổng doanh thu năm: {{ totalYearlyRevenue | currency: 'VND' }}</p>
+              </ng-container>
+
+              <button (click)="selectField(field)" class="btn btn-primary btn-sm float-end">Chọn</button>
+            </li>
+          </ul>
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row *ngIf="revenueChart">
+      <c-col>
+        <c-chart [data]="revenueChart.data" [height]="300" [ngStyle]="{'marginTop.px': 40}"
+          [options]="revenueChart.options" [type]="revenueChart.type">
+          Biểu đồ doanh thu
+        </c-chart>
+      </c-col>
+    </c-row>
+  </c-card-body>
+  <c-card-footer>
+    <!-- Footer content here -->
+  </c-card-footer>
+</c-card>

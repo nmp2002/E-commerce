@@ -1,0 +1,129 @@
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="menuCode">
+              Mã chức năng
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="menuCode" [(ngModel)]="form.menuCode" required
+                maxlength="20" #menuCode="ngModel" [readonly]="isUpdate" />
+              <div class="alert-danger" *ngIf="menuCode.errors && f.submitted">
+                <div *ngIf="menuCode.errors['required']">Mã chức năng không được để trống</div>
+                <div *ngIf="menuCode.errors['maxlength']">
+                  Mã chức năng phải nhỏ hơn 20 ký tự
+                </div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="menuName">
+              Tên chức năng
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="menuName" [(ngModel)]="form.menuName" required
+                maxlength="100" #menuName="ngModel" />
+              <div class="alert-danger" *ngIf="menuName.errors && f.submitted">
+                <div *ngIf="menuName.errors['required']">Tên chức năng không được để trống</div>
+                <div *ngIf="menuName.errors['maxlength']">
+                  Tên chức năng phải nhỏ hơn 100 ký tự
+                </div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="parentId">
+              Nhóm chức năng <span class="color_red">*</span>
+            </label>
+            <c-col sm="4">
+              <ng-select placeholder="-- Chọn --" [items]="tblParentMenus" notFoundText="Không có dữ liệu"
+                bindLabel="menuName" [(ngModel)]="selectedMenu" (change)="changeSelectedParentMenu()" required
+                [formControl]="parentId" [ngClass]="{'ng-select-invalid': parentId.touched && parentId.errors}">
+              </ng-select>
+              <div class="alert-danger" *ngIf="parentId.errors && f.submitted">
+                <div *ngIf="parentId.errors['required']">Nhóm chức năng không được để trống</div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="status">
+              Trạng thái
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Trạng thái" cFormControl [(ngModel)]="form.status" cSelect name="status"
+                #status="ngModel" cSelect (change)="changeSelectedStatus($event)" required>
+                <option value="">-- Chọn --</option>
+                <option value="0">Ngừng hoạt động</option>
+                <option value="1">Hoạt động</option>
+              </select>
+              <div class="alert-danger" *ngIf="status.errors && f.submitted">
+                <div *ngIf="status.errors['required']">Trạng thái không được để trống</div>
+              </div>
+            </c-col>
+          </c-row>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="url">
+              Đường dẫn
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="url" [(ngModel)]="form.url" maxlength="50"
+                #url="ngModel" />
+              <div class="alert-danger" *ngIf="url.errors && f.submitted">
+                <div *ngIf="url.errors['required']">Đường dẫn không được để trống</div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="icon">
+              Icon
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="icon" [(ngModel)]="form.icon" maxlength="20"
+                #icon="ngModel" />
+            </c-col>
+          </c-row>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="orderNumber">
+              Thứ tự
+            </label>
+            <c-col sm="4">
+              <div class="dislay-flex">
+                <input type="number" min="0" max="99" maxlength="2" sizing="sm" cFormControl name="orderNumber"
+                  [(ngModel)]="form.orderNumber" #orderNumber="ngModel" required style="width: 50%;" />
+                <div class="alert-danger" *ngIf="orderNumber.errors && f.submitted">
+                  <div *ngIf="orderNumber.errors['required']">Thứ tự không được để trống</div>
+                  <div *ngIf="orderNumber.errors['max']">
+                    Thứ tự phải lớn hơn 0 và nhỏ hơn 99
+                  </div>
+                  <div *ngIf="orderNumber.errors['min']">
+                    Thứ tự phải lớn hơn 0 và nhỏ hơn 99
+                  </div>
+                </div>
+                <div class="form-check form-check-inline ms-2">
+                  <input class="form-check-input" type="checkbox" name="title" id="title" [(ngModel)]="form.title"
+                    (change)="changeSelectedTitle($event)">
+                  <label class="form-check-label" for="title">Là tiêu đề</label>
+                </div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="description">
+              Mô tả
+            </label>
+            <c-col sm="4">
+              <textarea rows="2" sizing="sm" cFormControl name="description" [(ngModel)]="form.description"
+                maxlength="100" #description="ngModel"></textarea>
+            </c-col>
+          </c-row>
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 5}">
+              <button cButton color="info" type="submit" size="sm" *ngIf="isShowButton('save')">
+                <svg cIcon class="me-2" name="cil-save"></svg><span class="btn-text">Lưu</span>
+              </button>
+              <button cButton color="dark" type="button" size="sm" routerLink="/menu/menu-manager"
+                *ngIf="isShowButton('close')">
+                <svg cIcon class="me-2" name="cil-ban"></svg><span class="btn-text">Quay lại</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

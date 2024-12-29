@@ -1,0 +1,43 @@
+<div class="form-container">
+  <div class="dislay-flex">
+    <h5 mat-dialog-title style="white-space: nowrap;">Đổi mật khẩu</h5>
+    <mat-icon aria-hidden="false" style="margin-left: 75%; cursor: pointer;" (click)="onCancel(false, true)">close</mat-icon>
+  </div>
+  <mat-dialog-content>
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline" class="mr-20">
+        <mat-label>Mật khẩu mới</mat-label>
+        <input [type]="hide ? 'password' : 'text'" matInput name="password" formControlName="password" required
+          pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{7,}$" class="py-2" />
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide">
+          <mat-icon style="font-size: 18px;">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error class="nowrap mat-hint-class" *ngIf="form.value.password">Mật khẩu phải có ít nhất một chữ thường,
+          chữ hoa, số và độ
+          dài ít nhất 8
+          ký tự</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mt-4 mb-4">
+        <mat-label>Xác nhận lại mật khẩu</mat-label>
+        <input [type]="hide ? 'password' : 'text'" matInput name="passwordConfirm" formControlName="passwordConfirm"
+          required pattern="{{form.value.password}}" class="py-2" />
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide">
+          <mat-icon style="font-size: 18px;">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error class="nowrap mat-hint-class" *ngIf="form.value.password">Mật khẩu xác nhận không đúng</mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-raised-button [disabled]="!form.valid" class="btn-save" (click)="onSubmit()"
+      *ngIf="isShowButton('save')">
+      Lưu
+    </button>
+    <button mat-stroked-button class="btn-cancel" (click)="onCancel(false, true)" *ngIf="isShowButton('close')">
+      Quay lại
+    </button>
+  </mat-dialog-actions>
+</div>

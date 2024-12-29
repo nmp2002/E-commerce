@@ -1,0 +1,12 @@
+.form-control-file {
+    padding: 0.5rem;
+    border: 1px solid #ced4da; 
+    border-radius: 0.25rem; 
+    background-color: #ffffff; 
+    cursor: pointer;
+    /* Đảm bảo rằng phần tử có thể nhận sự kiện chuột */
+    pointer-events: auto; 
+    /* Đảm bảo kích thước phần tử */
+    width: 100%; 
+    box-sizing: border-box; 
+}

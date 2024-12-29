@@ -1,0 +1,63 @@
+<div class="bg-light min-vh-100 d-flex flex-row align-items-center div_login">
+  <c-container>
+    <c-row class="justify-content-center">
+      <c-col md="5">
+        <c-card-group>
+          <c-card class="p-4">
+            <c-card-body>
+              <form *ngIf="!isLoggedIn" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+                <h1 style="text-align:center;padding-bottom: 10px;">Đăng nhập</h1>
+                <!-- Tài khoản -->
+                <c-input-group class="mb-3">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilUser"></svg>
+                  </span>
+                  <input placeholder="Tài khoản" type="text" class="form-control" name="username"
+                    [(ngModel)]="form.username" required #username="ngModel" />
+                </c-input-group>
+                <c-input-group class="mb-3">
+                  <div class="alert alert-danger" role="alert" *ngIf="username.errors && f.submitted">
+                    <div *ngIf="username.errors['required']">Tài khoản không được để trống!</div>
+                  </div>
+                </c-input-group>
+                <!-- Mật khẩu -->
+                <c-input-group class="mb-4">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilLockLocked"></svg>
+                  </span>
+                  <input autoComplete="current-password" cFormControl name="password" placeholder="Mật khẩu"
+                    type="password" [(ngModel)]="form.password" required #password="ngModel" />
+                </c-input-group>
+                <c-input-group class="mb-3">
+                  <div class="alert alert-danger" role="alert" *ngIf="password.errors && f.submitted">
+                    <div *ngIf="password.errors['required']">Mật khẩu không được để trống!</div>
+                  </div>
+                </c-input-group>
+                <!-- Nút đăng nhập -->
+                <c-row>
+                  <c-col class="d-grid gap-2 col-6 mx-auto">
+                    <button cButton color="primary" type="submit">Đăng nhập</button>
+                  </c-col>
+                </c-row>
+                <!-- Nút chuyển hướng -->
+                <c-row>
+                  <c-col class="d-grid gap-2 col-6 mx-auto mt-3">
+                    <button cButton color="secondary" type="button" (click)="redirectToHome()">
+                     Trang chủ
+                    </button>
+                  </c-col>
+                </c-row>
+                <!-- Thông báo lỗi -->
+                <div class="form-group">
+                  <div class="alert alert-danger mt-3" role="alert" *ngIf="f.submitted && isLoginFailed">
+                    Đăng nhập thất bại {{ errorMessage ? (': ' + errorMessage) : '' }}!
+                  </div>
+                </div>
+              </form>
+            </c-card-body>
+          </c-card>
+        </c-card-group>
+      </c-col>
+    </c-row>
+  </c-container>
+</div>

@@ -1,0 +1,90 @@
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <form *ngIf="!isSuccessful" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="groupRoleCode">
+              Mã nhóm vai trò
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="groupRoleCode" [(ngModel)]="form.groupRoleCode" required
+                maxlength="20" #groupRoleCode="ngModel" [readonly]="isUpdate" />
+              <div class="alert-danger" *ngIf="groupRoleCode.errors && f.submitted">
+                <div *ngIf="groupRoleCode.errors['required']">Mã nhóm vai trò không được để trống</div>
+                <div *ngIf="groupRoleCode.errors['maxlength']">
+                  Mã nhóm vai trò phải lớn hơn 20 ký tự
+                </div>
+              </div>
+            </c-col>
+
+            <label cLabel class="col-sm-2 col-form-label" for="groupRoleName">
+              Tên nhóm vai trò
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="groupRoleName" [(ngModel)]="form.groupRoleName" required
+                maxlength="100" #groupRoleName="ngModel" />
+              <div class="alert-danger" *ngIf="groupRoleName.errors && f.submitted">
+                <div *ngIf="groupRoleName.errors['required']">Tên nhóm vai trò không được để trống</div>
+                <div *ngIf="groupRoleName.errors['maxlength']">
+                  Tên nhóm vai trò phải nhỏ hơn 100 ký tự
+                </div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="status">
+              Trạng thái
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Trạng thái" cFormControl [(ngModel)]="form.status" cSelect name="status"
+                #status="ngModel" cSelect (change)="changeSelectedStatus($event)" required>
+                <option value="">-- Chọn --</option>
+                <option value="0">Ngừng hoạt động</option>
+                <option value="1">Hoạt động</option>
+              </select>
+              <div class="alert-danger" *ngIf="status.errors && f.submitted">
+                <div *ngIf="status.errors['required']">Trạng thái không được để trống</div>
+              </div>
+            </c-col>
+          </c-row>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="description">
+              Mô tả
+            </label>
+            <c-col sm="10">
+              <textarea rows="3" sizing="sm" cFormControl name="description" [(ngModel)]="form.description"
+                maxlength="2000" #description="ngModel"></textarea>
+            </c-col>
+          </c-row>
+
+          <mat-divider class="my-3"></mat-divider>
+
+          <c-row class="mb-1">
+            <c-col cLabel class="col-sm-2 col-form-label">
+              <span><svg cIcon class="me-2" name="cil-settings"></svg> User - Rule chặn</span>
+            </c-col>
+            <c-col md="10">
+              <ng-multiselect-dropdown [settings]="dropdownSettingsRule" [data]="dropdownListRule"
+                [placeholder]="'-- Chọn --'" [(ngModel)]="selectedItemsRules" [ngModelOptions]="{standalone: true}">
+              </ng-multiselect-dropdown>
+            </c-col>
+          </c-row>
+
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 5}">
+              <button cButton color="info" type="submit" size="sm" *ngIf="isShowButton('save')">
+                <svg cIcon class="me-2" name="cil-save"></svg><span class="btn-text">Lưu</span>
+              </button>
+              <button cButton color="dark" type="button" size="sm" routerLink="/groupRole/groupRole-manager"
+                *ngIf="isShowButton('close')">
+                <svg cIcon class="me-2" name="cil-ban"></svg><span class="btn-text">Quay lại</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

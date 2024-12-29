@@ -1,0 +1,11 @@
+<div *ngIf="paymentStatus" class="payment-status-container">
+  <div class="status-box">
+    <h2 class="status-message">{{ paymentStatus }}</h2>
+    <p *ngIf="paymentStatus === 'Payment success and booking status updated'" class="success-message">
+      Your payment was successful! Thank you for booking with us.
+    </p>
+    <p *ngIf="paymentStatus === 'Payment failed'" class="error-message">
+      Unfortunately, the payment failed. Please try again or contact support.
+    </p>
+  </div>
+</div>

@@ -1,0 +1,82 @@
+<div class="text-center mb-4">
+  <button class="btn btn-primary" (click)="getCurrentLocation()">
+    Tìm nhanh sân 
+  </button>
+</div>
+<div class="closest-shifts-container text-center mb-4">
+  <h3 class="mb-3">Các sân con trống hiện tại</h3>
+  <div class="shifts-container d-flex justify-content-center flex-wrap">
+    <div *ngFor="let shift of paginatedShifts" class="shift-card p-3 m-2 border rounded shadow-sm">
+      <div>   
+        <p><strong>Tên sân:</strong> {{ shift.fieldName }}</p>
+        <p><strong>Tên sân con:</strong> {{ shift.smallFieldName }}</p>
+        <p><strong>Số tiền:</strong> {{ shift.amount}} VNĐ</p>
+        <p><strong>Thời gian bắt đầu:</strong> {{ shift.timeStart }}</p>
+        <p><strong>Thời gian kết thúc:</strong> {{ shift.timeEnd }}</p>
+      </div>
+      <div class="text-center mt-3">
+        <button 
+          class="btn btn-success" 
+          *ngIf="shift.fieldId && shift.id" 
+          (click)="bookField(shift)">
+          Đặt sân
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phân trang -->
+  <div class="pagination mt-4">
+    <button class="btn btn-primary" (click)="prevPage()" [disabled]="currentPage === 1">Trước</button>
+    <span class="mx-2">Trang {{ currentPage }} / {{ totalPages() }}</span>
+    <button class="btn btn-primary" (click)="nextPage()" [disabled]="currentPage === totalPages()">Tiếp theo</button>
+  </div>
+</div>
+
+
+<div class="row">
+  <div *ngFor="let field of fields; index as i" class="col-md-4 mb-4">
+    <div class="card">
+      <div class="image-container">
+        <img
+          *ngIf="field.image"
+          [src]="'data:image/jpeg;base64,' + field.image"
+          class="card-img-top"
+          alt="{{ field.fieldName }}"
+        />
+      </div>
+      <div class="card-body">
+        <h5 class="card-title text-center">{{ field.fieldName }}</h5>
+        <div>
+          <p><strong>Tỉnh/Thành phố:</strong> {{ field.provinceName }}</p>
+          <p><strong>Quận/Huyện:</strong> {{ field.districtName }}</p>
+          <p><strong>Phường/Xã:</strong> {{ field.wardName }}</p>
+          <p><strong>Địa chỉ :</strong>{{ field.address }}</p>
+          <p><strong>Số điện thoại liên hệ :</strong>{{ field.phoneNumberField }}</p>
+          <!-- Thêm bản đồ -->
+          <app-map
+          [address]="field.address || ''"
+          [uniqueId]="'map-' + i"
+        ></app-map>
+        
+
+          <div class="text-center mt-3">
+            <button 
+            class="btn btn-success" 
+            *ngIf="field.id !== undefined" 
+            (click)="bookField(field)">
+           Chi tiết sân 
+          </button>
+          
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+

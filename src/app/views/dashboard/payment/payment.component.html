@@ -1,0 +1,24 @@
+<div class="booking-details" *ngIf="bookingDetails">
+  <h2>Thông tin Đặt Sân</h2>
+  <div class="booking-info">
+    <p><strong>Tên người đặt sân:</strong> {{ bookingDetails.nameGuest }}</p>
+    <p><strong>Số điện thoại:</strong> {{ bookingDetails.phoneNumberGuest }}</p>
+    <p><strong>Tên sân:</strong> {{ bookingDetails.nameField }}</p>
+    <p><strong>Tên nhỏ sân:</strong> {{ bookingDetails.smallFieldName }}</p>
+    <p><strong>Ngày đặt :</strong> {{ bookingDetails.day | date: 'dd/MM/yyyy' }}</p>
+    <p><strong>Ca đặt:</strong> {{ bookingDetails.timeStart }} -- {{ bookingDetails.timeEnd }}</p>
+    <p><strong>Tổng tiền:</strong> {{ bookingDetails.totalPayment | currency:'VND' }}</p>
+    <p *ngIf="fieldDetails"><strong>Địa chỉ sân:</strong> {{ fieldDetails.address }}</p>
+  </div>
+
+  <div class="timer">
+    <p><strong>Thời gian còn lại:</strong> {{ countdownMinutes }}:{{ countdownSeconds | number:'2.0' }}</p>
+  </div>
+
+  <div class="payment-methods">
+    <h3>Chọn hình thức thanh toán</h3>
+    <div class="button-group">
+      <button class="btn btn-bank" (click)="payWithBank()">Thanh toán qua VNPAY</button>
+    </div>
+  </div>
+</div>

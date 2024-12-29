@@ -1,0 +1,137 @@
+<c-row ngPreserveWhitespaces>
+    <c-col xs="12">
+        <c-card class="mb-2">
+            <c-card-body>
+                <form name="form" (ngSubmit)="f.form.valid && findBookings()" #f="ngForm" novalidate>
+                    <c-row class="mb-1">
+                        <label cLabel class="col-sm-2 col-form-label" for="fieldName">
+                            Tên Sân
+                        </label>
+                        <c-col sm="4">
+                            <input cFormControl sizing="sm" id="fieldName" name="fieldName" type="text"
+                            (change)="fieldName = $any($event.target).value" />
+                        </c-col>
+                        <label cLabel class="col-sm-2 col-form-label" for="phoneNumber">
+                            Số điện thoại
+                        </label>
+                        <c-col sm="4">
+                            <input cFormControl sizing="sm" id="phoneNumber" name="phoneNumber" type="text"
+                            (change)="phoneNumber = $any($event.target).value" />
+                        </c-col>
+                    </c-row>
+                    <c-row class="mb-1">
+                        <label cLabel class="col-sm-2 col-form-label" for="status">
+                            Trạng thái
+                          </label>
+                          <c-col sm="4">
+                            <select sizing="sm" aria-label="Trạng thái" id="status" name="status" cSelect
+                              (change)="status = $any($event.target).value">
+                              <option value="-1">-- Tất cả --</option>
+                              <option value="0">Ngừng hoạt động</option>
+                              <option value="1">Hoạt động</option>
+                            </select>
+                        </c-col>
+                    </c-row>
+                    
+                    <c-row>
+                        <c-col md="6" [offset]="{md: 3}" class="text-center align-self-center mt-1">
+                            <button cButton color="info" size="sm" (click)="findBookings()">
+                                <svg cIcon class="me-2" name="cil-magnifying-glass"></svg><span class="btn-text">Tìm kiếm</span>
+                            </button>
+                            <button cButton color="info" size="sm" routerLink="/booking/booking-create">
+                                <svg cIcon class="me-2" name="cil-plus"></svg><span class="btn-text">Thêm mới</span>
+                            </button>
+                            <button cButton color="info" size="sm">
+                                <svg cIcon class="me-2" name="cil-file"></svg><span class="btn-text">Xuất Excel</span>
+                            </button>
+                        </c-col>
+                    </c-row>
+                </form>
+            </c-card-body>
+        </c-card>
+    </c-col>
+
+    <c-col xs="12">
+        <c-card class="mb-2">
+            <c-card-body>
+                <h2 class="text-danger text-center" *ngIf="bookings.length === 0">Không tìm thấy kết quả!</h2>
+                <c-pagination size="sm" aria-label="" *ngIf="totalPages > 0">
+                      <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)="retrieveBookings(1)"><span aria-hidden="true">&laquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2 <= 0" (click)="retrieveBookings(pageable.pageNumber - 1)">{{ pageable.pageNumber - 1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1 <= 0" (click)="retrieveBookings(pageable.pageNumber)">{{ pageable.pageNumber }}</a>
+          </li>
+          <li [class.active]="pageable.pageNumber === i" cPageItem *ngFor="let page of [].constructor(totalPages); let i = index">
+            <a cPageLink (click)="retrieveBookings(i + 1)">{{ i + 1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2 > totalPages" (click)="retrieveBookings(pageable.pageNumber + 2)">{{ pageable.pageNumber + 2 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3 > totalPages" (click)="retrieveBookings(pageable.pageNumber + 3)">{{ pageable.pageNumber + 3 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1 >= totalPages" (click)="retrieveBookings(totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' + ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) * pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count + ']'}}</span></a>
+          </li>
+                </c-pagination>
+
+                <table [bordered]="true" hover cTable small>
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Tên Sân</th>
+                            <th scope="col">Sân</th>
+                            <th scope="col">Tên Khách</th>
+                            <th scope="col">Số điện thoại</th>
+                            <th scope="col">Thời gian bắt đầu</th>
+                            <th scope="col">Thời gian kết thúc</th>
+                            <th scope="col">Ngày</th>
+                            <th scope="col">Số tiền</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col" colspan="2">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let booking of bookings; let index = index">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ booking.nameField }}</td>
+                            <td>{{ booking.smallFieldName }}</td>
+                            <td>{{ booking.nameGuest }}</td>
+                            <td>{{ booking.phoneNumberGuest }}</td>
+                            <td>{{ booking.timeStart }}</td>
+                            <td>{{ booking.timeEnd  }}</td>
+                            <td>{{ booking.day }}</td>
+                            <td>{{booking.totalPayment}} VNĐ</td>
+                            <td>
+                                <span [ngClass]="{
+                                    'badge': true,
+                                    'badge-success': booking.paymentStatus === 'unpaid',
+                                    'badge-danger': booking.paymentStatus=== 'booked'
+                                }">
+                                    {{ booking.paymentStatus === 'unpaid' ? 'Chưa thanh toán' : 'Đã thanh toán' }}
+                                </span>
+                            </td>
+                            <td>
+                                <button cButton color="info" size="sm" (click)="editBooking(booking.id)">
+                                    <svg cIcon name="cil-pencil" class="me-2"></svg>Sửa
+                                </button>
+                            </td>
+                            <td>
+                                <button cButton color="danger" size="sm" (click)="deleteBooking(booking.id)">
+                                    <svg cIcon name="cil-trash" class="me-2"></svg>Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </c-card-body>
+        </c-card>
+    </c-col>
+</c-row>

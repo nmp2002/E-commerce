@@ -1,0 +1,342 @@
+html {
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 15px;
+}
+
+.div_login {
+    background: url("../assets/images/logoACE.jpg") no-repeat center center fixed;
+    background-size: cover;
+    width: 100vw; /* Chiều rộng toàn màn hình */
+    height: 100vh; /* Chiều cao toàn màn hình */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+
+.sidebar {
+    --cui-sidebar-bg: #ae1c3f;
+}
+
+c-sidebar {
+    z-index: 0 !important;
+}
+
+c-sidebar-nav-group .nav-link,
+c-sidebar-nav-link-content {
+    font-size: 16px;
+}
+
+.sidebar-nav .nav-link {
+    word-wrap: break-word !important;
+    white-space: normal !important;
+}
+
+.header {
+    --cui-header-min-height: 1rem;
+    --cui-header-padding-x: 0.2rem;
+    --cui-header-padding-y: 0.2rem;
+}
+
+.header .container-fluid:nth-child(n+2) {
+    min-height: calc(var(--cui-subheader-min-height) - 12 * var(--cui-header-padding-y));
+}
+
+.mat-dialog-container {
+    z-index: 9999;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5em;
+}
+
+.cdk-overlay-container {
+    z-index: 9999 !important;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.mr-20 {
+    margin-right: 20px;
+}
+
+.mr-30 {
+    margin-right: 30px;
+}
+
+.mr-40 {
+    margin-right: 40px;
+}
+
+.mr-50 {
+    margin-right: 50px;
+}
+
+.pagination .active a {
+    background-color: #EB0A1E !important;
+}
+
+.info-paging {
+    border: none;
+    margin-left: 4px !important;
+    pointer-events: none;
+}
+
+.page-link {
+    color: black;
+    cursor: pointer;
+}
+
+.page-link.active,
+.active>.page-link {
+    border: 1px solid #EB0A1E !important;
+}
+
+html a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 400;
+}
+
+html a:hover {
+    text-decoration: none;
+    color: #EB0A1E;
+    font-weight: 400;
+}
+
+.btn-text,
+.btn svg {
+    color: #FFF;
+}
+
+.notiflix-notify-success {
+    color: #FFF;
+    background: #32c682;
+}
+
+.notiflix-notify-failure {
+    color: #FFF;
+    background: #ff5549;
+}
+
+.color_red {
+    color: red;
+    cursor: pointer !important;
+}
+
+.lbl_title {
+    font-weight: 600 !important;
+    border: 0 !important;
+    cursor: none;
+    pointer-events: none;
+}
+
+.color_blue {
+    color: blue;
+    cursor: pointer !important;
+}
+
+.btn-save {
+    color: white;
+    background-color: #0dcaf0;
+    border: none !important;
+}
+
+.btn-cancel {
+    color: #FFF;
+    background-color: #212529;
+    border: none !important;
+}
+
+.dislay-flex {
+    display: flex;
+    text-align: center;
+}
+
+.dislay-flex-left {
+    display: flex;
+    text-align: left;
+}
+
+.dislay-inline {
+    display: inline-block;
+}
+
+.nowrap {
+    white-space: nowrap;
+
+}
+
+.decoration {
+    text-decoration: none;
+}
+
+.div-hide {
+    display: none !important;
+}
+
+.alert-danger {
+    font-size: 13px;
+    color: #EB0A1E;
+}
+
+.swal2-title {
+    font-size: 20px !important;
+}
+
+.mat-hint-class {
+    font-size: 13px;
+    color: #EB0A1E;
+    margin-top: 15px;
+    margin-left: -12px !important;
+}
+
+.mat-form-field {
+    width: 100%;
+}
+
+.mat-form-field-infix,
+.mat-form-field-wrapper {
+    padding: 0px !important;
+}
+
+.cdk-overlay-pane {
+    display: block;
+}
+
+.ngx-mat-timepicker-meridian .mat-focus-indicator {
+    margin-top: 8px !important;
+}
+
+.mat-form-field-flex {
+    align-items: normal !important;
+}
+
+.mat-form-field-underline {
+    position: static !important;
+}
+
+input.ng-dirty.ng-invalid {
+    color: red !important;
+}
+
+input:-moz-read-only {
+    background-color: #e9ecef;
+}
+
+input:read-only {
+    background-color: #e9ecef;
+    pointer-events: none;
+}
+
+textarea:-moz-read-only {
+    background-color: #e9ecef;
+}
+
+textarea:read-only {
+    background-color: #e9ecef;
+}
+
+.disabled .mat-form-field-wrapper {
+    background-color: #e9ecef !important;
+    pointer-events: none !important;
+}
+
+.ng-select-disabled > .ng-select-container {
+    background-color: #e9ecef !important;
+    pointer-events: none !important;
+    border-color: #b1b7c1;
+}
+
+button,
+ul li {
+    cursor: pointer !important;
+}
+
+.btn.disabled,
+.check_box_disabled {
+    background-color: #b1b7c1 !important;
+    pointer-events: none !important;
+    border-color: #b1b7c1 !important;
+}
+
+.btn.disabled svg {
+    color: #FFF !important;
+}
+
+.disabled mat-datepicker-toggle {
+    pointer-events: none;
+}
+
+.mat-dialog-title {
+    border-bottom: 1px solid #EEE;
+    font-size: 18px;
+}
+
+.page-overlay-wrapper {
+    pointer-events: visible;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    z-index: 1009;
+    background: rgba(5, 5, 5, 0.5);
+
+    @keyframes rorate-icon {
+        50% {
+            transform: rotate(180deg);
+        }
+    }
+
+    .icon-spinner {
+        width: 32px;
+        height: 32px;
+        position: fixed;
+        left: 49%;
+        top: 45%;
+        z-index: 100;
+        background-image: url(../assets/images/loading.png);
+        background-repeat: no-repeat;
+        background-size: 100%;
+        animation: rorate-icon 10s infinite;
+    }
+
+    .icon-spinner-text {
+        z-index: 100;
+        position: fixed;
+        top: 50%;
+        left: 48%;
+    }
+
+    .icon-spinner-text-dot {
+        animation: rorate-icon 10s infinite;
+    }
+}
+
+.swal2-container {
+    z-index: 9999 !important;
+}
+
+.tree-product-row td,
+.tree-product-row {
+    height: 32px !important;
+    line-height: 32px !important;
+}
+
+.notification-header {
+    background-color: #0c512c;
+    color: #FFF;
+    max-height: fit-content;
+    min-height: fit-content;
+    z-index: 9999999 !important;
+}
+
+c-carousel-indicators button:focus {
+    outline: none;
+}
+
+.btn-avatar:hover, .btn-avatar:focus,.btn-avatar::selection {
+    border-color: transparent !important;
+}

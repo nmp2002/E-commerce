@@ -1,0 +1,162 @@
+/* Container cho toàn bộ */
+.container {
+  padding: 20px;
+}
+
+/* Các ô chọn ca */
+.shift-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between; /* Cân chỉnh các hộp đều */
+}
+
+/* Các ô shift */
+.shift-box {
+  flex: 1 1 calc(50% - 10px); /* Điều chỉnh kích thước và khoảng cách */
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+  }
+}
+
+/* Phần form đặt sân */
+.booking-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.booking-form {
+  width: 100%;
+  max-width: 450px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+  padding: 25px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.booking-form form {
+  margin-bottom: 0;
+}
+
+.booking-form .btn-primary {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #007bff;
+  border-color: #007bff;
+
+  &:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+}
+
+/* Các box trạng thái */
+.status-box {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 12px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.booked-status {
+  background-color: #dc3545;
+  color: white;
+  font-weight: bold;
+}
+
+.pending-status {
+  background-color: #ffc107;
+  color: black;
+  font-weight: bold;
+}
+
+.selected-shift {
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+}
+
+.disabled-div,
+.disabled-shift {
+  pointer-events: none;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+/* Nút "Đặt sân nhỏ" */
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 12px 20px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-3px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(1px); /* Nút có hiệu ứng đẩy xuống khi nhấn */
+  }
+
+  /* Nút khi bị vô hiệu hóa */
+  &:disabled {
+    background-color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* Thêm animation cho form khi mở */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

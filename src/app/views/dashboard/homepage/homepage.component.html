@@ -1,0 +1,54 @@
+<div class="dashboard-container">
+  <div class="header-image">
+    <img src="../../../assets/images/header-image.jpg" alt="Soccer Field" class="header-img">
+  </div>
+  <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+    <c-row>
+      <c-col xs="12" class="text-center mb-3">
+        <h2 class="search-title">Tìm kiếm sân bóng</h2>
+      </c-col>
+      <c-col xs="12">
+        <c-card class="search-card">
+          <c-card-body>
+            <c-row class="mb-3">
+              <label cLabel class="col-sm-2 col-form-label" for="provinceName">Tỉnh/Thành phố</label>
+              <c-col sm="4">
+                <select sizing="sm" id="provinceName" name="provinceName" cSelect
+                  [(ngModel)]="form.provinceid" (change)="changeSelectedCity($event)" required>
+                  <option value="">Chọn Tỉnh/Thành phố</option>
+                  <option *ngFor="let city of tblCity" [value]="city.provinceid">{{ city.provinceName }}</option>
+                </select>
+              </c-col>
+              <label cLabel class="col-sm-2 col-form-label" for="districtName">Quận/Huyện</label>
+              <c-col sm="4">
+                <select sizing="sm" id="districtName" name="districtName" cSelect
+                  [(ngModel)]="form.districtId" (change)="changeSelectedDistrict($event)" required>
+                  <option value="">Chọn Quận/Huyện</option>
+                  <option *ngFor="let district of tblDistrict" [value]="district.districtId">{{ district.districtName }}</option>
+                </select>
+              </c-col>
+            </c-row>
+            <c-row class="mb-3">
+              <label cLabel class="col-sm-2 col-form-label" for="wardName">Phường/Xã</label>
+              <c-col sm="4">
+                <select sizing="sm" id="wardName" name="wardName" cSelect
+                  [(ngModel)]="form.wardId" (change)="changeSelectedWard($event)" required>
+                  <option value="">Chọn Phường/Xã</option>
+                  <option *ngFor="let ward of tblWard" [value]="ward.wardId">{{ ward.wardName }}</option>
+                </select>
+              </c-col>
+            </c-row>
+            <c-row>
+              <c-col md="12" class="text-center align-self-center mt-3">
+                <button cButton size="lg" color="primary" type="button" routerLink="/dashboard/search-field-result">
+                  <svg cIcon class="me-2" name="cil-magnifying-glass"></svg>
+                  <span class="btn-text">Tìm kiếm</span>
+                </button>
+              </c-col>
+            </c-row>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-row>
+  </form>
+</div>

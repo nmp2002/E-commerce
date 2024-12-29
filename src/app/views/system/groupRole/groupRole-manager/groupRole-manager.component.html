@@ -1,0 +1,167 @@
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <form>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="groupRoleCode">
+              Mã nhóm vai trò
+            </label>
+            <c-col sm="3">
+              <input cFormControl sizing="sm" id="groupRoleCode" type="text"
+                (change)="groupRoleCode = $any($event.target).value" />
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="groupRoleName">
+              Tên nhóm vai trò
+            </label>
+            <c-col sm="3">
+              <input cFormControl sizing="sm" id="groupRoleName" type="text"
+                (change)="groupRoleName = $any($event.target).value" />
+            </c-col>
+          </c-row>
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 3}" class="text-center align-self-center mt-1">
+              <button cButton size="sm" color="info" (click)="findGroupRole()" *ngIf="isShowButton('search')">
+                <svg cIcon class="me-2" name="cil-magnifying-glass"></svg><span class="btn-text">Tìm kiếm</span>
+              </button>
+              <button cButton size="sm" color="info" routerLink="/groupRole/groupRole-create"
+                *ngIf="isShowButton('add')">
+                <svg cIcon class="me-2" name="cil-plus"></svg><span class="btn-text">Thêm mới</span>
+              </button>
+              <button cButton size="sm" color="info" *ngIf="isShowButton('exportExcel')">
+                <svg cIcon class="me-2" name="cil-file"></svg><span class="btn-text">Xuất Excel</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <h2 class="text-danger text-center" *ngIf="groupRoles.length == 0">Không tìm thấy kết quả!</h2>
+        <c-pagination size="sm" aria-label="" *ngIf="totalPages > 0">
+          <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)=" retrieveTutorials(1)"><span
+                aria-hidden="true">&laquo;</span></a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2<= 0" (click)="retrieveTutorials( pageable.pageNumber- 1)">{{
+              pageable.pageNumber - 1}}</a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1<= 0" (click)="retrieveTutorials( pageable.pageNumber)">{{
+              pageable.pageNumber }}</a>
+          </li>
+
+          <li cPageItem [active]="true">
+            <a cPageLink>{{ pageable.pageNumber+1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+2)">{{ pageable.pageNumber+2}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+3)">{{ pageable.pageNumber+3}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1>=totalPages "
+              (click)="retrieveTutorials( totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' +
+                ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) *
+                pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count +
+                ']'}}</span></a>
+          </li>
+        </c-pagination>
+        <table [bordered]="true" cTable small>
+          <thead>
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Mã nhóm vai trò</th>
+              <th scope="col">Tên nhóm vai trò</th>
+              <th scope="col">Mô tả</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col" colspan="2">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of groupRoles, index as i">
+              <td class="text-center" scope="row">{{(pageable.pageNumber * pageable.pageSize) + i + 1}}</td>
+              <td>{{item.groupRoleCode}}</td>
+              <td>{{item.groupRoleName}}</td>
+              <td style="white-space: pre;">{{item.description}}</td>
+              <td>{{item.status == '1' ? 'Hoạt động' : (item.status == '0' ? 'Ngừng hoạt động' : (item.status == '2' ?
+                'Bị xóa' : ''))}}</td>
+              <td class="text-center">
+                <a *ngIf="isShowButton('config')" [routerLink]="['/groupRole/groupRole-permission', item.id]"
+                  title="Phân quyền"> <svg cIcon class="me-2" name="cil-object-group">
+                    <title>Phân quyền</title>
+                  </svg></a>
+              </td>
+              <td>
+                <div class="dislay-flex">
+                  <span>
+                    <a *ngIf="isShowButton('edit')" [routerLink]="['/groupRole/groupRole-update', item.id]" title="Sửa">
+                      <svg cIcon class="me-2" name="cil-pencil" title="Sửa"></svg>
+                    </a>
+                  </span>
+                  <span *ngIf="isShowButton('delete')" (click)="deleteGroupRole(item)" class="color_red" title="Xóa">
+                    <svg cIcon class="me-2" name="cil-trash"></svg>
+                  </span>
+                  <span *ngIf="isShowButton('lock')" (click)="lockGroupRole(item)" class="color_blue"
+                    title="Mở khóa/Khóa">
+                    <svg cIcon name="cilLockLocked"></svg>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <c-pagination size="sm" aria-label="" *ngIf="totalPages > 0">
+          <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)=" retrieveTutorials(1)"><span
+                aria-hidden="true">&laquo;</span></a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2<= 0" (click)="retrieveTutorials( pageable.pageNumber- 1)">{{
+              pageable.pageNumber - 1}}</a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1<= 0" (click)="retrieveTutorials( pageable.pageNumber)">{{
+              pageable.pageNumber }}</a>
+          </li>
+
+          <li cPageItem [active]="true">
+            <a cPageLink>{{ pageable.pageNumber+1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+2)">{{ pageable.pageNumber+2}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+3)">{{ pageable.pageNumber+3}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1>=totalPages "
+              (click)="retrieveTutorials( totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' +
+                ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) *
+                pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count +
+                ']'}}</span></a>
+          </li>
+        </c-pagination>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

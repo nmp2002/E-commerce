@@ -1,0 +1,233 @@
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-4">
+      <c-card-body>
+        <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm">
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="userName">
+              Tên đăng nhập
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="userName" [(ngModel)]="form.userName" required
+                minlength="3" maxlength="20" #username="ngModel" [readonly]="isUpdate" />
+              <div class="alert-danger" *ngIf="username.errors && f.submitted">
+                <div *ngIf="username.errors['required']">Tài khoản không được để trống</div>
+                <div *ngIf="username.errors['minlength']">
+                  Tài khoản phải lớn hơn 3 ký tự
+                </div>
+                <div *ngIf="username.errors['maxlength']">
+                  Tài khoản phải nhỏ hơn 20 ký tự
+                </div>
+              </div>
+            </c-col>
+
+            <label cLabel class="col-sm-2 col-form-label" for="fullname">
+              Họ và tên
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="fullname" [(ngModel)]="form.fullname" required
+                minlength="3" maxlength="100" #fullname="ngModel" />
+              <div class="alert-danger" *ngIf="fullname.errors && f.submitted">
+                <div *ngIf="fullname.errors['required']">Họ và tên không được để trống</div>
+                <div *ngIf="fullname.errors['minlength']">
+                  Họ và tên phải lớn hơn 3 ký tự
+                </div>
+                <div *ngIf="fullname.errors['maxlength']">
+                  Họ và tên phải nhỏ hơn 100 ký tự
+                </div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="password" *ngIf="!isUpdate">
+              Mật khẩu
+            </label>
+            <c-col sm="4" *ngIf="!isUpdate">
+              <div>
+                <input [type]="hide ? 'password' : 'text'" sizing="sm" class="form-control" name="password"
+                  [(ngModel)]="form.password" required #password="ngModel"
+                  pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{7,}$" />
+                <mat-icon (click)="hide = !hide" style="float:right;margin-top: -28px;font-size: 18px;">{{hide ?
+                  'visibility_off' : 'visibility'}}</mat-icon>
+              </div>
+              <div class="alert-danger" *ngIf="password.errors && f.submitted">
+                <div *ngIf="password.errors['required']">Mật khẩu không được để trống</div>
+                <div *ngIf="password.errors['pattern']">
+                  Mật khẩu phải có ít nhất một chữ thường, chữ hoa, số và độ dài ít nhất 8
+                  ký tự
+                </div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="departmentcode">
+              Phòng đơn vị
+            </label>
+            <c-col sm="4">
+              <ng-select placeholder="-- Chọn --" [items]="tblDepartmentList" notFoundText="Không có dữ liệu"
+                [ngModelOptions]="{standalone: true}" bindLabel="departmentName" [(ngModel)]="selectedDept"
+                (change)="changeSelectedDept()" #departmentCode="ngModel">
+              </ng-select>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="email">
+              Thư điện tử
+            </label>
+            <c-col sm="4">
+              <input type="email" sizing="sm" cFormControl name="email" [(ngModel)]="form.email" email
+                #email="ngModel" />
+            </c-col>
+
+            <label cLabel class="col-sm-2 col-form-label" for="telephone">
+              Điện thoại
+            </label>
+            <c-col sm="4">
+              <input type="telephone" sizing="sm" cFormControl name="telephone" [(ngModel)]="form.telephone"
+                minlength="9" maxlength="100" #telephone="ngModel" />
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="address">
+              Địa chỉ
+            </label>
+            <c-col sm="4">
+              <textarea rows="5" sizing="sm" cFormControl name="address" [(ngModel)]="form.address" maxlength="100"
+                #address="ngModel"></textarea>
+            </c-col>
+            <c-col sm="6">
+              <c-row class="mb-1">
+                <label cLabel class="col-sm-4 col-form-label" for="roleId">
+                  Vai trò <span class="color_red">*</span>
+                </label>
+                <c-col sm="8">
+                  <ng-select placeholder="-- Chọn --" [items]="tblRoles" notFoundText="Không có dữ liệu"
+                    bindLabel="roleName" [(ngModel)]="selectedRole" (change)="changeSelectedRole()" required
+                    [formControl]="roleId" [ngClass]="{'ng-select-invalid': roleId.touched && roleId.errors}">
+                  </ng-select>
+                  <div class="alert-danger" *ngIf="roleId.errors && f.submitted">
+                    <div *ngIf="roleId.errors['required']">Chưa chọn Vai trò</div>
+                  </div>
+                </c-col>
+              </c-row>
+              <!--
+              <c-row class="mb-1">
+                <label cLabel class="col-sm-4 col-form-label" for="roleId">
+                  Loại đơn vị
+                </label>
+                <c-col sm="8">
+                  <select aria-label="Loại đơn vị" cFormControl [(ngModel)]="form.officetype" sizing="sm"
+                    #officetype="ngModel" name="officetype" cSelect (change)="changeSelectedOfficetype($event)"
+                    required>
+                    <option *ngFor="let officetype of tblOfficetypes" [value]="officetype.officecode">
+                      {{officetype.officename}}</option>
+                  </select>
+                  <div class="alert-danger" *ngIf="officetype.errors && f.submitted">
+                    <div *ngIf="officetype.errors['required']">Chưa chọn Loại đơn vị</div>
+                  </div>
+                </c-col>
+              </c-row>
+
+              <c-row class="mb-1">
+                <label cLabel class="col-sm-4 col-form-label" for="officecode">
+                  {{form.officetypeName}} <span class="color_red">*</span>
+                </label>
+                <c-col sm="8">
+                  <ng-select placeholder="-- Chọn --" [items]="tblUserOffices" notFoundText="Không có dữ liệu"
+                    bindLabel="value" [(ngModel)]="selectedUserOffice" (change)="changeSelectedOffice()" required
+                    [formControl]="officecode"
+                    [ngClass]="{'ng-select-invalid': officecode.touched && officecode.errors}">
+                  </ng-select>
+                  <div class="alert-danger" *ngIf="officecode.errors && f.submitted">
+                    <div *ngIf="officecode.errors['required']">Chưa chọn {{form.officetypeName}}</div>
+                  </div>
+                </c-col>
+              </c-row>
+            -->
+            </c-col>
+          </c-row>
+
+          <mat-divider class="my-3"></mat-divider>
+<!--
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="configRoleOffice">
+              <span><svg cIcon class="me-2" name="cil-settings"></svg>Phân quyền dữ liệu</span>
+            </label>
+          </c-row>
+          <c-row class="mb-1">
+            <c-col sm="4">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" checked="true" disabled="true">
+                <label class="form-check-label">Đơn vị người dùng (mặc định)</label>
+              </div>
+            </c-col>
+            <c-col sm="4">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="isAll" id="isAll" value="ALL"
+                  [(ngModel)]="form.officetypeAll" (change)="changeSelectedOfficeType($event)">
+                <label class="form-check-label" for="isAll">Tất cả đơn vị</label>
+              </div>
+            </c-col>
+          </c-row>
+          <c-row class="mb-1">
+            <c-col sm="4">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="isAgent" id="isAgent" value="G"
+                  [(ngModel)]="form.officetypeG" (change)="changeSelectedOfficeType($event)">
+                <label class="form-check-label" for="isAgent">Phân quyền theo Đại lý</label>
+              </div>
+            </c-col>
+            <c-col sm="4">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="isOffice" id="isOffice" value="B"
+                  [(ngModel)]="form.officetypeB" (change)="changeSelectedOfficeType($event)">
+                <label class="form-check-label" for="isOffice">Phân quyền theo Công ty bảo hiểm</label>
+              </div>
+            </c-col>
+            <c-col sm="4">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="isBranch" id="isBranch" value="Q"
+                  [(ngModel)]="form.officetypeQ" (change)="changeSelectedOfficeType($event)">
+                <label class="form-check-label" for="isBranch">Phân quyền theo Chi nhánh công ty bảo hiểm</label>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <c-col sm="4">
+              <ng-multiselect-dropdown [settings]="dropdownSettings" [data]="dropdownListG"
+                [disabled]="isReadonlyOfficeG" [class]="isReadonlyOfficeG ? 'check_box_disabled' : ''"
+                [placeholder]="'-- Tất cả --'" [(ngModel)]="selectedItemsG" [ngModelOptions]="{standalone: true}">
+              </ng-multiselect-dropdown>
+            </c-col>
+            <c-col sm="4">
+              <ng-multiselect-dropdown [settings]="dropdownSettings" [data]="dropdownListB"
+                [disabled]="isReadonlyOfficeB" [class]="isReadonlyOfficeB ? 'check_box_disabled' : ''"
+                [placeholder]="'-- Tất cả --'" [(ngModel)]="selectedItemsB" [ngModelOptions]="{standalone: true}">
+              </ng-multiselect-dropdown>
+            </c-col>
+            <c-col sm="4">
+              <ng-multiselect-dropdown [settings]="dropdownSettings" [data]="dropdownListQ"
+                [disabled]="isReadonlyOfficeQ" [class]="isReadonlyOfficeQ ? 'check_box_disabled' : ''"
+                [placeholder]="'-- Tất cả --'" [(ngModel)]="selectedItemsQ" [ngModelOptions]="{standalone: true}">
+              </ng-multiselect-dropdown>
+            </c-col>
+          </c-row>
+-->
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 5}" class="mt-4">
+              <button cButton color="info" type="submit" size="sm" >
+                <svg cIcon class="me-2" name="cil-save"></svg><span class="btn-text">Lưu</span>
+              </button>
+              <button cButton color="dark" type="button" size="sm" routerLink="/user/user-manager"
+                >
+                <svg cIcon class="me-2" name="cil-ban"></svg><span class="btn-text">Quay lại</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

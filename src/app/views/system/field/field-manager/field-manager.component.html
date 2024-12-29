@@ -1,0 +1,211 @@
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <form name="form" (ngSubmit)="f.form.valid && findField()" #f="ngForm" novalidate>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="fieldName">
+              Tên Sân
+            </label>
+            <c-col sm="4">
+              <input cFormControl sizing="sm" id="fieldName" name="fieldName" type="text"
+                (change)="fieldName = $any($event.target).value" />
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="phoneNumberField">
+              Số điện thoại
+            </label>
+            <c-col sm="4">
+              <input cFormControl sizing="sm" id="phoneNumberField" name="phoneNumberField" type="text"
+                (change)="phoneNumberField = $any($event.target).value" />
+            </c-col>
+          </c-row>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="provinceName">
+              Tỉnh/Thành phố
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Tỉnh/Thành phố" cFormControl [(ngModel)]="form.provinceid"
+                #provinceid="ngModel" name="provinceid" cSelect (change)="changeSelectedCity($event)" required>
+                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                <option *ngFor="let province of tblCity" [value]="province.provinceid">{{ province.provinceName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="provinceid.errors && f.submitted">
+                <div *ngIf="provinceid.errors['required']">Bạn phải chọn một Tỉnh/Thành phố</div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="districtId">
+              Quận/Huyện
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Quận/Huyện" cFormControl [(ngModel)]="form.districtId"
+                #districtId="ngModel" name="districtId" cSelect (change)="changeSelectedDistrict($event)" required>
+                <option value="">-- Chọn Quận/Huyện --</option>
+                <option *ngFor="let district of tblDistrict" [value]="district.districtId">{{ district.districtName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="districtId.errors && f.submitted">
+                <div *ngIf="districtId.errors['required']">Bạn phải chọn một Quận/Huyện</div>
+              </div>
+            </c-col>
+          </c-row>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="wardId">
+              Phường/Xã
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Phường/Xã" cFormControl [(ngModel)]="form.wardId"
+                #wardId="ngModel" name="wardId" cSelect (change)="changeSelectedWard($event)" required>
+                <option value="">-- Chọn Phường/Xã --</option>
+                <option *ngFor="let ward of tblWard" [value]="ward.wardId">{{ ward.wardName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="wardId.errors && f.submitted">
+                <div *ngIf="wardId.errors['required']">Bạn phải chọn một Phường/Xã</div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="status">
+              Trạng thái
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Trạng thái" id="status" name="status" cSelect
+                (change)="status = $any($event.target).value">
+                <option value="-1">-- Tất cả --</option>
+                <option value="0">Ngừng hoạt động</option>
+                <option value="1">Hoạt động</option>
+              </select>
+            </c-col>
+          </c-row>
+          
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 3}" class="text-center align-self-center mt-1">
+              <button cButton color="info" size="sm" (click)="findField()" *ngIf="isShowButton('search')">
+                <svg cIcon class="me-2" name="cil-magnifying-glass"></svg><span class="btn-text">Tìm kiếm</span>
+              </button>
+              <button cButton color="info" size="sm" routerLink="/field/field-create" *ngIf="isShowButton('add')">
+                <svg cIcon class="me-2" name="cil-plus"></svg><span class="btn-text">Thêm mới</span>
+              </button>
+              <button cButton color="info" size="sm" *ngIf="isShowButton('exportExcel')">
+                <svg cIcon class="me-2" name="cil-file"></svg><span class="btn-text">Xuất Excel</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <h2 class="text-danger text-center" *ngIf="fields.length == 0">Không tìm thấy kết quả!</h2>
+        <c-pagination size="sm" aria-label="" *ngIf="totalPages > 0">
+          <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)="retrieveFields(1)"><span aria-hidden="true">&laquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2 <= 0" (click)="retrieveFields(pageable.pageNumber - 1)">{{ pageable.pageNumber - 1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1 <= 0" (click)="retrieveFields(pageable.pageNumber)">{{ pageable.pageNumber }}</a>
+          </li>
+          <li [class.active]="pageable.pageNumber === i" cPageItem *ngFor="let page of [].constructor(totalPages); let i = index">
+            <a cPageLink (click)="retrieveFields(i + 1)">{{ i + 1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2 > totalPages" (click)="retrieveFields(pageable.pageNumber + 2)">{{ pageable.pageNumber + 2 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3 > totalPages" (click)="retrieveFields(pageable.pageNumber + 3)">{{ pageable.pageNumber + 3 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1 >= totalPages" (click)="retrieveFields(totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' + ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) * pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count + ']'}}</span></a>
+          </li>
+        </c-pagination>
+
+        <table [bordered]="true" hover cTable small>
+          <thead>
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Tên Sân</th>
+              <th scope="col">Tỉnh/Thành phố</th>
+              <th scope="col">Quận/Huyện</th>
+              <th scope="col">Phường/Xã</th>
+              <th scope="col"> Nhà quản lí sân</th>
+              <th scope="col">Số điện thoại</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col" colspan="2">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of fields; index as i">
+              <td class="text-center" scope="row">{{(pageable.pageNumber * pageable.pageSize) + i + 1}}</td>
+              <td>{{item.fieldName}}</td>
+              <td>{{item.provinceName}}</td>
+              <td>{{item.districtName}}</td>
+              <td>{{item.wardName}}</td>
+              <td>{{item.supplierName}}</td>
+              <td>{{item.phoneNumberField}}</td>
+              <td>{{item.status == 1 ? 'Hoạt động' : (item.status == 0 ? 'Ngừng hoạt động' : (item.status == 2 ? 'Bị xóa' : (item.status == 5 ? 'Bị khóa' : '')) )}}</td>
+              <td class="text-center">
+                <div class="dislay-flex">
+                  <a [routerLink]="['/field/field-update', encryptData(item.id)]" *ngIf="isShowButton('edit') && item.status == 1">
+                    <svg cIcon class="me-2" name="cil-pencil"></svg>
+                  </a>
+                  <a (click)="checkField(i)" style="text-decoration: none; color: #007bff; cursor: pointer; display: inline-flex; align-items: center;">
+                    <svg cIcon class="me-2" name="cilCheck" style="width: 16px; height: 16px; fill: currentColor;"></svg> 
+                  </a>
+                  
+                  <span (click)="updateField(item)" class="color_blue" *ngIf="isShowButton('changeStatus')">
+                    <svg cIcon class="me-2" name="cil-reload"></svg>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="dislay-flex">
+                  <span (click)="deleteField(item)" class="color_red" *ngIf="isShowButton('delete')">
+                    <svg cIcon class="me-2" name="cil-trash"></svg>
+                  </span>
+                  <span *ngIf="item.status == 1 && isShowButton('lock')" (click)="lockField(item)" class="color_blue">
+                    <svg cIcon name="cilLockLocked"></svg>
+                  </span>
+                  <span *ngIf="item.status != 1 && isShowButton('unlock')" (click)="unlockField(item)" class="color_blue">
+                    <svg cIcon name="cilLockUnlocked"></svg>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <c-pagination size="sm" *ngIf="totalPages > 0">
+          <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)="retrieveFields(1)"><span aria-hidden="true">&laquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2 <= 0" (click)="retrieveFields(pageable.pageNumber - 1)">{{ pageable.pageNumber - 1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1 <= 0" (click)="retrieveFields(pageable.pageNumber)">{{ pageable.pageNumber }}</a>
+          </li>
+          <li [class.active]="pageable.pageNumber === i" cPageItem *ngFor="let page of [].constructor(totalPages); let i = index">
+            <a cPageLink (click)="retrieveFields(i + 1)">{{ i + 1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2 > totalPages" (click)="retrieveFields(pageable.pageNumber + 2)">{{ pageable.pageNumber + 2 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3 > totalPages" (click)="retrieveFields(pageable.pageNumber + 3)">{{ pageable.pageNumber + 3 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1 >= totalPages" (click)="retrieveFields(totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' + ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) * pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count + ']'}}</span></a>
+          </li>
+        </c-pagination>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+

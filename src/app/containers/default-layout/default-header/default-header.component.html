@@ -1,0 +1,98 @@
+<!--<c-header class="mb-4 d-print-none" position="sticky">-->
+<ng-container>
+  <c-container [fluid]="true">
+    <button toggle="visible" cHeaderToggler [cSidebarToggle]="sidebarId" class="ps-1">
+      <svg cIcon name="cilMenu" size="lg"></svg>
+    </button>
+    <c-header-nav class="d-none d-lg-flex me-auto">
+    </c-header-nav>
+
+    <c-header-nav class="d-none d-lg-flex">
+      <c-nav-item>
+        <a routerLink="./" cNavLink>
+          <svg cIcon name="cilBell" size="lg"></svg>
+        </a>
+      </c-nav-item>
+      <c-nav-item>
+        <a routerLink="./" cNavLink>
+          <svg cIcon name="cilList" size="lg"></svg>
+        </a>
+      </c-nav-item>
+      <c-nav-item>
+        <a routerLink="./" cNavLink>
+          <svg cIcon name="cilEnvelopeOpen" size="lg"></svg>
+        </a>
+      </c-nav-item>
+    </c-header-nav>
+    <c-header-nav class="ms-3">
+      <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
+    </c-header-nav>
+
+  </c-container>
+  <c-header-divider></c-header-divider>
+  <c-container [fluid]="true">
+    <c-breadcrumb-router class="ms-2"></c-breadcrumb-router>
+  </c-container>
+</ng-container>
+<!--</c-header>-->
+
+<ng-template #userDropdown>
+  <c-dropdown alignment="end" variant="nav-item">
+    <ng-container *ngIf="isAvatar || isAvatarDefault; else loginLink">
+      <button cButton color="" [caret]="false" cDropdownToggle class="py-0 btn-avatar">
+        <c-avatar *ngIf="isAvatar" cTextColor="primary" shape="rounded-1" size="md" [src]="urlAvatar" status="success">
+        </c-avatar>
+        <c-avatar *ngIf="isAvatarDefault" cTextColor="primary" shape="rounded-1" size="md"
+          src="./assets/img/avatars/default.jpg" status="success">
+        </c-avatar>
+      </button>
+    </ng-container>
+    
+    <ng-template #loginLink>
+      <a routerLink="/login" cButton color="primary" class="ms-3">Đăng nhập</a>
+    </ng-template>
+    
+    <ul cDropdownMenu class="pt-0 pr-5 w-auto">
+      <li>
+        <h6 cDropdownHeader class="bg-light fw-semibold py-2">Tài khoản</h6>
+      </li>
+      <li>
+        <a routerLink="./" cDropdownItem>
+          <svg cIcon class="me-2" name="cilBell"></svg>
+          Thông báo
+          <c-badge class="ms-2 float-end" color="info">
+            42
+          </c-badge>
+        </a>
+      </li>
+      <li>
+        <a routerLink="./" cDropdownItem>
+          <svg cIcon class="me-2" name='cilFile'></svg>
+          Hướng dẫn sử dụng
+        </a>
+      </li>
+      <li>
+        <a cDropdownItem (click)="changePassword()">
+          <svg cIcon class="me-2" name='cilReload'></svg>
+          Đổi mật khẩu
+        </a>
+      </li>
+      <li>
+        <a routerLink="./user/user-info" cDropdownItem>
+          <svg cIcon class="me-2" name='cilUser'></svg>
+          Tài khoản
+        </a>
+      </li>
+      <li>
+        <hr cDropdownDivider />
+      </li>
+      <li>
+        <a (click)="logOut()" cDropdownItem>
+          <svg cIcon class="me-2" name="cilLockLocked"></svg>
+          Đăng xuất
+        </a>
+      </li>
+      <li></li>
+    </ul>
+  </c-dropdown>
+</ng-template>

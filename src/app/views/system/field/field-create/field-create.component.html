@@ -1,0 +1,225 @@
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <form name="form" (ngSubmit)="f.form.valid && onSubmit(f)" #f="ngForm" novalidate>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="provinceName">
+              Thành phố
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Thành phố" cFormControl [(ngModel)]="form.provinceid"
+                      #provinceid="ngModel" name="provinceid" cSelect (change)="changeSelectedCity($event)" required>
+                <option value="">-- Chọn thành phố --</option>
+                <option *ngFor="let city of tblCity" [value]="city.provinceid">{{ city.provinceName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="provinceid.errors && f.submitted">
+                <div *ngIf="provinceid.errors['required']">Bạn phải chọn một thành phố</div>
+              </div>
+            </c-col>
+
+            <label cLabel class="col-sm-2 col-form-label" for="districtName">
+              Quận/Huyện
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Quận/Huyện" cFormControl [(ngModel)]="form.districtId"
+                      #districtId="ngModel" name="districtId" cSelect (change)="changeSelectedDistrict($event)" required>
+                <option value="">-- Chọn quận/huyện --</option>
+                <option *ngFor="let district of tblDistrict" [value]="district.districtId">{{ district.districtName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="districtId.errors && f.submitted">
+                <div *ngIf="districtId.errors['required']">Bạn phải chọn một quận/huyện</div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="wardName">
+              Phường/Xã
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Phường/Xã" cFormControl [(ngModel)]="form.wardId"
+                      #wardId="ngModel" name="wardId" cSelect (change)="changeSelectedWard($event)" required>
+                <option value="">-- Chọn phường/xã --</option>
+                <option *ngFor="let ward of tblWard" [value]="ward.wardId">{{ ward.wardName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="wardId.errors && f.submitted">
+                <div *ngIf="wardId.errors['required']">Bạn phải chọn một phường/xã</div>
+              </div>
+            </c-col>
+
+            <label cLabel class="col-sm-2 col-form-label" for="fieldName">
+              Tên Sân
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="fieldName" [(ngModel)]="form.fieldName" required
+                     minlength="3" maxlength="100" #fieldName="ngModel" />
+              <div class="alert-danger" *ngIf="fieldName.errors && f.submitted">
+                <div *ngIf="fieldName.errors['required']">Tên sân không được để trống</div>
+                <div *ngIf="fieldName.errors['minlength']">
+                  Tên sân phải có ít nhất 3 ký tự
+                </div>
+                <div *ngIf="fieldName.errors['maxlength']">
+                  Tên sân không quá 100 ký tự
+                </div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="phoneNumberField">
+              Số Điện Thoại
+            </label>
+            <c-col sm="4">
+              <input
+                type="tel"
+                sizing="sm"
+                cFormControl
+                name="phoneNumberField"
+                [(ngModel)]="form.phoneNumberField"
+                minlength="9"
+                maxlength="20"
+                pattern="^[0-9]*$"
+                #phoneNumberField="ngModel"
+                required
+              />
+              <div class="alert-danger" *ngIf="phoneNumberField.errors && (phoneNumberField.dirty || phoneNumberField.touched)">
+                <div *ngIf="phoneNumberField.errors['required']">Số điện thoại không được để trống</div>
+                <div *ngIf="phoneNumberField.errors['minlength']">
+                  Số điện thoại phải có ít nhất 9 chữ số
+                </div>
+                <div *ngIf="phoneNumberField.errors['maxlength']">
+                  Số điện thoại không quá 20 chữ số
+                </div>
+                <div *ngIf="phoneNumberField.errors['pattern']">
+                  Số điện thoại phải là các chữ số
+                </div>
+              </div>
+            </c-col>
+            
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="day">
+              Ngày
+            </label>
+            <c-col sm="4">
+              <input type="date" sizing="sm" cFormControl name="day" [(ngModel)]="form.day" #day="ngModel" required/>
+              <div class="alert-danger" *ngIf="day.errors && f.submitted">
+                <div *ngIf="day.errors['required']">Ngày không được để trống</div>
+              </div>
+            </c-col>
+            <label cLabel class="col-sm-2 col-form-label" for="supplierName">
+              Nhà quản lý sân
+            </label>
+            <c-col sm="4">
+              <select sizing="sm" aria-label="Nhà quản lý sân" cFormControl [(ngModel)]="form.supplierId"
+                      #supplierId="ngModel" name="supplierId"  cSelect (change)="changeSelectedSupplier($event)"  required>
+                <option value="">-- Chọn nhà quản lý sân --</option>
+                <option *ngFor="let supplier of tblSupplier" [value]="supplier.supplierId">{{ supplier.supplierName }}</option>
+              </select>
+              <div class="alert-danger" *ngIf="supplierId.errors && f.submitted">
+                <div *ngIf="supplierId.errors['required']">Bạn phải chọn một nhà quản lý sân</div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="timeStart">
+              Thời Gian Bắt Đầu
+            </label>
+            <c-col sm="4">
+              <input type="time" sizing="sm" cFormControl name="timeStart" [(ngModel)]="form.timeStart" #timeStart="ngModel" required/>
+              <div class="alert-danger" *ngIf="timeStart.errors && f.submitted">
+                <div *ngIf="timeStart.errors['required']">Thời gian bắt đầu không được để trống</div>
+              </div>
+            </c-col>
+
+            <label cLabel class="col-sm-2 col-form-label" for="timeEnd">
+              Thời Gian Kết Thúc
+            </label>
+            <c-col sm="4">
+              <input type="time" sizing="sm" cFormControl name="timeEnd" [(ngModel)]="form.timeEnd" #timeEnd="ngModel" required/>
+              <div class="alert-danger" *ngIf="timeEnd.errors && f.submitted">
+                <div *ngIf="timeEnd.errors['required']">Thời gian kết thúc không được để trống</div>
+              </div>
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-2 col-form-label" for="address">
+              Địa Chỉ
+            </label>
+            <c-col sm="4">
+              <input type="text" sizing="sm" cFormControl name="address" [(ngModel)]="form.address" required
+                     minlength="3" maxlength="255" #address="ngModel" />
+              <div class="alert-danger" *ngIf="address.errors && f.submitted">
+                <div *ngIf="address.errors['required']">Địa chỉ không được để trống</div>
+                <div *ngIf="address.errors['minlength']">
+                  Địa chỉ phải có ít nhất 3 ký tự
+                </div>
+                <div *ngIf="address.errors['maxlength']">
+                  Địa chỉ không quá 255 ký tự
+                </div>
+              </div>
+            </c-col>
+            
+            <c-col sm="4">
+              <label cLabel class="col-form-label" for="imageUpload">
+                  Hình Ảnh
+              </label>
+              <input type="file" id="imageUpload" (change)="onImageChange($event)" class="form-control-file" required />
+              <div class="alert-danger" *ngIf="!form.image && f.submitted">
+                <div *ngIf="!form.image">Bạn phải chọn một hình ảnh</div>
+              </div>
+              <img *ngIf="form.image" [src]="form.image" alt="Preview" class="img-thumbnail mt-2" />
+              
+          </c-col>
+          
+            
+          </c-row>
+          
+
+
+          
+          <c-row class="mb-4">
+            <label cLabel class="col-sm-2 col-form-label">
+              Số sân loại
+            </label>
+            <c-col sm="10">
+              <div *ngFor="let fieldType of tblFieldType" class="mb-3">
+                <div class="d-flex align-items-center">
+                  <span class="me-2 fw-bold">{{ fieldType.fieldTypeName }}:</span>
+                  <div class="input-group">
+                    <input type="number" class="form-control" cFormControl [name]="'field' + fieldType.fieldTypeId" [(ngModel)]="form['field' + fieldType.fieldTypeId]" required min="0" #fieldTypeId="ngModel" />
+                    <span class="input-group-text"> sân</span>
+                  </div>
+                </div>
+                <div class="alert-danger" *ngIf="fieldTypeId.invalid && f.submitted">
+                  <div *ngIf="fieldTypeId.errors?.['required']">Số sân {{ fieldType.fieldTypeName }} không được để trống</div>
+                  <div *ngIf="fieldTypeId.errors?.['min']">Số sân phải là số không âm</div>
+                </div>
+              </div>
+            </c-col>
+          </c-row>
+          
+          
+
+          <mat-divider class="my-3"></mat-divider>
+
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 5}" class="mt-4">
+              <button cButton color="info" type="submit" size="sm">
+                <svg cIcon class="me-2" name="cil-save"></svg><span class="btn-text">Lưu</span>
+              </button>
+              <button cButton color="dark" type="button" size="sm" routerLink="/field/field-manager"
+               >
+                <svg cIcon class="me-2" name="cil-ban"></svg><span class="btn-text">Quay lại</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

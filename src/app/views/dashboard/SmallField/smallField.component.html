@@ -1,0 +1,171 @@
+<div class="container">
+  <!-- Form đặt sân nhỏ -->
+  <div class="booking-form-container" *ngIf="bookingFormVisible">
+    <div class="booking-form">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title text-center">Đặt sân nhỏ</h5>
+          <form #bookingForm="ngForm" novalidate>
+            <div class="form-group">
+              <label for="bookingName">Họ và tên:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="bookingName"
+                [(ngModel)]="bookingName"
+                name="bookingName"
+                #bookingNameField="ngModel"
+                required
+              />
+              <div *ngIf="bookingNameField.invalid && (bookingNameField.dirty || bookingNameField.touched)" class="alert alert-danger">
+                Họ và tên không được để trống
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="bookingPhone">Số điện thoại:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="bookingPhone"
+                [(ngModel)]="bookingPhone"
+                name="bookingPhone"
+                #bookingPhoneField="ngModel"
+                required
+                pattern="^[0-9]*$"
+              />
+              <div *ngIf="bookingPhoneField.invalid && (bookingPhoneField.dirty || bookingPhoneField.touched)" class="alert alert-danger">
+                <div *ngIf="bookingPhoneField.errors?.['required']">Số điện thoại không được để trống</div>
+                <div *ngIf="bookingPhoneField.errors?.['pattern']">Số điện thoại phải là số</div>
+
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="bookingEmail">Email:</label>
+              <input
+                type="email"
+                class="form-control"
+                id="bookingEmail"
+                [(ngModel)]="bookingEmail"
+                name="bookingEmail"
+                #bookingEmailField="ngModel"
+                required
+                email
+              />
+              <div *ngIf="bookingEmailField.invalid && (bookingEmailField.dirty || bookingEmailField.touched)" class="alert alert-danger">
+                <div *ngIf="bookingEmailField.errors?.['required']">Email không được để trống</div>
+                <div *ngIf="bookingEmailField.errors?.['email']">Email không đúng định dạng</div>
+                
+              </div>
+            </div>
+
+            <!-- Thông tin ca sân đã chọn -->
+            <div class="form-group">
+              <label for="bookingShift">Thông tin ca sân đã chọn:</label>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Ngày</th>
+                    <th>Ca sân</th>
+                    <th>Tiền</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let shift of selectedShiftFields; let i = index">
+                    <td>{{ selectedDate | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ shift.timeStart }} - {{ shift.timeEnd }}</td>
+                    <td>{{ isWeekend(selectedDate) ? shift.amountWeekend : shift.amountWeekday }} VND</td>
+                    <td><button type="button" class="btn btn-danger btn-sm" (click)="removeShift(i)">Xóa</button></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"><strong>Tổng tiền</strong></td>
+                    <td colspan="2">{{ calculateTotalPayment() }} VND</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="text-center">
+              <button type="button" class="btn btn-primary" [disabled]="bookingForm.invalid" (click)="submitBooking()">Đặt sân</button>
+              <button type="button" class="btn btn-secondary ml-2" (click)="hideBookingForm()">Hủy</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Thanh chọn ngày -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <label for="datePicker"><strong>Chọn ngày:</strong></label>
+      <input type="date" id="datePicker" class="form-control" [(ngModel)]="selectedDate" (change)="onDateChange($event)" [ngModelOptions]="{standalone: true}" [min]="minDate">
+    </div>
+  </div>
+  
+
+  <!-- Chú thích cho trạng thái -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h6>Chú thích trạng thái:</h6>
+      <div class="d-flex align-items-center">
+        <div class="status-box booked-status" style="width: 10px; height: 10px; margin-right: 2px;"></div>
+        <span>Đã đặt (booked)</span>
+      </div>
+      <div class="d-flex align-items-center mt-2">
+        <div class="status-box pending-status" style="width: 10px; height: 10px; margin-right: 2px;"></div>
+        <span>Chờ xử lý (pending)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danh sách card sân -->
+  <div class="row">
+    <div *ngFor="let smallField of smallFields" class="col-md-4 mb-4"  [ngClass]="{'disabled-div': smallField.status && +smallField.status === 2}">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title text-center">{{ smallField.smallFieldName }}</h5>
+          <div>
+            <p><strong>Loại sân : </strong>{{smallField.fieldType}} người</p>
+            <p><strong>Giờ hiện tại:</strong> {{ currentTime | date: 'HH:mm:ss' }}</p>
+            <p><strong>Trạng thái đặt sân:</strong> {{ getBookingStatusForField(smallField.id || 0) }}</p>
+            <p><strong>Trạng thái:</strong> 
+              {{ smallField.status !== undefined && +smallField.status === 1 ? 'Hoạt động' : smallField.status && +smallField.status === 2 ? 'Tạm ngừng hoạt động' : smallField.status }}
+            </p>
+            <div *ngIf="shiftFieldsMap[smallField.fieldType || ''] && shiftFieldsMap[smallField.fieldType || ''].length > 0">
+              <h6 class="mt-3">Ca sân:</h6>
+              <div class="shift-boxes">
+                <div *ngFor="let shiftField of shiftFieldsMap[smallField.fieldType || '']" 
+                class="shift-box" 
+                [ngClass]="{
+                  'selected-shift': shiftField.selected && shiftField.smallFieldId === smallField.id, 
+                  'booked-status': getStatusClass(shiftField, smallField.id || 0) === 'booked-status', 
+                  'pending-status': getStatusClass(shiftField, smallField.id || 0) === 'pending-status',
+                  'disabled-shift': isShiftInPast(shiftField) 
+                }"
+                [ngStyle]="{
+                  'pointer-events': isShiftInPast(shiftField) ? 'none' : 'auto', 
+                  'opacity': isShiftInPast(shiftField) ? '0.5' : '1' 
+                }"
+                (click)="!isShiftInPast(shiftField) && toggleShiftSelection(shiftField, smallField.id)">
+             <p>{{ shiftField.timeStart }} - {{ shiftField.timeEnd }}</p>
+             <p>{{ isWeekend(selectedDate) ? shiftField.amountWeekend : shiftField.amountWeekday }}</p>
+           </div>
+           
+              </div>
+            </div>
+            
+            <div class="text-center mt-3">
+              <button class="btn btn-success" (click)="showBookingForm()">Đặt sân nhỏ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,116 @@
+<div class="container mt-4">
+  <form name="form" (ngSubmit)="f.form.valid && findField()" #f="ngForm" novalidate>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="fieldName">Tên Sân</label>
+          <input cFormControl class="form-control form-control-sm" id="fieldName" name="fieldName" type="text" placeholder="Nhập tên sân" [(ngModel)]="fieldName" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="phoneNumberField">Số điện thoại</label>
+          <input cFormControl class="form-control form-control-sm" id="phoneNumberField" name="phoneNumberField" type="text" placeholder="Nhập số điện thoại" [(ngModel)]="phoneNumberField" />
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3 text-center">
+      <div class="col-md-12">
+        <button cButton class="btn btn-info btn-sm" type="submit">Tìm kiếm</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="row">
+    <div class="col-md-12 text-center" *ngIf="fields && fields.length === 0">Không tìm thấy kết quả!</div>
+    <div class="col-md-4" *ngFor="let field of fields; let i = index">
+      <div class="card mb-3 shadow-sm custom-card">
+        <img *ngIf="field.image" [src]="'data:image/jpeg;base64,' + field.image" class="card-img-top" alt="{{ field.fieldName }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ field.fieldName }}</h5>
+          <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ field.provinceName }}, {{ field.districtName }}, {{ field.wardName }}</p>
+          <p class="card-text"><i class="fas fa-phone"></i> {{ field.phoneNumberField }}</p>
+          <button cButton class="btn btn-primary btn-sm" (click)="setupField(field)">Thiết lập</button>
+          <button cButton class="btn btn-info btn-sm" (click)="showFieldInfo(field)">Thông tin</button>
+          <button cButton class="btn btn-primary btn-sm" (click)="checkField(i)">Xem lịch sân</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup form -->
+<div class="modal fade" id="setupFormModal" tabindex="-1" role="dialog" aria-labelledby="setupFormModalLabel" aria-hidden="true" [ngClass]="{ 'show': showSetupModal, 'd-block': showSetupModal }">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="setupFormModalLabel">Thiết lập thông tin sân</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showSetupModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #setupForm="ngForm">
+          <div class="form-group">
+            <label for="shiftFieldName">Ca sân số </label>
+            <input type="number" class="form-control" id="shiftFieldName" name="shiftFieldName" [(ngModel)]="selectedField.shiftFieldName" required>
+          </div>          
+          <div class="form-group">
+            <label for="timeStart">Thời gian bắt đầu</label>
+            <input type="time" class="form-control" id="timeStart" name="timeStart" [(ngModel)]="selectedField.timeStart" required>
+          </div>
+          <div class="form-group">
+            <label for="timeEnd">Thời gian kết thúc</label>
+            <input type="time" class="form-control" id="timeEnd" name="timeEnd" [(ngModel)]="selectedField.timeEnd" required>
+          </div>
+          <div class="form-group">
+            <label for="amountWeekday">Giá ngày trong tuần</label>
+            <input type="text" class="form-control" id="amountWeekday" name="amountWeekday" [(ngModel)]="selectedField.amountWeekday" #amountWeekday="ngModel" required pattern="^\d+(\.\d{1,2})?$">
+            <div *ngIf="amountWeekday.errors && (amountWeekday.dirty || amountWeekday.touched)">
+              <div *ngIf="amountWeekday.errors['required']">Giá ngày trong tuần là bắt buộc.</div>
+              <div *ngIf="amountWeekday.errors['pattern']">Giá ngày trong tuần phải là số.</div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="amountWeekend">Giá ngày cuối tuần</label>
+            <input type="text" class="form-control" id="amountWeekend" name="amountWeekend" [(ngModel)]="selectedField.amountWeekend" #amountWeekend="ngModel" required pattern="^\d+(\.\d{1,2})?$">
+            <div *ngIf="amountWeekend.errors && (amountWeekend.dirty || amountWeekend.touched)">
+              <div *ngIf="amountWeekend.errors['required']">Giá ngày cuối tuần là bắt buộc.</div>
+              <div *ngIf="amountWeekend.errors['pattern']">Giá ngày cuối tuần phải là số.</div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="fieldType">Loại sân</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-info text-white">
+                  <i class="fas fa-futbol"></i>
+                </span>
+              </div>
+              <select class="custom-select custom-select-lg" id="fieldType" name="fieldType" [(ngModel)]="selectedField.fieldType" required>
+                <option *ngFor="let type of fieldTypeList" [ngValue]="type.fieldTypeName">{{ type.fieldTypeName }}</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="showSetupModal = false">Đóng</button>
+        <button type="button" class="btn btn-primary" (click)="saveSetupInfo()" [disabled]="setupForm.invalid">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Modal cho thông tin ca sân -->
+  <app-shiftfield-info
+  [shiftFields]="selectedShiftFields"
+  [showInfoModal]="showInfoModal"
+  (showInfoModalChange)="closeInfoModalHandler($event)"
+></app-shiftfield-info>
+
+          
+
+
+</div>

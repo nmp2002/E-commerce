@@ -1,0 +1,81 @@
+<c-row ngPreserveWhitespaces>
+  <c-col sm="12">
+    <c-card class="mb-4">
+      <c-card-body>
+        <c-row>
+          <c-col sm="7">
+            <div class="dislay-flex">
+              <div>
+                <img *ngIf="isAvatarDefault" src="./assets/img/avatars/default.jpg" width="250px" height="250px">
+                <img *ngIf="isAvatar" [src]="urlAvatar" width="250px" height="250px">
+                <br>
+                <c-input-group class="mb-3" class="info">
+                  <label cInputGroupText for="uploadFile" color="info"
+                    style="cursor: pointer; width : 250px; height: 30px; border:none; border-radius: 0px; background: #0dcaf0; color: #FFF;">
+                    <svg cIcon class="me-2" name="cil-file"></svg><span class="btn-text"> Upload hình ảnh</span>
+                  </label>
+                  <input cFormControl id="uploadFile" type="file" (change)="onSelectFile($event)"
+                    style="display: none;" />
+                </c-input-group>
+              </div>
+              <div style="text-align: left !important;">
+                <c-row class="mx-4">
+                  <h5 class="mb-3 text-left">Thông tin chi tiết tài khoản</h5>
+                  <c-row class="mt-3">
+                    Tên đăng nhập: {{form.username}}
+                  </c-row>
+                  <c-row class="mt-3">
+                    Họ và tên: {{form.fullname}}
+                  </c-row>
+                  <c-row class="mt-3">
+                    Số điện thoại: {{form.telephone}}
+                  </c-row>
+                  <c-row class="mt-3">
+                    Thư điện tử: {{form.email}}
+                  </c-row>
+                  <c-row class="mt-3">
+                    Địa chỉ: {{form.address}}
+                  </c-row>
+                  <c-row class="mt-3">
+                    Chi nhánh: {{form.officename}}
+                  </c-row>
+                </c-row>
+                <c-row class="mt-4">
+                  <c-col c-col md="6" [offset]="{md: 4}" class="mt-4">
+                    <button cButton color="info" size="sm" routerLink="/dashboard" *ngIf="isShowButton('close')">
+                      <svg cIcon class="me-2" name="cil-ban"></svg><span class="btn-text">Về trang chủ</span>
+                    </button>
+                  </c-col>
+                </c-row>
+              </div>
+            </div>
+          </c-col>
+          <c-col sm="5">
+            <c-row class="mx-4">
+              <h5 class="mb-3 text-left">Danh sách quyền</h5>
+              <table mat-table [dataSource]="dataSource">
+                <ng-container matColumnDef="menuName">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <span [style.paddingLeft.px]="40" style="font-size: 16px; font-weight: 600;">Chức năng</span>
+                  </th>
+                  <td mat-cell *matCellDef="let node">
+                    <div class="dislay-flex">
+                      <button mat-icon-button [style.visibility]="!node.expandable ? 'hidden' : ''"
+                        [style.marginLeft.px]="node.level * 32">
+                        <mat-icon class="mat-icon-rtl-mirror">
+                          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                        </mat-icon>
+                      </button> {{node.menuName}}
+                    </div>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </c-row>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

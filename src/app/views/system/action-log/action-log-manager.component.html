@@ -1,0 +1,194 @@
+<!--
+<c-row ngPreserveWhitespaces>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <form>
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-1 col-form-label" for="tableName">
+              Tên bảng
+            </label>
+            <c-col sm="3">
+              <input sizing="sm" cFormControl  id="tableName" name="tableName" [(ngModel)]="form.tableName" type="text"  />
+            </c-col>
+            <label cLabel class="col-sm-1 col-form-label" for="columnName">
+              Tên cột
+            </label>
+            <c-col sm="3">
+              <input cFormControl sizing="sm" id="tableName" name="tableName" [(ngModel)]="form.columnName" type="text" />
+            </c-col>
+            <label cLabel class="col-sm-1 col-form-label" for="columnId">
+              ID
+            </label>
+            <c-col sm="3">
+              <input sizing="sm" cFormControl id="columnId" name="columnId" (keypress)="onKeypressEvent($event);" [(ngModel)]="form.columnId" type="text" />
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-1 col-form-label" for="previous">
+              Giá trị cũ
+            </label>
+            <c-col sm="3">
+              <input sizing="sm" cFormControl id="previous" name="previous" [(ngModel)]="form.previous" type="text" />
+            </c-col>
+            <label cLabel class="col-sm-1 col-form-label" for="next">
+              Giá trị mới
+            </label>
+            <c-col sm="3">
+              <input sizing="sm" cFormControl id="next" name="next" [(ngModel)]="form.colnextumnId" type="text" />
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-1">
+            <label cLabel class="col-sm-1 col-form-label" for="fromDate">
+              Từ ngày
+            </label>
+            <c-col sm="3">
+              <mat-form-field appearance="outline">
+                <input matInput [matDatepicker]="fromDate" [(ngModel)]="form.fromDate"
+                  [ngModelOptions]="{standalone: true}" />
+                <mat-datepicker-toggle matSuffix [for]="fromDate"></mat-datepicker-toggle>
+                <mat-datepicker #fromDate></mat-datepicker>
+              </mat-form-field>
+            </c-col>
+            <label cLabel class="col-sm-1 col-form-label" for="toDate">
+              Đến ngày
+            </label>
+            <c-col sm="3">
+              <mat-form-field appearance="outline">
+                <input matInput [matDatepicker]="toDate" [(ngModel)]="form.toDate"
+                  [ngModelOptions]="{standalone: true}" />
+                <mat-datepicker-toggle matSuffix [for]="toDate"></mat-datepicker-toggle>
+                <mat-datepicker #toDate></mat-datepicker>
+              </mat-form-field>
+            </c-col>
+          </c-row>
+
+          <c-row>
+            <c-col c-col md="6" [offset]="{md: 3}" class="text-center align-self-center mt-1">
+              <button cButton size="sm" color="info" (click)="findActionLog()" *ngIf="isShowButton('search')">
+                <svg cIcon class="me-2" name="cil-magnifying-glass"></svg><span class="btn-text">Tìm kiếm</span>
+              </button>
+              <button cButton size="sm" (click)="exportExcel()" color="info" *ngIf="isShowButton('exportExcel')">
+                <svg cIcon class="me-2" name="cil-file"></svg><span class="btn-text">Xuất Excel</span>
+              </button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+  <c-col xs="12">
+    <c-card class="mb-2">
+      <c-card-body>
+        <h2 class="text-danger text-center" *ngIf="actionLogs.length == 0">Không tìm thấy kết quả!</h2>
+        <c-pagination size="sm" aria-label="" *ngIf="totalPages > 0">
+          <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)=" retrieveTutorials(1)"><span
+                aria-hidden="true">&laquo;</span></a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2<= 0" (click)="retrieveTutorials(pageable.pageNumber- 1)">{{
+              pageable.pageNumber - 1}}</a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1<= 0" (click)="retrieveTutorials(pageable.pageNumber)">{{
+              pageable.pageNumber }}</a>
+          </li>
+
+          <li cPageItem [active]="true">
+            <a cPageLink>{{ pageable.pageNumber+1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+2)">{{ pageable.pageNumber+2}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+3)">{{ pageable.pageNumber+3}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1>=totalPages "
+              (click)="retrieveTutorials( totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' +
+                ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) *
+                pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count +
+                ']'}}</span></a>
+          </li>
+        </c-pagination>
+        <table [bordered]="true" cTable small>
+          <thead>
+            <tr>
+              <th scope="col" class="text-center">STT</th>
+              <th class="nowrap" scope="col">Thao tác</th>
+              <th class="nowrap" scope="col">Tên bảng</th>
+              <th class="nowrap" scope="col">Tên cột</th>
+              <th class="nowrap" scope="col">ID cập nhật</th>
+              <th class="nowrap" scope="col">Giá trị trước</th>
+              <th class="nowrap" scope="col">Giá trị sau</th>
+              <th class="nowrap" scope="col">Người cập nhật</th>
+              <th class="nowrap" scope="col">Thời gian cập nhật</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of actionLogs, index as i">
+              <td class="nowrap text-center" scope="row">{{(pageable.pageNumber * pageable.pageSize) + i + 1}}</td>
+              <td class="nowrap">{{item.actionType}}</td>
+              <td class="nowrap">{{item.tableName}}</td>
+              <td class="nowrap">{{item.columnName}}</td>
+              <td class="nowrap">{{item.columnId}}</td>
+              <td class="nowrap">{{item.previous}}</td>
+              <td class="nowrap">{{item.next}}</td>
+              <td class="nowrap">{{item.createdby}}</td>
+              <td class="nowrap">{{item.createdDateStr}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <c-pagination size="sm" aria-label="" *ngIf="totalPages > 0">
+          <li cPageItem>
+            <a cPageLink aria-label="Đầu" [hidden]="pageable.pageNumber <= 0" (click)=" retrieveTutorials(1)"><span
+                aria-hidden="true">&laquo;</span></a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-2<= 0" (click)="retrieveTutorials( pageable.pageNumber- 1)">{{
+              pageable.pageNumber - 1}}</a>
+          </li>
+
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber-1<= 0" (click)="retrieveTutorials( pageable.pageNumber)">{{
+              pageable.pageNumber }}</a>
+          </li>
+
+          <li cPageItem [active]="true">
+            <a cPageLink>{{ pageable.pageNumber+1 }}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+2>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+2)">{{ pageable.pageNumber+2}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink [hidden]="pageable.pageNumber+3>totalPages "
+              (click)="retrieveTutorials( pageable.pageNumber+3)">{{ pageable.pageNumber+3}}</a>
+          </li>
+          <li cPageItem>
+            <a cPageLink aria-label="Next" [hidden]="pageable.pageNumber+1>=totalPages "
+              (click)="retrieveTutorials( totalPages)"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+          <li cPageItem>
+            <a class="info-paging" cPageLink aria-label="Số bản ghi/Tổng"><span aria-hidden="true">{{'[' +
+                ((pageable.pageNumber * pageable.pageSize + 1)) + ' - ' + (((pageable.pageNumber + 1) *
+                pageable.pageSize) > count ? count : ((pageable.pageNumber + 1) * pageable.pageSize)) + ' / ' + count +
+                ']'}}</span></a>
+          </li>
+        </c-pagination>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+-->

@@ -1,0 +1,87 @@
+<!-- booking-modal.component.html -->
+<div *ngIf="booking" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Chi tiết đặt sân</h2>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="save()">
+     
+        <label for="name">Tên sân:</label>
+        <input
+          type="text"
+          [(ngModel)]="booking.nameField"
+          name="nameField"
+          id="name"
+          readonly
+        />
+
+        <label for="name">Sân:</label>
+        <input
+          type="text"
+          [(ngModel)]="booking.smallFieldName"
+          name="smallFieldName"
+          id="name"
+          readonly
+        />
+        <label for="name">Tên khách:</label>
+        <input
+          type="text"
+          [(ngModel)]="booking.nameGuest"
+          name="nameGuest"
+          id="name"
+          required
+        />
+        <label for="phone">Số điện thoại:</label>
+        <input
+          type="text"
+          [(ngModel)]="booking.phoneNumberGuest"
+          name="phoneNumberGuest"
+          id="phone"
+          required
+        />
+
+        <label for="day">Ngày đặt:</label>
+        <input
+          type="date"
+          [(ngModel)]="booking.day"
+          name="day"
+          id="day"
+          readonly
+        />
+
+        <label for="timeStart">Giờ đặt bắt đầu:</label>
+        <input
+          type="datetime"
+          [(ngModel)]="booking.timeStart"
+          name="timeStart"
+          id="timeStart"
+          readonly
+        />
+
+        <label for="timeEnd">Giờ đặt kết thúc:</label>
+        <input
+          type="datetime"
+          [(ngModel)]="booking.timeEnd"
+          name="timeEnd"
+          id="timeEnd"
+          readonly
+        />
+
+        <label for="totalPayment">Tổng thanh toán:</label>
+        <input
+          type="text"
+          [(ngModel)]="booking.totalPayment"
+          name="totalPayment"
+          id="totalPayment"
+          readonly
+        />
+
+        <!-- Thêm các trường khác nếu cần -->
+
+        <button type="submit">Lưu</button>
+        <button type="button" class="close-btn" (click)="close()">Đóng</button>
+      </form>
+    </div>
+  </div>
+</div>

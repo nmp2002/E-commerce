@@ -1,0 +1,154 @@
+.modal-content {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  background-color: #e9f5ff; /* Màu xanh nhạt hơn */
+  color: #007bff; /* Chữ xanh đậm */
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  padding: 15px 20px;
+
+  .modal-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+
+  .close {
+    color: #007bff; /* Nút thoát màu xanh nhạt */
+    opacity: 1;
+    font-size: 1.2rem;
+    line-height: 1;
+
+    &:hover {
+      color: #0056b3; /* Đậm hơn khi hover */
+    }
+
+    span {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.modal-body {
+  padding: 20px;
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #495057;
+    }
+
+    select.form-control {
+      border-radius: 5px;
+      border: 1px solid #ced4da;
+    }
+  }
+
+  .table-responsive {
+    margin-top: 20px;
+  }
+
+  table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+
+    thead {
+      background-color: #f8f9fa;
+
+      th {
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        border-bottom: 2px solid #dee2e6;
+      }
+    }
+
+    tbody {
+      tr {
+        &:hover {
+          background-color: #f1f3f5;
+        }
+
+        td {
+          text-align: center;
+          padding: 10px;
+          border-bottom: 1px solid #dee2e6;
+        }
+      }
+    }
+  }
+}
+
+.modal-footer {
+  background-color: #f8f9fa;
+  border-top: none;
+  padding: 15px;
+  border-radius: 0 0 10px 10px;
+
+  .btn {
+    border-radius: 5px;
+    padding: 8px 15px;
+
+    &.btn-secondary {
+      background-color: #6c757d;
+      border-color: #6c757d;
+
+      &:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+      }
+    }
+
+    &.btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+
+      &:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+      }
+    }
+  }
+}
+
+.btn {
+  &-success {
+    background-color: #28a745;
+    border-color: #28a745;
+
+    &:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+  }
+
+  &-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+
+    &:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+  }
+
+  &-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+
+    &:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+    }
+  }
+}
