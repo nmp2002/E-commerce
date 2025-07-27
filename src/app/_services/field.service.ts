@@ -26,7 +26,9 @@ export class FieldService {
   findAll(): Observable<TblField[]> {
     return this.http.get<TblField[]>(`${this.baseURL}`);
   }
-
+  findByFieldName(fieldName: string): Observable<any> {
+    return this.http.get<any>(this.baseURL + 'field?fieldName=' + fieldName, httpOptions);
+  }
   // Lấy danh sách thành phố
   getCities(): Observable<TblCity[]> {
     return this.http.get<TblCity[]>(this.baseURL + 'cities', httpOptions);
@@ -171,8 +173,30 @@ export class FieldService {
   lockField(id: number): Observable<any> {
     return this.http.get<any>(this.baseURL+ 'lock?id=' + id, httpOptions);
   }
+  lockfield(id: number): Observable<any> {
+    return this.http.get<any>(this.baseURL+ 'lockField?id=' + id, httpOptions);
+  }
+  unlockfield(id: number): Observable<any> {
+    return this.http.get<any>(this.baseURL+ 'unlockField?id=' + id, httpOptions);
+  }
 
   unlockField(id: number): Observable<any> {
     return this.http.get<any>(this.baseURL + 'unlock?id=' + id, httpOptions);
+  }
+     // Phương thức để gọi API đếm booking trong ngày hôm nay theo fieldId
+     countActiveSmallFields(fieldId: number): Observable<number> {
+        return this.http.get<number>(`${this.baseURL}countActiveSmallFields?fieldId=${fieldId}`, httpOptions);
+    }
+    countMaintenanceSmallFields(fieldId: number): Observable<number> {
+      return this.http.get<number>(`${this.baseURL}countMaintenanceSmallFields?fieldId=${fieldId}`, httpOptions);
+    }
+     // Đếm số lượng fields hoạt động
+  countActiveFields(): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}countActiveFields`, httpOptions);
+  }
+
+  // Đếm số lượng fields không hoạt động
+  countInactiveFields(): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}countInactiveFields`, httpOptions);
   }
 }

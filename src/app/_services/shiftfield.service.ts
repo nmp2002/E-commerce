@@ -95,4 +95,14 @@ export class ShiftFieldService {
       fieldType
     }, httpOptions);
   }
+
+  deleteShiftField(id: number): Observable<any> {
+
+
+    return this.http.get<any>(this.baseURL + 'deleteShiftField?id=' +id,httpOptions);
+  }
+    deleteshiftField(id: number): Observable<TblShiftField[]> {
+    return this.http.get<TblShiftField[]>(`${this.baseURL}delete?id=${id}`, httpOptions);
+    }
+
 }

@@ -1,0 +1,287 @@
+<div
+  class="bg-light min-vh-100 d-flex flex-row align-items-center div_register"
+>
+  <c-container>
+    <c-row class="justify-content-center">
+      <c-col md="6">
+        <c-card-group>
+          <c-card class="p-4 register-card">
+            <c-card-body>
+              <form
+                *ngIf="!isSuccessful"
+                name="form"
+                (ngSubmit)="onSubmit()"
+                #f="ngForm"
+                novalidate
+              >
+                <div class="text-center mb-4">
+                  <h1 class="register-title">Đăng ký tài khoản</h1>
+                  <p class="text-muted">Tạo tài khoản mới để bắt đầu</p>
+                </div>
+
+                <!-- Họ và tên -->
+                <c-input-group class="mb-3">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilUser" width="20" height="20"></svg>
+                  </span>
+                  <input
+                    placeholder="Họ và tên"
+                    type="text"
+                    class="form-control"
+                    name="fullname"
+                    [(ngModel)]="form.fullname"
+                    required
+                    #fullname="ngModel"
+                  />
+                </c-input-group>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="fullname.errors && f.submitted"
+                >
+                  <div *ngIf="fullname.errors['required']">
+                    Họ và tên không được để trống!
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <c-input-group class="mb-3">
+                  <span cInputGroupText>
+                    <svg
+                      cIcon
+                      name="cilEnvelopeClosed"
+                      width="20"
+                      height="20"
+                    ></svg>
+                  </span>
+                  <input
+                    placeholder="Email"
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    [(ngModel)]="form.email"
+                    required
+                    #email="ngModel"
+                  />
+                </c-input-group>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="email.errors && f.submitted"
+                >
+                  <div *ngIf="email.errors['required']">
+                    Email không được để trống!
+                  </div>
+                  <div *ngIf="email.errors['email']">Email không hợp lệ!</div>
+                </div>
+                <!-- Số điện thoại -->
+                <!-- Số điện thoại -->
+                <c-input-group class="mb-3">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilContact" width="20" height="20"></svg>
+                  </span>
+                  <input
+                    placeholder="Số điện thoại"
+                    type="tel"
+                    class="form-control"
+                    name="telephone"
+                    [(ngModel)]="form.telephone"
+                    required
+                    pattern="[0-9]{10}"
+                    #telephone="ngModel"
+                  />
+                </c-input-group>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="telephone.errors && f.submitted"
+                >
+                  <div *ngIf="telephone.errors['required']">
+                    Số điện thoại không được để trống!
+                  </div>
+                  <div *ngIf="telephone.errors['pattern']">
+                    Số điện thoại phải có 10 chữ số!
+                  </div>
+                </div>
+                <!-- Tên đăng nhập -->
+                <c-input-group class="mb-3">
+                  <span cInputGroupText>
+                    <svg cIcon name="cilUser" width="20" height="20"></svg>
+                  </span>
+                  <input
+                    placeholder="Tên đăng nhập"
+                    type="text"
+                    class="form-control"
+                    name="username"
+                    [(ngModel)]="form.username"
+                    required
+                    #username="ngModel"
+                  />
+                </c-input-group>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="username.errors && f.submitted"
+                >
+                  <div *ngIf="username.errors['required']">
+                    Tên đăng nhập không được để trống!
+                  </div>
+                </div>
+
+                <!-- Mật khẩu -->
+                <c-input-group class="mb-3">
+                  <span cInputGroupText>
+                    <svg
+                      cIcon
+                      name="cilLockLocked"
+                      width="20"
+                      height="20"
+                    ></svg>
+                  </span>
+                  <input
+                    placeholder="Mật khẩu"
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    [(ngModel)]="form.password"
+                    required
+                    #password="ngModel"
+                  />
+                </c-input-group>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="password.errors && f.submitted"
+                >
+                  <div *ngIf="password.errors['required']">
+                    Mật khẩu không được để trống!
+                  </div>
+                  <div *ngIf="password.errors['minlength']">
+                    Mật khẩu phải có ít nhất 6 ký tự!
+                  </div>
+                </div>
+
+                <!-- Xác nhận mật khẩu -->
+                <c-input-group class="mb-4">
+                  <span cInputGroupText>
+                    <svg
+                      cIcon
+                      name="cilLockLocked"
+                      width="20"
+                      height="20"
+                    ></svg>
+                  </span>
+                  <input
+                    placeholder="Xác nhận mật khẩu"
+                    type="password"
+                    class="form-control"
+                    name="confirmPassword"
+                    [(ngModel)]="form.confirmPassword"
+                    required
+                    #confirmPassword="ngModel"
+                  />
+                </c-input-group>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="confirmPassword.errors && f.submitted"
+                >
+                  <div *ngIf="confirmPassword.errors['required']">
+                    Vui lòng xác nhận mật khẩu!
+                  </div>
+                </div>
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="f.submitted && form.password !== form.confirmPassword"
+                >
+                  Mật khẩu xác nhận không khớp!
+                </div>
+
+                <!-- Nút đăng ký -->
+                <c-row>
+                  <c-col class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-primary register-btn">
+                      <svg
+                        cIcon
+                        name="cilUserPlus"
+                        width="20"
+                        height="20"
+                        class="me-2"
+                      ></svg>
+                      Đăng ký
+                    </button>
+                  </c-col>
+                </c-row>
+
+                <!-- Nút chuyển hướng -->
+                <c-row>
+                  <c-col class="d-grid gap-2 col-6 mx-auto mt-3">
+                    <button
+                      type="button"
+                      class="btn btn-secondary home-btn"
+                      (click)="redirectToHome()"
+                    >
+                      <svg
+                        cIcon
+                        name="cilHome"
+                        width="20"
+                        height="20"
+                        class="me-2"
+                      ></svg>
+                      Trang chủ
+                    </button>
+                  </c-col>
+                </c-row>
+
+                <!-- Thông báo lỗi -->
+                <div class="form-group">
+                  <div
+                    class="alert alert-danger mt-3"
+                    role="alert"
+                    *ngIf="f.submitted && isSignUpFailed"
+                  >
+                    <svg
+                      cIcon
+                      name="cilWarning"
+                      width="20"
+                      height="20"
+                      class="me-2"
+                    ></svg>
+                    Đăng ký thất bại
+                    {{ errorMessage ? ": " + errorMessage : "" }}!
+                  </div>
+                </div>
+
+                <!-- Nút đăng nhập -->
+                <div class="text-center mt-3">
+                  <p class="mb-0">
+                    Đã có tài khoản?
+                    <a routerLink="/login" class="login-link">Đăng nhập ngay</a>
+                  </p>
+                </div>
+              </form>
+
+              <!-- Thông báo thành công -->
+              <div
+                class="alert alert-success"
+                role="alert"
+                *ngIf="isSuccessful"
+              >
+                <svg
+                  cIcon
+                  name="cilCheckCircle"
+                  width="20"
+                  height="20"
+                  class="me-2"
+                ></svg>
+                Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài
+                khoản.
+              </div>
+            </c-card-body>
+          </c-card>
+        </c-card-group>
+      </c-col>
+    </c-row>
+  </c-container>
+</div>

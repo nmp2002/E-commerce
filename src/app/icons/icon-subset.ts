@@ -104,7 +104,8 @@ import {
   cilDataTransferDown,
   cilX,
   cilTextSquare,
-  
+  cilCart,
+
 } from '@coreui/icons';
 
 export const iconSubset = {
@@ -213,7 +214,7 @@ export const iconSubset = {
   cilDataTransferDown,
   cilX,
   cilTextSquare,
-  
+  cilCart,
 };
 
 export enum IconSubset {
@@ -321,5 +322,6 @@ export enum IconSubset {
   cilDataTransferDown ='cilDataTransferDown',
   cilX= 'cilX',
   cilTextSquare = 'cilTextSquare',
-  cilFootball ='cilFootball'
+  cilFootball ='cilFootball',
+  cilCart = 'cilCart'
 }

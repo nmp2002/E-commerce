@@ -48,12 +48,12 @@
                 </td>
                 
                 <td>
-                  <input *ngIf="editingShiftField && editingShiftField.id === shiftField.id" class="form-control form-control-sm" [(ngModel)]="editingShiftField.amountWeekday" name="amountWeekday" required>
+                  <input *ngIf="editingShiftField && editingShiftField.id === shiftField.id" class="form-control form-control-sm" [(ngModel)]="editingShiftField.amountWeekday" name="amountWeekday"      type="number"  required>
                   <ng-container *ngIf="!editingShiftField || editingShiftField.id !== shiftField.id">{{ shiftField.amountWeekday }}</ng-container>
                 </td>
                 
                 <td>
-                  <input *ngIf="editingShiftField && editingShiftField.id === shiftField.id"  class="form-control form-control-sm" [(ngModel)]="editingShiftField.amountWeekend" name="amountWeekend" required>
+                  <input *ngIf="editingShiftField && editingShiftField.id === shiftField.id"  class="form-control form-control-sm" [(ngModel)]="editingShiftField.amountWeekend"      type="number"  name="amountWeekend" required>
                   <ng-container *ngIf="!editingShiftField || editingShiftField.id !== shiftField.id">{{ shiftField.amountWeekend }}</ng-container>
                 </td>
               
@@ -64,6 +64,12 @@
                 <td>
                   <button *ngIf="editingShiftField && editingShiftField.id === shiftField.id" type="button" class="btn btn-sm btn-success" (click)="saveEditedShiftField()">Lưu</button>
                   <button *ngIf="editingShiftField && editingShiftField.id === shiftField.id" type="button" class="btn btn-sm btn-secondary" (click)="cancelEdit()">Đóng</button>
+                  <button *ngIf="editingShiftField && editingShiftField.id === shiftField.id" 
+        type="button" 
+        class="btn btn-sm btn-danger" 
+        (click)="deleteShiftField(shiftField.id!)">
+  Xóa
+</button>
                   <button *ngIf="!editingShiftField || editingShiftField.id !== shiftField.id" type="button" class="btn btn-sm btn-primary" (click)="editShiftField(shiftField)">Chỉnh sửa</button>
                 </td>
               </tr>

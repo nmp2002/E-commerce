@@ -1,0 +1,295 @@
+<div class="product-detail-page">
+  <div class="container-fluid py-4">
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="loading-container">
+        <c-spinner class="text-primary" style="width: 3rem; height: 3rem;"></c-spinner>
+        <p class="mt-3 text-muted">Đang tải thông tin sản phẩm...</p>
+      </div>
+    </div>
+
+    <!-- Product Content -->
+    <div *ngIf="!loading && currentProduct" class="product-content">
+      <div class="row g-0">
+        <!-- Left Column: Image Gallery -->
+        <div class="col-lg-6">
+          <div class="product-gallery-container">
+            <div class="product-gallery">
+              <div class="main-image-container">
+                <img *ngIf="currentProduct.image" [src]="getImageSrc(currentProduct.image)" [alt]="currentProduct.productName"
+                  class="main-product-image">
+                <div *ngIf="!currentProduct.image" class="image-placeholder">
+                  <i class="cil-image-broken"></i>
+                  <p>Không có hình ảnh</p>
+                </div>
+                <!-- Image Zoom Overlay -->
+                <div class="image-zoom-overlay" *ngIf="currentProduct.image">
+                  <i class="cil-zoom-in"></i>
+                </div>
+              </div>
+
+              <!-- Thumbnail Gallery -->
+              <div class="thumbnail-gallery mt-3" *ngIf="currentProduct.image">
+                <div class="thumbnail-item active">
+                  <img [src]="getImageSrc(currentProduct.image)" [alt]="currentProduct.productName">
+                </div>
+                <div class="thumbnail-item">
+                  <img [src]="getImageSrc(currentProduct.image)" [alt]="currentProduct.productName">
+                </div>
+                <div class="thumbnail-item">
+                  <img [src]="getImageSrc(currentProduct.image)" [alt]="currentProduct.productName">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Product Info -->
+        <div class="col-lg-6">
+          <div class="product-info-container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="product-breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none">{{ currentProduct.brand || 'Thương hiệu' }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ currentProduct.productName }}</li>
+              </ol>
+            </nav>
+
+            <!-- Product Title -->
+            <h1 class="product-title">{{ currentProduct.productName }}</h1>
+
+            <!-- Product Code -->
+            <p class="product-code">Mã: {{ currentProduct.groupCode }}</p>
+
+            <!-- Rating and Reviews -->
+            <div class="product-rating mb-3">
+              <div class="stars">
+                <i class="cil-star-fill text-warning"></i>
+                <i class="cil-star-fill text-warning"></i>
+                <i class="cil-star-fill text-warning"></i>
+                <i class="cil-star-fill text-warning"></i>
+                <i class="cil-star text-muted"></i>
+              </div>
+              <span class="rating-text">4.5/5</span>
+              <span class="review-count">(128 đánh giá)</span>
+            </div>
+
+            <!-- Price Section -->
+            <div class="price-section">
+              <div class="current-price">
+                {{ currentProduct.price | currency:'VND':'symbol':'1.0-0' }}
+              </div>
+              <div class="original-price" *ngIf="currentProduct.originalPrice && currentProduct.originalPrice > currentProduct.price">
+                {{ currentProduct.originalPrice | currency:'VND':'symbol':'1.0-0' }}
+                <span class="discount-badge">
+                  -{{ ((currentProduct.originalPrice - currentProduct.price) / currentProduct.originalPrice * 100) | number:'1.0-0' }}%
+                </span>
+              </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="stock-status mb-4">
+              <div *ngIf="currentProduct.stockQuantity! > 0" class="in-stock">
+                <i class="cil-check-circle"></i>
+                <span>Còn hàng - Giao hàng trong 2-4 giờ</span>
+              </div>
+              <div *ngIf="currentProduct.stockQuantity! <= 0" class="out-of-stock">
+                <i class="cil-x-circle"></i>
+                <span>Hết hàng</span>
+              </div>
+            </div>
+
+            <!-- Variant Selection -->
+            <div class="variant-section">
+              <div *ngFor="let optionName of getVariantDisplayOptions()" class="variant-group mb-4">
+                <h6 class="variant-label">{{ optionName }}</h6>
+                <div class="variant-options">
+                  <ng-container *ngFor="let option of variantOptions.get(optionName)">
+                    <!-- Color Swatches -->
+                    <button *ngIf="optionName.toLowerCase() === 'color' || optionName.toLowerCase() === 'màu sắc'"
+                      type="button" class="variant-option color-option"
+                      [class.active]="selectedOptions.get(optionName) === option.value"
+                      [title]="option.value"
+                      (click)="onOptionSelect(optionName, option.value)">
+                      <span class="color-swatch" [style.background-color]="option.value"></span>
+                      <span class="option-label">{{ option.value }}</span>
+                    </button>
+                    <!-- Other Attributes (Dung lượng, Storage, RAM) -->
+                    <button *ngIf="optionName.toLowerCase() !== 'color' && optionName.toLowerCase() !== 'màu sắc'"
+                      type="button" class="variant-option"
+                      [class.active]="selectedOptions.get(optionName) === option.value"
+                      (click)="onOptionSelect(optionName, option.value)">
+                      {{ option.value }}
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quantity Selector -->
+            <div class="quantity-section mb-4">
+              <label class="quantity-label">Số lượng:</label>
+              <div class="quantity-selector">
+                <button class="quantity-btn" (click)="decreaseQuantity()" [disabled]="quantity <= 1">
+                  <span>-</span>
+                </button>
+                <input type="number" class="quantity-input" [(ngModel)]="quantity" min="1" max="99">
+                <button class="quantity-btn" (click)="increaseQuantity()" [disabled]="quantity >= 99">
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button class="btn btn-primary btn-buy-now" (click)="buyNow()" [disabled]="currentProduct.stockQuantity! <= 0 || loading">
+                <i class="cil-wallet"></i>
+                Mua ngay
+              </button>
+              <button class="btn btn-outline-primary btn-add-cart" (click)="addToCart()" [disabled]="currentProduct.stockQuantity! <= 0 || loading">
+                <i class="cil-cart"></i>
+                Thêm vào giỏ hàng
+              </button>
+            </div>
+
+            <!-- Product Features -->
+            <div class="product-features mt-4">
+              <div class="feature-item">
+                <i class="cil-shield-check"></i>
+                <span>Bảo hành chính hãng 12 tháng</span>
+              </div>
+              <div class="feature-item">
+                <i class="cil-truck"></i>
+                <span>Miễn phí vận chuyển toàn quốc</span>
+              </div>
+              <div class="feature-item">
+                <i class="cil-return"></i>
+                <span>Đổi trả trong 30 ngày</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Details Tabs -->
+      <div class="product-details-section mt-5">
+        <div class="container-fluid">
+          <ul class="nav nav-tabs product-tabs" id="productTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">
+                <i class="cil-description"></i>
+                Mô tả sản phẩm
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">
+                <i class="cil-list"></i>
+                Thông số kỹ thuật
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#variants" type="button" role="tab">
+                <i class="cil-options"></i>
+                Phiên bản khác
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                <i class="cil-chat-bubble"></i>
+                Đánh giá (128)
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content product-tab-content" id="productTabContent">
+            <div class="tab-pane fade show active" id="desc" role="tabpanel">
+              <div class="product-description">
+                <div [innerHTML]="currentProduct.description || 'Chưa có mô tả cho sản phẩm này.'"></div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="specs" role="tabpanel">
+              <div class="specifications">
+                <!-- Specifications Header -->
+                <div class="specs-header mb-4">
+                  <h3 class="specs-title">
+                    <i class="cil-settings"></i>
+                    Thông số kỹ thuật
+                  </h3>
+                </div>
+
+                <!-- Specifications Content -->
+                <div class="specs-content" *ngIf="currentProduct.attributes && currentProduct.attributes.length > 0">
+                  <div class="specs-grid">
+                    <div *ngFor="let attr of currentProduct.attributes" class="spec-item">
+                      <div class="spec-label">{{ attr.name }}</div>
+                      <div class="spec-value">{{ attr.value }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- No Specifications -->
+                <div class="no-specs" *ngIf="!currentProduct.attributes || currentProduct.attributes.length === 0">
+                  <div class="no-specs-content">
+                    <div class="no-specs-icon">
+                      <i class="cil-info"></i>
+                    </div>
+                    <h4>Chưa có thông số kỹ thuật</h4>
+                    <p>Thông tin kỹ thuật của sản phẩm này đang được cập nhật.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="variants" role="tabpanel">
+              <div class="variants-list" *ngIf="allVariants && allVariants.length > 1">
+                <app-variant-details-modal [groupCode]="currentProduct.groupCode || null" (viewProduct)="viewProduct($event)"></app-variant-details-modal>
+              </div>
+              <div *ngIf="!allVariants || allVariants.length <= 1" class="no-variants">
+                <i class="cil-info"></i>
+                <p>Không có phiên bản khác</p>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="reviews" role="tabpanel">
+              <div class="reviews-section">
+                <div class="reviews-summary">
+                  <div class="overall-rating">
+                    <div class="rating-number">4.5</div>
+                    <div class="rating-stars">
+                      <i class="cil-star-fill"></i>
+                      <i class="cil-star-fill"></i>
+                      <i class="cil-star-fill"></i>
+                      <i class="cil-star-fill"></i>
+                      <i class="cil-star"></i>
+                    </div>
+                    <div class="total-reviews">128 đánh giá</div>
+                  </div>
+                </div>
+                <div class="reviews-list">
+                  <p class="text-muted">Chưa có đánh giá nào</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Not Found Message -->
+    <div *ngIf="!loading && !currentProduct" class="not-found-container">
+      <div class="not-found-content">
+        <div class="not-found-icon">
+          <i class="cil-warning"></i>
+        </div>
+        <h2>Không tìm thấy sản phẩm</h2>
+        <p>Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+        <button class="btn btn-primary" (click)="goBack()">
+          <i class="cil-arrow-left"></i>
+          Quay lại
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

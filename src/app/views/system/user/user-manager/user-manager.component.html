@@ -20,13 +20,6 @@
             </c-col>
           </c-row>
           <c-row class="mb-1">
-            <label cLabel class="col-sm-2 col-form-label" for="departmentname">
-              Phòng đơn vị
-            </label>
-            <c-col sm="4">
-              <input cFormControl sizing="sm" id="departmentname" name="departmentname" type="text"
-                (change)="departmentname = $any($event.target).value" />
-            </c-col>
             <label cLabel class="col-sm-2 col-form-label" for="status">
               Trạng thái
             </label>
@@ -103,8 +96,6 @@
               <th scope="col">STT</th>
               <th scope="col">Tên đăng nhập</th>
               <th scope="col">Họ và tên</th>
-              <th scope="col">Đơn vị</th>
-              <th scope="col">Đại lý</th>
               <th scope="col">Thư điện tử</th>
               <th scope="col">Điện thoại</th>
               <th scope="col">Trạng thái</th>
@@ -116,8 +107,7 @@
               <td class="text-center" scope="row">{{(pageable.pageNumber * pageable.pageSize) + i + 1}}</td>
               <td>{{item.userName}}</td>
               <td>{{item.fullname}}</td>
-              <td>{{item.departmentname}}</td>
-              <td>{{item.officename}}</td>
+
               <td>{{item.email}}</td>
               <td>{{item.telephone}}</td>
               <td>{{item.status == 1 ? 'Hoạt động' : (item.status == 0 ? 'Ngừng hoạt động' : (item.status == 2 ? 'Bị

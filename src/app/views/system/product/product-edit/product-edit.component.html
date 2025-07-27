@@ -1,0 +1,114 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Chỉnh sửa sản phẩm</h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" (click)="goBack()">
+              <i class="cil-arrow-left"></i> Quay lại
+            </button>
+          </div>
+        </div>
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+          <div class="card-body">
+            <div class="form-group">
+              <label for="productName">Tên sản phẩm</label>
+              <input type="text" class="form-control" id="productName" formControlName="productName"
+                [ngClass]="{'is-invalid': productForm.get('productName')?.invalid && productForm.get('productName')?.touched}">
+              <div class="invalid-feedback" *ngIf="productForm.get('productName')?.errors?.['required']">
+                Vui lòng nhập tên sản phẩm
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="categoryId">Danh mục</label>
+              <select class="form-control" id="categoryId" formControlName="categoryId"
+                [ngClass]="{'is-invalid': productForm.get('categoryId')?.invalid && productForm.get('categoryId')?.touched}">
+                <option value="">Chọn danh mục</option>
+                <option *ngFor="let category of categories" [value]="category.id">
+                  {{category.categoryName}}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="productForm.get('categoryId')?.errors?.['required']">
+                Vui lòng chọn danh mục
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="price">Giá</label>
+              <input type="number" class="form-control" id="price" formControlName="price"
+                [ngClass]="{'is-invalid': productForm.get('price')?.invalid && productForm.get('price')?.touched}">
+              <div class="invalid-feedback" *ngIf="productForm.get('price')?.errors?.['required']">
+                Vui lòng nhập giá
+              </div>
+              <div class="invalid-feedback" *ngIf="productForm.get('price')?.errors?.['min']">
+                Giá phải lớn hơn 0
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="stockQuantity">Số lượng tồn kho</label>
+              <input type="number" class="form-control" id="stockQuantity" formControlName="stockQuantity"
+                [ngClass]="{'is-invalid': productForm.get('stockQuantity')?.invalid && productForm.get('stockQuantity')?.touched}">
+              <div class="invalid-feedback" *ngIf="productForm.get('stockQuantity')?.errors?.['required']">
+                Vui lòng nhập số lượng
+              </div>
+              <div class="invalid-feedback" *ngIf="productForm.get('stockQuantity')?.errors?.['min']">
+                Số lượng phải lớn hơn 0
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Trạng thái</label>
+              <select class="form-control" id="status" formControlName="status">
+                <option value="ACTIVE">Đang hoạt động</option>
+                <option value="INACTIVE">Không hoạt động</option>
+                <option value="OUT_OF_STOCK">Hết hàng</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Thuộc tính sản phẩm</label>
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Tên thuộc tính</th>
+                      <th>Giá trị</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let attr of attributes; let i = index">
+                      <td>
+                        <input type="text" class="form-control" [(ngModel)]="attr.name" [ngModelOptions]="{standalone: true}">
+                      </td>
+                      <td>
+                        <input type="text" class="form-control" [(ngModel)]="attr.value" [ngModelOptions]="{standalone: true}">
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-danger btn-sm" (click)="removeAttribute(i)">
+                          <i class="cil-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <button type="button" class="btn btn-info btn-sm" (click)="addAttribute()">
+                <i class="cil-plus"></i> Thêm thuộc tính
+              </button>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || loading">
+              <i class="cil-save"></i> Lưu
+              <span class="spinner-border spinner-border-sm ml-1" *ngIf="loading"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

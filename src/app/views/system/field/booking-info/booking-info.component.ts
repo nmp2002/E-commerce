@@ -64,7 +64,7 @@ export class BookingInfoComponent implements OnInit {
   findBookings(): void {
     this.bookingService.getBooking(this.fieldName,this.smallFieldName,this.guestName, this.phoneNumber,this.totalPayment,this.timeStart,this.timeEnd,this.day,this.statusField,1, 10).subscribe({
         next:data => {
-          this.bookings = data.content; 
+          this.bookings = data.content;
           this.count = data.totalElements;
           this.pageable = data.pageable;
           this.totalPages = data.totalPages;
@@ -73,7 +73,8 @@ export class BookingInfoComponent implements OnInit {
         },
         error: err => {
         }
-      });
+    });
+
     }
 
   // Hiển thị chi tiết của đơn đặt sân để chỉnh sửa
@@ -95,22 +96,41 @@ export class BookingInfoComponent implements OnInit {
     }
   }
 
- 
-  // Phương thức để lấy danh sách đơn đặt sân theo trang
+
   retrieveBookings(page: number): void {
-    this.bookingService.getBooking(this.fieldName,this.smallFieldName,this.guestName, this.phoneNumber,this.totalPayment,this.timeStart,this.timeEnd,this.day,this.statusField,page, 10
+    this.bookingService.getBooking(
+      this.fieldName, this.smallFieldName, this.guestName, this.phoneNumber,
+      this.totalPayment, this.timeStart, this.timeEnd, this.day, this.statusField,
+      page, 10
     ).subscribe({
-        next: data => {
-          this.bookings = data.content;
-          this.count = data.totalElements;
-          this.pageable = data.pageable;
-          this.totalPages = data.totalPages;
-          this.pageSize = data.size;
-          console.log(data);
+      next: data => {
+        this.bookings = data.content;
+        this.count = data.totalElements;
+        this.pageable = data.pageable;
+        this.totalPages = data.totalPages;
+        this.pageSize = data.size;
+
+        // Sắp xếp các bookings theo bookingId giảm dần
+        this.sortBookingsById();
+        console.log(data);
       },
       error: err => {
+        console.error('Lỗi khi lấy dữ liệu đơn đặt sân:', err);
       }
     });
   }
-  
+
+  sortBookingsById() {
+    this.bookings.sort((a, b) => {
+      // Sắp xếp theo bookingId giảm dần
+      return b.bookingId - a.bookingId;
+    });
+
+    // In ra bookings sau khi sắp xếp để kiểm tra
+    console.log('Bookings sau khi sắp xếp theo ID giảm dần:', this.bookings);
+  }
+
+
+
+
 }

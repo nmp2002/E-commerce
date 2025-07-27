@@ -34,6 +34,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   countdownMinutes: number = 5;
   countdownSeconds: number = 0;
   countdownInterval: any;
+  isPaymentInitiated: boolean = false; // Cờ để xác định nếu thanh toán đã được khởi động
 
   constructor(
     private route: ActivatedRoute,
@@ -41,7 +42,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
     private paymentService: PaymentService,
     private fieldService: FieldService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const bookingId = this.route.snapshot.paramMap.get('bookingId');
@@ -54,6 +55,11 @@ export class PaymentComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval); // Xoá interval khi component bị huỷ
+    }
+
+    // Xoá đặt sân chỉ khi thanh toán chưa được khởi động
+    if (!this.isPaymentInitiated && this.bookingDetails) {
+      this.deleteBooking(this.bookingDetails.bookingId);
     }
   }
 
@@ -81,6 +87,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
       }
     );
   }
+
   startCountdown(): void {
     this.countdownInterval = setInterval(() => {
       if (this.countdownSeconds === 0) {
@@ -96,14 +103,13 @@ export class PaymentComponent implements OnInit, OnDestroy {
       }
     }, 1000);
   }
-  
+
   stopCountdown(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
   }
-  
 
   timeUp(): void {
     if (this.bookingDetails) {
@@ -123,46 +129,29 @@ export class PaymentComponent implements OnInit, OnDestroy {
       }
     );
   }
-  
-
-  payWithMomo(): void {
-    if (this.bookingDetails) {
-      console.log('Initiating payment with MoMo for booking ID:', this.bookingDetails.bookingId);
-      // Gọi service hoặc API thanh toán tại đây
-    }
-  }
 
   payWithBank(): void {
     console.log('Booking Details:', this.bookingDetails);
 
-    // Kiểm tra thông tin đặt sân và tổng số tiền có tồn tại hay không
     if (this.bookingDetails && this.bookingDetails.bookingId && this.bookingDetails.totalPayment) {
-      console.log('Booking ID:', this.bookingDetails.bookingId);
-      console.log('Total Payment (before conversion):', this.bookingDetails.totalPayment);
-
-      // Loại bỏ dấu phẩy và khoảng trắng nếu có trong số tiền
       const amount = parseFloat(this.bookingDetails.totalPayment.replace(/,/g, '').replace(/ /g, ''));
-      console.log('Total Payment (after conversion):', amount);
+      this.isPaymentInitiated = true; // Đánh dấu rằng thanh toán đã được khởi động
 
-      // Gọi service để tạo thanh toán
-      this.paymentService.createPayment(this.bookingDetails.bookingId, amount)
-        .subscribe(
-          (paymentUrl: string) => {
-            if (paymentUrl && paymentUrl.trim() !== '') {
-              console.log('Payment URL:', paymentUrl);
-
-              // Chuyển hướng tới URL thanh toán nhận được từ backend
-              window.location.href = paymentUrl;
-            } else {
-              console.error('Received empty or invalid payment URL');
-              alert('Đã xảy ra lỗi khi tạo URL thanh toán. Vui lòng thử lại sau.');
-            }
-          },
-          (error: any) => {
-            console.error('Error creating payment URL:', error);
+      this.paymentService.createPayment(this.bookingDetails.bookingId, amount).subscribe(
+        (paymentUrl: string) => {
+          if (paymentUrl && paymentUrl.trim() !== '') {
+            console.log('Payment URL:', paymentUrl);
+            window.location.href = paymentUrl; // Chuyển hướng tới URL thanh toán
+          } else {
+            console.error('Received empty or invalid payment URL');
             alert('Đã xảy ra lỗi khi tạo URL thanh toán. Vui lòng thử lại sau.');
           }
-        );
+        },
+        (error: any) => {
+          console.error('Error creating payment URL:', error);
+          alert('Đã xảy ra lỗi khi tạo URL thanh toán. Vui lòng thử lại sau.');
+        }
+      );
     } else {
       console.error('Booking details or total payment is missing.');
       alert('Thông tin đặt sân hoặc tổng số tiền không hợp lệ. Vui lòng kiểm tra lại.');

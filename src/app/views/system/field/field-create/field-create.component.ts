@@ -10,7 +10,7 @@ import { TblWard } from '../../../../model/tblWard';
 import { TblSupplier } from '../../../../model/TblSupplier';
 import { TblFieldType } from '../../../../model/tblFieldType';
 import { TokenStorageService } from '../../../../_services/token-storage.service';
-import { SupplierService } from 'src/app/_services/supplier.service';
+import { SupplierService } from '../../../../_services/supplier.service';
 @Component({
   selector: 'app-field-create',
   templateUrl: './field-create.component.html',
@@ -18,6 +18,7 @@ import { SupplierService } from 'src/app/_services/supplier.service';
 })
 export class FieldCreateComponent implements OnInit {
   selectedImages: File[] = [];
+  selectedFile: File | null = null;
   tblField: TblField[];
   tblCity: TblCity[];
   tblDistrict: TblDistrict[];
@@ -25,6 +26,7 @@ export class FieldCreateComponent implements OnInit {
   tblSupplier: TblSupplier[];
   tblFieldType: TblFieldType[];
   isUpdate = false;
+  username: string | null = null;
   form: any = {
     id: null,
     provinceid: '',
@@ -57,9 +59,16 @@ export class FieldCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
+        // Lấy username từ sessionStorage
+        const authUser = sessionStorage.getItem('auth-user');
+        if (authUser) {
+          const user = JSON.parse(authUser);
+          this.username = user.username; // Giả sử 'username' nằm trong đối tượng user
+        }
+
   }
   ngOnDestroy(): void {
- 
+
     sessionStorage.removeItem('provinceid');
     sessionStorage.removeItem('districtId');
     sessionStorage.removeItem('wardId');
@@ -86,16 +95,16 @@ export class FieldCreateComponent implements OnInit {
         }
       }
     });
-  
+
     this.fieldService.getSupplier().subscribe(allSuppliers => {
       const authUserJson = sessionStorage.getItem('auth-user');
       let username: string | null = null;
-    
+
       if (authUserJson) {
         try {
           const authUser = JSON.parse(authUserJson);
           username = authUser.username;
-          console.log('Username từ auth-user:', username); 
+          console.log('Username từ auth-user:', username);
         } catch (error) {
           console.error('Lỗi phân tích cú pháp auth-user:', error);
         }
@@ -111,19 +120,19 @@ export class FieldCreateComponent implements OnInit {
         this.tblSupplier = allSuppliers;
       }
     });
-    
-  
+
+
     this.fieldService.getCities().subscribe(data => {
       this.tblCity = data.filter(ob => ob.active === '1');
       this.tblDistrict = [];
     });
-  
+
     const savedprovinceid = sessionStorage.getItem('provinceid');
     if (savedprovinceid) {
       this.form.provinceid = Number(savedprovinceid);
       this.loadDistricts(this.form.provinceid);
     }
-  
+
     const savedDistrictId = sessionStorage.getItem('districtId');
     if (savedDistrictId) {
       this.form.districtId = Number(savedDistrictId);
@@ -141,14 +150,14 @@ export class FieldCreateComponent implements OnInit {
       this.form['field' + fieldType.fieldTypeId] = 0;
     });
   }
-  
+
 
   loadFieldTypes(fieldId: number): void {
     // Trước khi gọi API, gán giá trị mặc định là 0 cho tất cả các fieldType
     this.tblFieldType.forEach(fieldType => {
       this.form['field' + fieldType.fieldTypeId] = 0;
     });
-  
+
     this.fieldService.getFieldTypebyFieldId(fieldId).subscribe(fieldTypes => {
       // Duyệt qua từng fieldType từ API để cập nhật giá trị vào form
       fieldTypes.forEach(ft => {
@@ -160,9 +169,9 @@ export class FieldCreateComponent implements OnInit {
       });
     });
   }
-  
-  
-  
+
+
+
   loadDistricts(provinceid: number): void {
     if (provinceid) {
       this.fieldService.getDistrictsByCityId(provinceid).subscribe(data => {
@@ -217,7 +226,7 @@ export class FieldCreateComponent implements OnInit {
         address: this.form.address,
         image: this.form.image
       };
-  
+
       // Lưu dữ liệu field vào bảng tblField
       this.fieldService.createOrUpdateField(
         fieldData.id,
@@ -249,13 +258,13 @@ export class FieldCreateComponent implements OnInit {
               childClassName: 'notiflix-notify-success'
             }
           });
-  
+
           // Lặp qua các fieldType để lưu hoặc cập nhật
           const updatedFieldTypes: string[] = [];
           this.tblFieldType.forEach(fieldType => {
             const fieldTypeName = fieldType.fieldTypeName;
             const totalNumberField = this.form['field' + fieldType.fieldTypeId];
-            
+
             // Nếu tồn tại fieldTypeName trong tblFieldType và là lần đầu thêm vào updatedFieldTypes
             if (fieldTypeName && totalNumberField !== undefined && totalNumberField !== null && totalNumberField > 0 && updatedFieldTypes.indexOf(fieldTypeName) === -1) {
               updatedFieldTypes.push(fieldTypeName); // Thêm fieldTypeName vào updatedFieldTypes
@@ -270,8 +279,18 @@ export class FieldCreateComponent implements OnInit {
               });
             }
           });
-  
-          this.router.navigate(['/field/field-manager']);
+
+             // Lấy username từ sessionStorage
+        const authUser = sessionStorage.getItem('auth-user');
+        let username = '';
+        if (authUser) {
+          const user = JSON.parse(authUser);
+          username = user.username;
+        }
+
+        // Điều hướng theo username
+        const navigateTo = username === 'superadmin' ? '/field/field-manager' : '/field/shiftfield';
+        this.router.navigate([navigateTo]);
         },
         error: (err) => {
           console.error('Error saving field', err);
@@ -293,8 +312,8 @@ export class FieldCreateComponent implements OnInit {
       });
     }
   }
-  
-  
+
+
 
   changeSelectedCity(event: any): void {
     const selectedprovinceid = Number(event.target.value);
@@ -320,6 +339,7 @@ export class FieldCreateComponent implements OnInit {
   onImageChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e: any) => {
         // Lấy kết quả từ FileReader và chuyển đổi thành chuỗi base64
@@ -329,10 +349,12 @@ export class FieldCreateComponent implements OnInit {
         }
       };
       reader.readAsDataURL(file);
+    } else {
+      this.selectedFile = null;
     }
   }
-  
-  
 
-  
+
+
+
 }

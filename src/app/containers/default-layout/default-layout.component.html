@@ -1,19 +1,19 @@
 <div class="header header-sticky notification-header" *ngIf="isShowNotification">
   <span style="margin-left: 5px;">{{notificationContent}}</span>
 </div>
-<c-sidebar 
-  #sidebar="cSidebar" 
-  class="d-print-none sidebar sidebar-fixed" 
-  id="sidebar" 
-  visible 
+<c-sidebar
+  #sidebar="cSidebar"
+  class="d-print-none sidebar sidebar-fixed"
+  id="sidebar"
+  visible
   *ngIf="isLoggedIn">
   <c-sidebar-brand [brandFull]="{
-      src: './assets/images/logoACE.jpg',
+      src: './assets/images/logo.jpg',
       width: 237,
       height: 200,
       alt: 'TTISV'
     }" [brandNarrow]="{
-      src: './assets/images/logoACE.jpg',
+      src: './assets/images/logo.jpg',
       width: 237,
       height: 200,
       alt: 'TTISV Logo'

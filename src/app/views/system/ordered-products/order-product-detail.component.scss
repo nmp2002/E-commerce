@@ -1,0 +1,18 @@
+.card-header.bg-primary {
+  background-color: #321fdb !important;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.list-group-item strong {
+  min-width: 120px;
+  display: inline-block;
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}

@@ -73,7 +73,7 @@
               </select>
             </c-col>
           </c-row>
-          
+
           <c-row>
             <c-col c-col md="6" [offset]="{md: 3}" class="text-center align-self-center mt-1">
               <button cButton color="info" size="sm" (click)="findField()" *ngIf="isShowButton('search')">
@@ -153,9 +153,9 @@
                     <svg cIcon class="me-2" name="cil-pencil"></svg>
                   </a>
                   <a (click)="checkField(i)" style="text-decoration: none; color: #007bff; cursor: pointer; display: inline-flex; align-items: center;">
-                    <svg cIcon class="me-2" name="cilCheck" style="width: 16px; height: 16px; fill: currentColor;"></svg> 
+                    <svg cIcon class="me-2" name="cilCheck" style="width: 16px; height: 16px; fill: currentColor;"></svg>
                   </a>
-                  
+
                   <span (click)="updateField(item)" class="color_blue" *ngIf="isShowButton('changeStatus')">
                     <svg cIcon class="me-2" name="cil-reload"></svg>
                   </span>
@@ -166,10 +166,10 @@
                   <span (click)="deleteField(item)" class="color_red" *ngIf="isShowButton('delete')">
                     <svg cIcon class="me-2" name="cil-trash"></svg>
                   </span>
-                  <span *ngIf="item.status == 1 && isShowButton('lock')" (click)="lockField(item)" class="color_blue">
+                  <span *ngIf="item.status == 1 && isShowButton('lock')" (click)="lockfield(item)" class="color_blue">
                     <svg cIcon name="cilLockLocked"></svg>
                   </span>
-                  <span *ngIf="item.status != 1 && isShowButton('unlock')" (click)="unlockField(item)" class="color_blue">
+                  <span *ngIf="item.status != 1 && isShowButton('unlock')" (click)="unlockfield(item)" class="color_blue">
                     <svg cIcon name="cilLockUnlocked"></svg>
                   </span>
                 </div>

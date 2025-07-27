@@ -1,6 +1,6 @@
 export class TblSupplier {
     supplierId?: number;
-    fieldId?: number;
+    fieldId?: string;
     createby?: string;
     modifiedby?: string;
     createdDate?: Date;

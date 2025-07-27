@@ -10,6 +10,7 @@ import { BookingService } from '../../../../_services/booking.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TblBooking } from 'src/app/model/tblBooking';
 import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-shiftfield-update',
   templateUrl: './shiftfield-update.component.html',
@@ -193,8 +194,14 @@ export class ShiftFieldUpdateComponent implements OnInit {
         },
         error: (error: any) => {
           if (error.status === 400 && error.error.message) {
-            // Hiển thị thông báo lỗi từ server
-            alert(error.error.message);
+            // Hiển thị thông báo lỗi từ server bằng Swal
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi!',
+              text: error.error.message,
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'Đồng ý'
+            });
           } else {
             console.error('Error saving shift field:', error);
           }
@@ -258,16 +265,10 @@ export class ShiftFieldUpdateComponent implements OnInit {
     this.showInfoModal = isClosed;
   }
 
-  private convertToShiftField(field: TblField): TblShiftField {
-    return {
-      ...field,
-      timeStart: field.timeStart ? new Date(field.timeStart).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '00:00',
-      timeEnd: field.timeEnd ? new Date(field.timeEnd).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '00:00',
-      amountWeekday: (field as any).amountWeekday || '',
-      amountWeekend: (field as any).amountWeekend || '',
-      fieldType: typeof field.fieldType === 'string' ? field.fieldType : ''
-    };
+  public encryptData(input: any): any {
+    return (input != null && input != undefined && input != '') ? btoa(input) : null;
   }
+
   
 
   closeBookingModalHandler(isClosed: boolean) {

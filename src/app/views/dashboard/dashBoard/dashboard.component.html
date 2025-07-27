@@ -1,0 +1,124 @@
+<div *ngIf="isSuperAdmin">
+  <!-- Dashboard cho superadmin -->
+  <div class="dashboard-container">
+    <h1>Dashboard - Superadmin</h1>
+    <div class="grid-container">
+      <mat-card class="dashboard-card" routerLink="/user/user-manager">
+        <mat-icon class="card-icon" >people</mat-icon>
+        <h2>Số lượng người dùng đang hoạt động</h2>
+        <p>{{ activeUsers }}</p>
+      </mat-card>
+
+      <mat-card class="dashboard-card" routerLink="/user/user-manager">
+        <mat-icon class="card-icon" >people_outline</mat-icon>
+        <h2>Số lượng người dùng không hoạt động</h2>
+        <p>{{ inactiveUsers }}</p>
+      </mat-card>
+
+      <mat-card class="dashboard-card" routerLink="/field/field-manager">
+        <mat-icon class="card-icon">sports_soccer</mat-icon>
+        <h2>Số lượng sân đang hoạt động</h2>
+        <p>{{ activeFields }}</p>
+      </mat-card>
+
+      <mat-card class="dashboard-card" routerLink="/field/field-manager">
+        <mat-icon class="card-icon" >sports_baseball</mat-icon>
+        <h2>Số lượng sân ngừng hoạt động</h2>
+        <p>{{ inactiveFields }}</p>
+      </mat-card>
+         <!-- Biểu đồ người dùng -->
+         <mat-card class="dashboard-card chart-card">
+          <mat-icon class="card-icon">bar_chart</mat-icon>
+          <h2>Thống kê người dùng</h2>
+          <div>
+            <c-chart
+                    [data]="userChartData"
+                    type="bar"
+                    [options]="chartOptions">
+                    ></c-chart>
+          </div>
+        </mat-card>
+  
+        <!-- Biểu đồ sân -->
+        <mat-card class="dashboard-card chart-card">
+          <mat-icon class="card-icon">bar_chart</mat-icon>
+          <h2>Thống kê sân</h2>
+          <div>
+            <c-chart 
+                    [data]="fieldChartData"
+                    type="bar"
+                    [options]="chartOptions">
+                    ></c-chart>
+          </div>
+        </mat-card>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!isSuperAdmin">
+  <!-- Dashboard cho quản lý sân -->
+  <!-- Nội dung dashboard ban đầu -->
+  <div class="dashboard-container">
+    <h1>Bảng điều khiển</h1>
+    <div class="grid-container">
+      <!-- Thông tin tổng quan -->
+      <mat-card class="dashboard-card">
+        <mat-icon class="card-icon">calendar_today</mat-icon>
+        <h2>Số sân ngày hôm nay được đặt</h2>
+        <p>{{ totalBookings }}</p>
+      </mat-card>
+
+      <mat-card class="dashboard-card">
+        <mat-icon class="card-icon">attach_money</mat-icon>
+        <h2>Doanh thu hôm nay</h2>
+        <p>{{ todayRevenue | currency:'VND' }}</p>
+      </mat-card>
+
+      <!-- Hiển thị số lượng đặt sân cho từng sân -->
+      <div *ngFor="let field of fields">
+        <mat-card class="dashboard-card">
+          <mat-icon class="card-icon">sports_soccer</mat-icon>
+          <h3>Sân: {{ field.fieldName }}</h3>
+          <p>Số lượng đặt sân hôm nay: 
+            {{ field.id && fieldBookingCounts[field.id] !== undefined ? fieldBookingCounts[field.id] : 0 }}
+          </p>
+          <p>Số lượng sân con hoạt động: 
+            {{ field.id && activeFieldCounts[field.id] !== undefined ? activeFieldCounts[field.id] : 0 }}
+          </p>
+          <p>Số lượng sân con đang bảo trì: 
+            {{ field.id && maintenanceFieldCounts[field.id] !== undefined ? maintenanceFieldCounts[field.id] : 0 }}
+          </p>
+          <p>Doanh thu đặt sân hôm nay: 
+            {{ field.id && fieldRevenues[field.id] !== undefined ? fieldRevenues[field.id] : 0 }} VNĐ
+          </p>
+        </mat-card>
+      </div>
+
+      <!-- Thống kê doanh thu hôm nay theo từng sân -->
+      <mat-card class="dashboard-card chart-card">
+        <mat-icon class="card-icon">bar_chart</mat-icon>
+        <h2>Thống kê doanh thu hôm nay theo từng sân</h2>
+        <div>
+          <c-chart
+            type="bar"
+            [data]="revenueData"
+            [options]="chartOptions"
+          ></c-chart>
+        </div>
+      </mat-card>
+
+      <!-- Thống kê số sân đang hoạt động và bảo trì theo tên sân -->
+      <mat-card class="dashboard-card chart-card">
+        <mat-icon class="card-icon">bar_chart</mat-icon>
+        <h2>Thống kê số sân (Đang hoạt động và Bảo trì)</h2>
+        <div>
+          <c-chart
+            type="bar"
+            [data]="fieldStatusData"
+            [options]="chartOptions"
+          ></c-chart>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Danh sách sản phẩm</h4>
+      <button class="btn btn-primary" (click)="addProduct()">
+        <i class="fas fa-plus"></i> Thêm sản phẩm
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." [(ngModel)]="searchTerm">
+            <div class="input-group-append">
+              <button class="btn btn-default" type="button" (click)="search()">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-control" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+            <option [ngValue]="null">Tất cả danh mục</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{category.categoryName}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên sản phẩm</th>
+              <th>Giá</th>
+              <th>Số lượng</th>
+              <th>Danh mục</th>
+              <th>Trạng thái</th>
+              <th>Hình ảnh</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of products">
+              <td>{{product.id}}</td>
+              <td>{{product.productName}}</td>
+              <td>{{product.price | currency:'VND'}}</td>
+              <td>{{product.stockQuantity}}</td>
+              <td>{{getCategoryName(product.categoryId)}}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-success': product.status === productStatus.ACTIVE,
+                  'bg-danger': product.status === productStatus.INACTIVE,
+                  'bg-warning': product.status === productStatus.OUT_OF_STOCK
+                }">
+                  {{getStatusText(product.status)}}
+                </span>
+              </td>
+              <td>
+                <img *ngIf="product.image" [src]="'data:image/jpeg;base64,' + product.image" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                <span *ngIf="!product.image">N/A</span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-info btn-sm" (click)="viewProduct(product.id!)">
+                    <i class="fas fa-eye"></i>Tìm kiếm
+                  </button>
+                  <button class="btn btn-warning btn-sm" (click)="editProduct(product.id!)">
+                    <i class="fas fa-edit"></i>Sửa
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteProduct(product.id!)">
+                    <i class="fas fa-trash"></i>Xoá
+                  </button>
+                  <button class="btn btn-secondary btn-sm" (click)="updateProductStatus(product.id!, product.status === productStatus.ACTIVE ? productStatus.INACTIVE : productStatus.ACTIVE)">
+                    <i class="fas" [ngClass]="product.status === productStatus.ACTIVE ? 'fa-toggle-off' : 'fa-toggle-on'"></i>Tìm
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="products.length === 0">
+              <td colspan="8" class="text-center">Không có sản phẩm nào</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav aria-label="Page navigation" class="mt-3">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="onPageChange(currentPage - 1)" style="cursor: pointer;">Previous</a>
+          </li>
+          <li class="page-item" *ngFor="let page of getPaginationArray()" [class.active]="currentPage === page">
+            <a class="page-link" (click)="onPageChange(page)" style="cursor: pointer;">{{page}}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="onPageChange(currentPage + 1)" style="cursor: pointer;">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

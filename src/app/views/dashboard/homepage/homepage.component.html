@@ -1,54 +1,340 @@
-<div class="dashboard-container">
-  <div class="header-image">
-    <img src="../../../assets/images/header-image.jpg" alt="Soccer Field" class="header-img">
-  </div>
-  <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-    <c-row>
-      <c-col xs="12" class="text-center mb-3">
-        <h2 class="search-title">Tìm kiếm sân bóng</h2>
-      </c-col>
-      <c-col xs="12">
-        <c-card class="search-card">
-          <c-card-body>
-            <c-row class="mb-3">
-              <label cLabel class="col-sm-2 col-form-label" for="provinceName">Tỉnh/Thành phố</label>
-              <c-col sm="4">
-                <select sizing="sm" id="provinceName" name="provinceName" cSelect
-                  [(ngModel)]="form.provinceid" (change)="changeSelectedCity($event)" required>
-                  <option value="">Chọn Tỉnh/Thành phố</option>
-                  <option *ngFor="let city of tblCity" [value]="city.provinceid">{{ city.provinceName }}</option>
+<!-- Main Container -->
+<div class="homepage-wrapper">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-banner position-relative">
+      <div class="hero-slider">
+        <!-- Banner 1 -->
+        <div class="hero-slide active">
+          <div class="hero-image">
+            <img src="../../../../assets/images/panel.jpg" alt="Electronics Store" class="img-fluid w-100">
+            <div class="hero-overlay"></div>
+          </div>
+          <div class="hero-content-wrapper">
+            <div class="container">
+              <div class="hero-content">
+                <div class="hero-badge">
+                  <span class="badge">Mới Ra Mắt</span>
+                </div>
+                <h1 class="hero-title">Khám Phá Công Nghệ Mới</h1>
+                <p class="hero-description">Laptop & Điện Thoại Chính Hãng - Giá Tốt Nhất</p>
+                <div class="hero-buttons">
+                  <button class="btn btn-primary">
+                    <i class="bi bi-lightning-charge me-2"></i>Mua Ngay
+                  </button>
+                  <button class="btn btn-outline">
+                    <i class="bi bi-arrow-right me-2"></i>Xem Thêm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner 2 -->
+        <div class="hero-slide">
+          <div class="hero-image">
+            <img src="../../../../assets/images/laptop.jpg" alt="Laptop Collection" class="img-fluid w-100">
+            <div class="hero-overlay"></div>
+          </div>
+          <div class="hero-content-wrapper">
+            <div class="container">
+              <div class="hero-content">
+                <div class="hero-badge">
+                  <span class="badge">Ưu Đãi Sốc</span>
+                </div>
+                <h1 class="hero-title">Laptop Gaming Siêu Hot</h1>
+                <p class="hero-description">Giảm giá lên đến 30% - Trả góp 0% lãi suất</p>
+                <div class="hero-buttons">
+                  <button class="btn btn-primary">
+                    <i class="bi bi-controller me-2"></i>Khám Phá Ngay
+                  </button>
+                  <button class="btn btn-outline">
+                    <i class="bi bi-arrow-right me-2"></i>Xem Thêm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner 3 -->
+        <div class="hero-slide">
+          <div class="hero-image">
+            <img src="../../../../assets/images/phone.jpg" alt="Smartphone Collection" class="img-fluid w-100">
+            <div class="hero-overlay"></div>
+          </div>
+          <div class="hero-content-wrapper">
+            <div class="container">
+              <div class="hero-content">
+                <div class="hero-badge">
+                  <span class="badge">Flash Sale</span>
+                </div>
+                <h1 class="hero-title">Điện Thoại Flagship</h1>
+                <p class="hero-description">Giảm giá sốc - Quà tặng hấp dẫn</p>
+                <div class="hero-buttons">
+                  <button class="btn btn-primary">
+                    <i class="bi bi-clock me-2"></i>Mua Ngay
+                  </button>
+                  <button class="btn btn-outline">
+                    <i class="bi bi-arrow-right me-2"></i>Xem Thêm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slider Navigation -->
+      <div class="hero-navigation">
+        <button class="hero-nav-btn prev-btn">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="hero-nav-btn next-btn">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Slider Dots -->
+      <div class="hero-dots">
+        <button class="hero-dot active" data-slide="0"></button>
+        <button class="hero-dot" data-slide="1"></button>
+        <button class="hero-dot" data-slide="2"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search Section -->
+  <section class="search-section">
+    <div class="container">
+      <div class="search-wrapper">
+        <div class="row mb-3">
+          <div class="col-12 text-center">
+            <h2 class="section-title fw-bold mb-1">Tìm Kiếm Sản Phẩm</h2>
+            <p class="text-muted small">Tìm kiếm sản phẩm phù hợp với nhu cầu của bạn</p>
+          </div>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="search-form">
+          <div class="row g-2">
+            <div class="col-md-4">
+              <div class="form-floating">
+                <select class="form-select" formControlName="category">
+                  <option value="">Tất cả danh mục</option>
+                  <option value="laptop">Laptop</option>
+                  <option value="phone">Điện thoại</option>
                 </select>
-              </c-col>
-              <label cLabel class="col-sm-2 col-form-label" for="districtName">Quận/Huyện</label>
-              <c-col sm="4">
-                <select sizing="sm" id="districtName" name="districtName" cSelect
-                  [(ngModel)]="form.districtId" (change)="changeSelectedDistrict($event)" required>
-                  <option value="">Chọn Quận/Huyện</option>
-                  <option *ngFor="let district of tblDistrict" [value]="district.districtId">{{ district.districtName }}</option>
+                <label><i class="bi bi-grid me-2"></i>Danh Mục</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-floating">
+                <select class="form-select" formControlName="brand" [disabled]="loadingBrands">
+                  <option value="">Tất cả thương hiệu</option>
+                  <option *ngFor="let brand of searchBrands" [value]="brand.value">
+                    {{ brand.name }}
+                  </option>
                 </select>
-              </c-col>
-            </c-row>
-            <c-row class="mb-3">
-              <label cLabel class="col-sm-2 col-form-label" for="wardName">Phường/Xã</label>
-              <c-col sm="4">
-                <select sizing="sm" id="wardName" name="wardName" cSelect
-                  [(ngModel)]="form.wardId" (change)="changeSelectedWard($event)" required>
-                  <option value="">Chọn Phường/Xã</option>
-                  <option *ngFor="let ward of tblWard" [value]="ward.wardId">{{ ward.wardName }}</option>
+                <label>
+                  <i class="bi bi-tag me-2"></i>
+                  <span *ngIf="loadingBrands" class="text-muted">
+                    <i class="bi bi-arrow-clockwise spin"></i> Đang tải...
+                  </span>
+                  <span *ngIf="!loadingBrands">Thương Hiệu</span>
+                </label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-floating">
+                <select class="form-select" formControlName="priceRange">
+                  <option value="">Khoảng giá</option>
+                  <option value="0-10">Dưới 10 triệu</option>
+                  <option value="10-20">10 - 20 triệu</option>
+                  <option value="20-30">20 - 30 triệu</option>
+                  <option value="30+">Trên 30 triệu</option>
                 </select>
-              </c-col>
-            </c-row>
-            <c-row>
-              <c-col md="12" class="text-center align-self-center mt-3">
-                <button cButton size="lg" color="primary" type="button" routerLink="/dashboard/search-field-result">
-                  <svg cIcon class="me-2" name="cil-magnifying-glass"></svg>
-                  <span class="btn-text">Tìm kiếm</span>
+                <label><i class="bi bi-currency-dollar me-2"></i>Khoảng Giá</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12 text-center">
+              <button class="btn btn-primary px-4 py-2 rounded-pill" type="submit">
+                <i class="bi bi-search me-2"></i>Tìm kiếm
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promo Section -->
+  <section class="promo-section py-5">
+    <div class="container">
+      <div class="promo-card bg-gradient rounded-4 overflow-hidden">
+        <div class="row g-0">
+          <div class="col-lg-6">
+            <div class="promo-content p-5">
+              <div class="promo-badges mb-4">
+                <span class="badge bg-danger me-2">Mới Ra Mắt</span>
+                <span class="badge bg-warning">-15%</span>
+              </div>
+              <h2 class="promo-title display-5 fw-bold mb-4">Redmi Note 14 Series</h2>
+              <div class="promo-features mb-4">
+                <div class="feature-item d-flex align-items-center mb-3">
+                  <div class="feature-icon bg-primary rounded-circle p-2 me-3">
+                    <i class="bi bi-cpu text-white"></i>
+                  </div>
+                  <div class="feature-text">Snapdragon 8 Gen 2</div>
+                </div>
+                <div class="feature-item d-flex align-items-center mb-3">
+                  <div class="feature-icon bg-primary rounded-circle p-2 me-3">
+                    <i class="bi bi-camera text-white"></i>
+                  </div>
+                  <div class="feature-text">Camera 200MP</div>
+                </div>
+                <div class="feature-item d-flex align-items-center">
+                  <div class="feature-icon bg-primary rounded-circle p-2 me-3">
+                    <i class="bi bi-battery-charging text-white"></i>
+                  </div>
+                  <div class="feature-text">Sạc 120W</div>
+                </div>
+              </div>
+              <div class="promo-price mb-4">
+                <span class="current-price h2 fw-bold text-primary">15.990.000₫</span>
+                <span class="old-price text-muted text-decoration-line-through ms-2">18.990.000₫</span>
+              </div>
+              <div class="promo-cta">
+                <button class="btn btn-primary btn-lg me-3">
+                  <i class="bi bi-lightning-charge me-2"></i>Mua Ngay
                 </button>
-              </c-col>
-            </c-row>
-          </c-card-body>
-        </c-card>
-      </c-col>
-    </c-row>
-  </form>
+                <button class="btn btn-outline-primary btn-lg">
+                  <i class="bi bi-info-circle me-2"></i>Chi tiết
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="promo-image position-relative h-100">
+              <img src="../../../assets/images/panel.jpg" alt="Redmi Note 14" class="img-fluid h-100 object-fit-cover">
+              <div class="promo-tags position-absolute bottom-0 start-0 p-4">
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-success">Trả góp 0%</span>
+                  <span class="badge bg-info">Quà 500k</span>
+                  <span class="badge bg-warning">Bảo hành 24T</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section py-5">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title fw-bold">Danh Mục Nổi Bật</h2>
+        <div class="title-underline mx-auto"></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="category-card position-relative rounded-4 overflow-hidden shadow-lg">
+            <img src="../../../../assets/images/laptop.jpg" alt="Laptops" class="img-fluid w-100">
+            <div class="category-overlay d-flex flex-column justify-content-center align-items-center">
+              <h3 class="text-white fw-bold mb-4">Laptop</h3>
+              <a routerLink="/category/laptops" class="btn btn-light btn-lg px-4 py-2 rounded-pill">
+                Xem ngay <i class="bi bi-arrow-right ms-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="category-card position-relative rounded-4 overflow-hidden shadow-lg">
+            <img src="../../../../assets/images/phone.jpg" alt="Phones" class="img-fluid w-100">
+            <div class="category-overlay d-flex flex-column justify-content-center align-items-center">
+              <h3 class="text-white fw-bold mb-4">Điện Thoại</h3>
+              <a routerLink="/category/phones" class="btn btn-light btn-lg px-4 py-2 rounded-pill">
+                Xem ngay <i class="bi bi-arrow-right ms-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products Section -->
+  <section class="featured-products-section py-5 bg-light">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title fw-bold">Sản Phẩm Nổi Bật</h2>
+        <div class="title-underline mx-auto"></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-3" *ngFor="let product of featuredProducts">
+          <div class="product-card bg-white rounded-4 shadow-sm h-100">
+            <div class="product-image position-relative">
+              <img [src]="getImageUrl(product.image)" [alt]="product.productName" class="img-fluid rounded-top-4" (error)="onImageError($event)">
+              <div class="product-badge position-absolute top-0 end-0 m-3" *ngIf="product.discount">
+                <span class="badge bg-danger">-{{product.discount}}%</span>
+              </div>
+            </div>
+            <div class="product-info p-4">
+              <h4 class="product-title h5 mb-3">{{product.productName}}</h4>
+              <div class="mb-2">
+                <span class="badge bg-info">Còn lại: {{product.stockQuantity}}</span>
+              </div>
+              <div class="product-price mb-3">
+                <span class="current-price h4 fw-bold text-primary">{{product.price | currency:'VND'}}</span>
+                <span class="old-price text-muted text-decoration-line-through ms-2" *ngIf="product.oldPrice">
+                  {{product.oldPrice | currency:'VND'}}
+                </span>
+              </div>
+              <div class="product-rating mb-3">
+                <div class="stars">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-half text-warning"></i>
+                </div>
+                <span class="ms-2 text-muted">({{product.rating}})</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill py-2">
+                <i class="bi bi-cart-plus me-2"></i>Mua ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section py-5" data-aos="fade-up">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title fw-bold">Khách Hàng Nói Gì?</h2>
+        <div class="title-underline mx-auto"></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4" *ngFor="let feedback of testimonials">
+          <div class="testimonial-card p-4 rounded-4 shadow" data-aos="zoom-in">
+            <p class="testimonial-text">"{{feedback.text}}"</p>
+            <div class="testimonial-author d-flex align-items-center mt-3">
+              <img [src]="feedback.avatar" class="rounded-circle me-3" width="40" height="40">
+              <div>
+                <div class="fw-bold">{{feedback.name}}</div>
+                <div class="text-muted small">{{feedback.role}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>

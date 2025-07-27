@@ -1,0 +1,247 @@
+<div class="payment-result-container py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="payment-result-card">
+          <div class="result-header text-center mb-4">
+            <div class="result-icon mb-3">
+              <i *ngIf="paymentStatus === 'success'" class="cil-check-circle text-success" style="font-size: 4rem;"></i>
+              <i *ngIf="paymentStatus === 'failed'" class="cil-x-circle text-danger" style="font-size: 4rem;"></i>
+              <i *ngIf="paymentStatus === 'error'" class="cil-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+              <i *ngIf="paymentStatus === 'unknown'" class="cil-question-circle text-secondary" style="font-size: 4rem;"></i>
+              <i *ngIf="paymentStatus === ''" class="cil-sync text-primary" style="font-size: 4rem;"></i>
+            </div>
+            <h2 class="result-title">
+              <span *ngIf="paymentStatus === 'success'">Thanh toán thành công!</span>
+              <span *ngIf="paymentStatus === 'failed'">Thanh toán thất bại</span>
+              <span *ngIf="paymentStatus === 'error'">Có lỗi xảy ra</span>
+              <span *ngIf="paymentStatus === 'unknown'">Không xác định</span>
+              <span *ngIf="paymentStatus === ''">Đang xử lý...</span>
+            </h2>
+          </div>
+
+          <div class="result-body">
+            <div *ngIf="paymentStatus === 'success'" class="success-message">
+              <p class="text-center mb-4">
+                {{ paymentMessage }}
+              </p>
+              <div class="order-info p-3 bg-light rounded">
+                <h6 class="mb-2">Thông tin đơn hàng:</h6>
+                <p class="mb-1"><strong>Mã đơn hàng:</strong> #{{ orderId }}</p>
+                <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-success">{{ orderStatus }}</span></p>
+              </div>
+
+              <!-- Chi tiết đơn hàng -->
+              <div *ngIf="orderDetails" class="order-details mt-3 p-3 bg-light rounded">
+                <h6 class="mb-3">Chi tiết đơn hàng:</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-1"><strong>Địa chỉ giao hàng:</strong></p>
+                    <p class="mb-2">{{ orderDetails.shippingAddress }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1"><strong>Số điện thoại:</strong> {{ orderDetails.phone }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ orderDetails.email }}</p>
+                    <p class="mb-1"><strong>Ngày đặt:</strong> {{ orderDetails.orderDate | date:'dd/MM/yyyy HH:mm' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Danh sách sản phẩm -->
+              <div *ngIf="orderItems && orderItems.length > 0" class="order-items mt-3">
+                <h6 class="mb-3">Sản phẩm trong đơn hàng:</h6>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>STT</th>
+                        <th>Sản phẩm</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-end">Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of orderItems; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <div class="product-info">
+                              <strong>ID: {{ item.productId }}</strong>
+                              <!-- Có thể thêm tên sản phẩm nếu có -->
+                            </div>
+                          </div>
+                        </td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-end">{{ item.price | number:'1.0-0' }} VNĐ</td>
+                        <td class="text-end">{{ (item.price * item.quantity) | number:'1.0-0' }} VNĐ</td>
+                      </tr>
+                    </tbody>
+                    <tfoot class="table-light">
+                      <tr>
+                        <td colspan="4" class="text-end"><strong>Tổng tiền:</strong></td>
+                        <td class="text-end"><strong>{{ orderDetails?.totalAmount | number:'1.0-0' }} VNĐ</strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tổng hợp tất cả đơn hàng thành công -->
+              <div *ngIf="allSuccessfulOrders && allSuccessfulOrders.length > 0" class="all-orders-summary mt-4">
+                <h6 class="mb-3">Tổng hợp đơn hàng thành công:</h6>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>STT</th>
+                        <th>Mã đơn hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let order of allSuccessfulOrders; let i = index"
+                          [class.table-primary]="order.id == orderId">
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          <strong>#{{ order.id }}</strong>
+                          <span *ngIf="order.id == orderId" class="badge bg-success ms-2">Đơn hàng mới</span>
+                        </td>
+                        <td>{{ order.orderDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="text-end">{{ order.totalAmount | number:'1.0-0' }} VNĐ</td>
+                        <td>
+                          <span class="badge bg-success">{{ orderService.getStatusVietnamese(order.status) }}</span>
+                        </td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-primary" (click)="viewOrderDetails(order.id)">
+                            <i class="cil-eye me-1"></i>Xem chi tiết
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot class="table-light">
+                      <tr>
+                        <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                        <td class="text-end">
+                          <strong>{{ getTotalAmount() | number:'1.0-0' }} VNĐ</strong>
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              <div class="alert alert-info mt-3">
+                <i class="cil-info me-2"></i>
+                <strong>Lưu ý:</strong> Chúng tôi sẽ gửi email xác nhận đến địa chỉ email của bạn.
+              </div>
+            </div>
+
+            <div *ngIf="paymentStatus === 'failed'" class="error-message">
+              <p class="text-center mb-4">
+                {{ paymentMessage }}
+              </p>
+              <div class="order-info p-3 bg-light rounded">
+                <h6 class="mb-2">Thông tin đơn hàng:</h6>
+                <p class="mb-1"><strong>Mã đơn hàng:</strong> #{{ orderId }}</p>
+                <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-danger">{{ orderStatus }}</span></p>
+              </div>
+              <div class="alert alert-warning mt-3">
+                <i class="cil-exclamation-triangle me-2"></i>
+                <strong>Gợi ý:</strong> Bạn có thể thử lại thanh toán hoặc chọn phương thức thanh toán khác.
+              </div>
+            </div>
+
+            <div *ngIf="paymentStatus === 'error'" class="error-message">
+              <p class="text-center mb-4">
+                {{ paymentMessage }}
+              </p>
+              <div class="order-info p-3 bg-light rounded">
+                <h6 class="mb-2">Thông tin đơn hàng:</h6>
+                <p class="mb-1"><strong>Mã đơn hàng:</strong> #{{ orderId }}</p>
+                <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-warning">Đang kiểm tra</span></p>
+              </div>
+              <div class="alert alert-warning mt-3">
+                <i class="cil-exclamation-triangle me-2"></i>
+                <strong>Hỗ trợ:</strong> Vui lòng liên hệ bộ phận hỗ trợ khách hàng để được hỗ trợ.
+              </div>
+            </div>
+
+            <div *ngIf="paymentStatus === 'unknown'" class="unknown-message">
+              <p class="text-center mb-4">
+                {{ paymentMessage }}
+              </p>
+              <div class="order-info p-3 bg-light rounded">
+                <h6 class="mb-2">Thông tin đơn hàng:</h6>
+                <p class="mb-1"><strong>Mã đơn hàng:</strong> #{{ orderId }}</p>
+                <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-secondary">Không xác định</span></p>
+              </div>
+              <div class="alert alert-info mt-3">
+                <i class="cil-info me-2"></i>
+                <strong>Kiểm tra:</strong> Bạn có thể kiểm tra trạng thái đơn hàng trong phần "Đơn hàng của tôi".
+              </div>
+            </div>
+
+            <div *ngIf="paymentStatus === ''" class="loading-message">
+              <p class="text-center mb-4">
+                Đang xác minh kết quả thanh toán...
+              </p>
+              <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-footer text-center mt-4">
+            <div *ngIf="paymentStatus === 'success'">
+              <button class="btn btn-primary me-2" (click)="goToHome()">
+                <i class="cil-home me-2"></i>
+                Về trang chủ
+              </button>
+              <button class="btn btn-outline-primary me-2" (click)="viewOrder()">
+                <i class="cil-list me-2"></i>
+                Xem đơn hàng
+              </button>
+              <button class="btn btn-outline-secondary" (click)="goToOrders()">
+                <i class="cil-folder me-2"></i>
+                Đơn hàng của tôi
+              </button>
+            </div>
+
+            <div *ngIf="paymentStatus === 'failed'">
+              <button class="btn btn-primary me-2" (click)="retryPayment()">
+                <i class="cil-reload me-2"></i>
+                Thử lại thanh toán
+              </button>
+              <button class="btn btn-outline-secondary me-2" (click)="goToHome()">
+                <i class="cil-home me-2"></i>
+                Về trang chủ
+              </button>
+              <button class="btn btn-outline-info" (click)="goToOrders()">
+                <i class="cil-folder me-2"></i>
+                Đơn hàng của tôi
+              </button>
+            </div>
+
+            <div *ngIf="paymentStatus === 'error' || paymentStatus === 'unknown'">
+              <button class="btn btn-primary me-2" (click)="goToOrders()">
+                <i class="cil-folder me-2"></i>
+                Kiểm tra đơn hàng
+              </button>
+              <button class="btn btn-outline-secondary" (click)="goToHome()">
+                <i class="cil-home me-2"></i>
+                Về trang chủ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

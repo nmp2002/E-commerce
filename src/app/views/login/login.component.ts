@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../_services/auth.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
+import { first } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService,
     private tokenStorage: TokenStorageService,
-    private router: Router) { }
+    private router: Router,
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     if (this.tokenStorage.getToken()) {
@@ -38,7 +40,12 @@ export class LoginComponent implements OnInit {
         this.isLoginFailed = false;
         this.isLoggedIn = true;
         this.roles = this.tokenStorage.getUser().roles;
-        this.reloadPage();
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.reloadPage();
+        }
       },
       error: err => {
         console.log(err);
@@ -55,4 +62,10 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/']); // Chuyển hướng về trang chủ
   }
 
+  // Xóa hàm loginWithGoogle vì chưa được implement trong AuthService
+  // Thay thế bằng thông báo tạm thời
+  loginWithGoogle(): void {
+    this.errorMessage = 'Tính năng đăng nhập bằng Google đang được phát triển';
+    this.isLoginFailed = true;
+  }
 }

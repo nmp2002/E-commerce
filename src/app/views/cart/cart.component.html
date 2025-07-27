@@ -1,0 +1,139 @@
+<div class="cart-container py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="cart-header mb-4">
+          <h2 class="cart-title">Giỏ hàng của bạn</h2>
+          <p class="cart-subtitle text-muted">Quản lý sản phẩm trong giỏ hàng của bạn</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Danh sách sản phẩm -->
+      <div class="col-lg-8">
+        <div class="cart-items-card">
+          <div *ngIf="cartItems.length === 0" class="empty-cart">
+            <div class="empty-cart-icon">
+              <i class="cil-cart"></i>
+            </div>
+            <h4>Giỏ hàng trống</h4>
+            <p class="text-muted">Hãy thêm sản phẩm vào giỏ hàng của bạn</p>
+            <button class="btn btn-primary btn-lg mt-3" routerLink="/category">
+              <i class="cil-basket me-2"></i>Tiếp tục mua sắm
+            </button>
+          </div>
+
+          <div *ngIf="cartItems.length > 0" class="cart-items">
+            <!-- Header với checkbox chọn tất cả -->
+            <div class="cart-header-actions mb-3">
+              <div class="form-check">
+                <input type="checkbox" id="selectAll"
+                       [(ngModel)]="selectAll"
+                       (change)="toggleSelectAll($event)">
+                <label for="selectAll">
+                  Chọn tất cả ({{ getSelectedCount() }}/{{ cartItems.length }})
+                </label>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table cart-table">
+                <thead>
+                  <tr>
+                    <th class="select-col">Chọn</th>
+                    <th class="product-col">Sản phẩm</th>
+                    <th class="quantity-col">Số lượng</th>
+                    <th class="price-col">Đơn giá</th>
+                    <th class="total-col">Thành tiền</th>
+                    <th class="action-col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of cartItems; let i = index" class="cart-item">
+                    <td class="select-cell">
+                      <button type="button"
+                              class="btn btn-sm"
+                              [class]="item.selected ? 'btn-success' : 'btn-outline-secondary'"
+                              (click)="toggleItemSelection(i)">
+                        {{ item.selected ? '✓' : '○' }}
+                      </button>
+                    </td>
+                    <td class="product-cell">
+                      <div class="product-info">
+                        <div class="product-image">
+                          <img [src]="item.image" [alt]="item.name">
+                        </div>
+                        <div class="product-details">
+                          <h6 class="product-name">{{ item.name }}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="quantity-cell">
+                      <div class="quantity-control">
+                        <button class="btn-quantity" (click)="updateQuantity(item, -1)">
+                          <span>-</span>
+                        </button>
+                        <span class="quantity">{{ item.quantity }}</span>
+                        <button class="btn-quantity" (click)="updateQuantity(item, 1)">
+                          <span>+</span>
+                        </button>
+                      </div>
+                    </td>
+                    <td class="price-cell">
+                      <span class="price">{{ item.price | currency:'VND' }}</span>
+                    </td>
+                    <td class="total-cell">
+                      <span class="total">{{ item.price * item.quantity | currency:'VND' }}</span>
+                    </td>
+                    <td class="action-cell">
+                      <button class="btn-remove" (click)="removeItem(item.id)" title="Xóa sản phẩm">
+                        <i class="cil-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tổng tiền và thanh toán -->
+      <div class="col-lg-4">
+        <div class="cart-summary-card">
+          <div class="summary-header">
+            <h5>Tổng đơn hàng</h5>
+          </div>
+          <div class="summary-body">
+            <div class="summary-item">
+              <span class="label">Tạm tính</span>
+              <span class="value">{{ getSelectedTotal() | currency:'VND' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Phí vận chuyển</span>
+              <span class="value free">Miễn phí</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-total">
+              <span class="label">Tổng cộng</span>
+              <span class="value total">{{ getSelectedTotal() | currency:'VND' }}</span>
+            </div>
+          </div>
+          <div class="summary-footer">
+            <button class="btn btn-checkout w-100"
+                    [disabled]="getSelectedCount() === 0"
+                    (click)="proceedToCheckout()">
+              <i class="cil-credit-card me-2"></i>
+              Tiến hành thanh toán ({{ getSelectedCount() }} sản phẩm)
+            </button>
+            <button class="btn btn-continue w-100" routerLink="/category">
+              <i class="cil-basket me-2"></i>
+              Tiếp tục mua sắm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -110,4 +110,11 @@ export class BookingService {
   checkBookingExistence(smallFieldId: number, timeStart: string, day: string): Observable<boolean> {
     return this.http.get<any>(`${this.baseURL}checkExistence?smallFieldId=${smallFieldId}&timeStart=${timeStart}&day=${day}`, httpOptions);
   }
+    // Phương thức để gọi API đếm booking trong ngày hôm nay theo fieldId
+    countBookingsByFieldToday(fieldId: number): Observable<number> {
+      return this.http.get<number>(`${this.baseURL}countBookingsByFieldToday?fieldId=${fieldId}`, httpOptions);
+  }
+  calculateRevenueByFieldToday(fieldId: number): Observable<number> {
+    return this.http.get<number>(`${this.baseURL}calculateRevenueToday?fieldId=${fieldId}`, httpOptions);
+  }
 }

@@ -1,35 +1,42 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { API_PATH } from "../_services/hvnhconst";
-import { Notification } from '../model/notificationdto';
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-};
-const API_URL = API_PATH + '/category/notification/';
+import { Subject, Observable } from 'rxjs';
+import { Client, IMessage } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor(private http: HttpClient) { }
-  getNotification(): Observable<any> {
-    return this.http.get<Notification>(API_URL + 'getNotification', httpOptions);
+  private stompClient: Client | null = null;
+  private notifications$ = new Subject<string>();
+
+  connect(): Observable<string> {
+    const socket = new SockJS('http://localhost:8080/websocket-notifications');
+    this.stompClient = new Client({
+      webSocketFactory: () => socket,
+      debug: (str) => console.log(str),
+      reconnectDelay: 5000,
+    });
+
+    this.stompClient.onConnect = () => {
+      console.log('Connected to WebSocket');
+      this.stompClient?.subscribe('/topic/notifications', (message: IMessage) => {
+        this.notifications$.next(message.body);
+      });
+    };
+
+    this.stompClient.onStompError = (frame) => {
+      console.error('STOMP Error:', frame.headers['message']);
+    };
+
+    this.stompClient.activate();
+    return this.notifications$.asObservable();
   }
 
-  findNotification(title: string, content: string, status: string, page: number, size: number): Observable<any> {
-    return this.http.post<any>(API_URL + 'list', {
-      title, content, status, page, size
-    }, httpOptions);
-  }
-
-  createOrUpdateNotification(id: number, title: string, content: string, startdate: Date, endate: string, status: string, isUpdate: boolean): Observable<any> {
-    return this.http.put(API_URL + (isUpdate ? 'updateNotification' : 'createNotification'), {
-      id, title, content, status, startdate, endate
-    }, httpOptions);
-  }
-
-  findById(id: number): Observable<any> {
-    return this.http.get<any>(API_URL + 'findById?id=' + id, httpOptions);
+  disconnect() {
+    if (this.stompClient) {
+      this.stompClient.deactivate();
+      console.log('Disconnected from WebSocket');
+    }
   }
 }

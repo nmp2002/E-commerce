@@ -24,22 +24,26 @@
                             Trạng thái
                           </label>
                           <c-col sm="4">
-                            <select sizing="sm" aria-label="Trạng thái" id="status" name="status" cSelect
+                            <select sizing="sm" aria-label="Trạng thái" id="statusField" name="statusField" cSelect
                               (change)="status = $any($event.target).value">
                               <option value="-1">-- Tất cả --</option>
-                              <option value="0">Ngừng hoạt động</option>
-                              <option value="1">Hoạt động</option>
+                              <option value="booked">Đã thanh toán</option>
+                              <option value="pending">Chưa thanh toán</option>
                             </select>
                         </c-col>
+                        <label cLabel class="col-sm-2 col-form-label" for="day">
+                            Ngày
+                        </label>
+                        <c-col sm="4">
+                            <input cFormControl sizing="sm" id="day" name="day" type="date"
+                                (change)="day = $any($event.target).value" />
+                        </c-col>
                     </c-row>
-                    
+
                     <c-row>
                         <c-col md="6" [offset]="{md: 3}" class="text-center align-self-center mt-1">
                             <button cButton color="info" size="sm" (click)="findBookings()">
                                 <svg cIcon class="me-2" name="cil-magnifying-glass"></svg><span class="btn-text">Tìm kiếm</span>
-                            </button>
-                            <button cButton color="info" size="sm" routerLink="/booking/booking-create">
-                                <svg cIcon class="me-2" name="cil-plus"></svg><span class="btn-text">Thêm mới</span>
                             </button>
                             <button cButton color="info" size="sm">
                                 <svg cIcon class="me-2" name="cil-file"></svg><span class="btn-text">Xuất Excel</span>
@@ -112,10 +116,10 @@
                             <td>
                                 <span [ngClass]="{
                                     'badge': true,
-                                    'badge-success': booking.paymentStatus === 'unpaid',
-                                    'badge-danger': booking.paymentStatus=== 'booked'
+                                    'badge-danger': booking. statusField === 'pending',
+                                    'badge-success': booking. statusField=== 'booked'
                                 }">
-                                    {{ booking.paymentStatus === 'unpaid' ? 'Chưa thanh toán' : 'Đã thanh toán' }}
+                                    {{ booking. statusField === 'pending' ? 'Chưa thanh toán' : 'Đã thanh toán' }}
                                 </span>
                             </td>
                             <td>

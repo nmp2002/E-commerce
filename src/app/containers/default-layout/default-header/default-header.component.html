@@ -6,24 +6,110 @@
     </button>
     <c-header-nav class="d-none d-lg-flex me-auto">
     </c-header-nav>
-
-    <c-header-nav class="d-none d-lg-flex">
-      <c-nav-item>
-        <a routerLink="./" cNavLink>
+    <c-header-nav class="d-none d-lg-flex notification-dropdown" *ngIf="isLoggedIn">
+      <c-dropdown alignment="end" variant="nav-item">
+        <button cButton color="" name="cilBell" [caret]="false" cDropdownToggle class="py-0 btn-avatar">
           <svg cIcon name="cilBell" size="lg"></svg>
-        </a>
-      </c-nav-item>
-      <c-nav-item>
-        <a routerLink="./" cNavLink>
-          <svg cIcon name="cilList" size="lg"></svg>
-        </a>
-      </c-nav-item>
-      <c-nav-item>
-        <a routerLink="./" cNavLink>
-          <svg cIcon name="cilEnvelopeOpen" size="lg"></svg>
-        </a>
-      </c-nav-item>
+          <span class="badge bg-danger">{{ notifications.length }}</span>
+        </button>
+        <ul cDropdownMenu class="dropdown-menu dropdown-menu-end">
+          <li *ngFor="let notification of notifications">
+            <div class="dropdown-item">
+              <strong>{{ notification.message }}</strong><br>
+              <small class="text-muted">{{ notification.time | date:'dd/MM/yyyy HH:mm' }}</small>
+
+            </div>
+          </li>
+          <li *ngIf="notifications.length === 0">
+            <div class="dropdown-item text-muted">
+              Không có thông báo
+            </div>
+          </li>
+        </ul>
+      </c-dropdown>
     </c-header-nav>
+
+    <!-- Nút giỏ hàng (hiển thị cho ROLE_USER) -->
+    <c-header-nav class="d-none d-lg-flex ms-3">
+      <c-dropdown alignment="end" variant="nav-item" *ngIf="isLoggedIn && isUserRole">
+        <button cButton color="" name="cilCart" [caret]="false" cDropdownToggle class="py-0 btn-avatar">
+          <svg cIcon name="cilCart" size="lg"></svg>
+          <span class="badge bg-danger" *ngIf="cartItemCount > 0">
+            {{ cartItemCount }}
+          </span>
+        </button>
+        <ul cDropdownMenu class="dropdown-menu dropdown-menu-end">
+          <li *ngFor="let item of cartItems">
+            <div class="dropdown-item">
+              <div class="d-flex align-items-center">
+                <img [src]="item.image" class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                <div>
+                  <strong>{{ item.name }}</strong><br>
+                  <small class="text-muted">Số lượng: {{ item.quantity }}</small><br>
+                  <small class="text-muted">Giá: {{ item.price | currency:'VND' }}</small>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li *ngIf="cartItems.length === 0">
+            <div class="dropdown-item text-muted">
+              Giỏ hàng trống
+            </div>
+          </li>
+          <li *ngIf="cartItems.length > 0">
+            <hr class="dropdown-divider">
+            <a class="dropdown-item text-center" routerLink="/cart">
+              Xem tất cả sản phẩm
+            </a>
+          </li>
+        </ul>
+      </c-dropdown>
+    </c-header-nav>
+
+    <!-- Icon đơn hàng thành công (hiển thị cho ROLE_USER) -->
+    <c-header-nav class="d-none d-lg-flex ms-2">
+      <c-dropdown alignment="end" variant="nav-item" *ngIf="isLoggedIn && isUserRole">
+        <button cButton color="" name="cilCheckCircle" [caret]="false" cDropdownToggle class="py-0 btn-avatar">
+          <svg cIcon name="cilCheckCircle" size="lg"></svg>
+          <span class="badge bg-success" *ngIf="successfulOrderCount > 0">
+            {{ successfulOrderCount }}
+          </span>
+        </button>
+        <ul cDropdownMenu class="dropdown-menu dropdown-menu-end">
+          <li *ngFor="let order of successfulOrders">
+            <div class="dropdown-item">
+              <div class="d-flex align-items-center">
+                <div class="me-2">
+                  <svg cIcon name="cilCheckCircle" class="text-success"></svg>
+                </div>
+                <div class="flex-grow-1">
+                  <strong>Đơn hàng #{{ order.id }}</strong><br>
+                  <small class="text-muted">{{ order.orderDate | date:'dd/MM/yyyy HH:mm' }}</small><br>
+                  <small class="text-muted">{{ order.totalAmount | number:'1.0-0' }} VNĐ</small>
+                </div>
+                <div class="ms-2">
+                  <button class="btn btn-sm btn-outline-primary" (click)="viewOrderDetails(order.id!)" *ngIf="order.id">
+                    <i class="cil-eye"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li *ngIf="successfulOrders.length === 0">
+            <div class="dropdown-item text-muted">
+              Chưa có đơn hàng thành công
+            </div>
+          </li>
+          <li *ngIf="successfulOrders.length > 0">
+            <hr class="dropdown-divider">
+            <a class="dropdown-item text-center" routerLink="/orders">
+              Xem tất cả đơn hàng
+            </a>
+          </li>
+        </ul>
+      </c-dropdown>
+    </c-header-nav>
+
     <c-header-nav class="ms-3">
       <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
     </c-header-nav>
@@ -47,11 +133,11 @@
         </c-avatar>
       </button>
     </ng-container>
-    
+
     <ng-template #loginLink>
       <a routerLink="/login" cButton color="primary" class="ms-3">Đăng nhập</a>
     </ng-template>
-    
+
     <ul cDropdownMenu class="pt-0 pr-5 w-auto">
       <li>
         <h6 cDropdownHeader class="bg-light fw-semibold py-2">Tài khoản</h6>

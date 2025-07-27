@@ -227,6 +227,74 @@ export class FieldManagerComponent implements OnInit {
     );
   }
 
+  lockfield(field: any): void {
+    Swal.fire({
+          text: "Bạn có chắc chắn muốn khóa sân bóng!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Đồng ý',
+          cancelButtonText: 'Quay lại'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.fieldService.lockfield(field.id).subscribe({
+              next: data => {
+                console.log(data);
+                Notify.success('Khóa sân bóng thành công !', {
+                  timeout: 3000,
+                  success: {
+                    childClassName: 'notiflix-notify-success',
+                  }
+                });
+                this.retrieveFields(1);
+              },
+              error: err => {
+                Notify.failure(err.error.message != null ? err.error.message : 'Khóa người dùng thất bại !', {
+                  timeout: 3000,
+                  failure: {
+                    childClassName: 'notiflix-notify-failure',
+                  }
+                });
+              }
+            });
+          }
+        });
+  }
+  unlockfield(field: any): void {
+      Swal.fire({
+        text: "Bạn có chắc chắn muốn mở khóa sân bóng!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Quay lại'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.fieldService.unlockfield(field.id).subscribe({
+            next: data => {
+              console.log(data);
+              Notify.success('Mở khóa sân bóng thành công !', {
+                timeout: 3000,
+                success: {
+                  childClassName: 'notiflix-notify-success',
+                }
+              });
+              this.retrieveFields(1);
+            },
+            error: err => {
+              Notify.failure(err.error.message != null ? err.error.message : 'Mở khóa người dùng thất bại !', {
+                timeout: 3000,
+                failure: {
+                  childClassName: 'notiflix-notify-failure',
+                }
+              });
+            }
+          });
+        }
+      });
+    }
   unlockField(field: any): void {
     this.fieldService.updateFieldStatus(field.id, 1).subscribe(
       response => {

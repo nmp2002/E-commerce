@@ -1,0 +1,109 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Danh sách sản phẩm -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Danh sách sản phẩm</h4>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            <button *ngFor="let product of products"
+                    class="list-group-item list-group-item-action"
+                    [class.active]="selectedProduct?.id === product.id"
+                    (click)="onProductSelect(product)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{product.productName}}</h6>
+                  <small class="text-muted">ID: {{product.id}}</small>
+                </div>
+                <span class="badge bg-primary rounded-pill">
+                  {{product.price | currency:'VND'}}
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phụ kiện của sản phẩm -->
+    <div class="col-md-8">
+      <div class="card" *ngIf="selectedProduct">
+        <div class="card-header">
+          <h4 class="card-title">Phụ kiện của {{selectedProduct.productName}}</h4>
+        </div>
+        <div class="card-body">
+          <!-- Phụ kiện hiện tại -->
+          <div class="current-accessories mb-4">
+            <h5>Phụ kiện đã thêm</h5>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Tên phụ kiện</th>
+                    <th>Giá</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let accessory of accessories">
+                    <td>{{accessory.accessoryProduct?.productName}}</td>
+                    <td>{{accessory.accessoryProduct?.price | currency:'VND'}}</td>
+                    <td>
+                      <button class="btn btn-danger btn-sm"
+                              (click)="removeAccessory(accessory.accessoryProductId)">
+                        <i class="cil-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="accessories.length === 0">
+                    <td colspan="3" class="text-center">Chưa có phụ kiện nào</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Danh sách phụ kiện có thể thêm -->
+          <div class="available-accessories">
+            <h5>Phụ kiện có thể thêm</h5>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Tên phụ kiện</th>
+                    <th>Giá</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let accessory of availableAccessories">
+                    <td>{{accessory.productName}}</td>
+                    <td>{{accessory.price | currency:'VND'}}</td>
+                    <td>
+                      <button class="btn btn-primary btn-sm"
+                              (click)="addAccessory(accessory.id!)">
+                        <i class="cil-plus"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="availableAccessories.length === 0">
+                    <td colspan="3" class="text-center">Không có phụ kiện nào có thể thêm</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="!selectedProduct">
+        <div class="card-body text-center">
+          <i class="cil-basket fa-3x text-muted mb-3"></i>
+          <h5>Vui lòng chọn sản phẩm để quản lý phụ kiện</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

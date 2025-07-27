@@ -88,6 +88,7 @@ export class UserRegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadUserEdit();
   }
 
   public isShowButton(btnCode: string): boolean {

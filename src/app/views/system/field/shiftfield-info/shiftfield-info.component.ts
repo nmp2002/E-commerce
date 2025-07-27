@@ -3,7 +3,7 @@ import { TblShiftField } from '../../../../model/tblShiftField';
 import { ShiftFieldService } from '../../../../_services/shiftfield.service';
 import { TokenStorageService } from 'src/app/_services/token-storage.service';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-shiftfield-info',
   templateUrl: './shiftfield-info.component.html',
@@ -146,4 +146,66 @@ export class ShiftFieldInfoComponent implements OnChanges {
       this.filteredShiftFields = this.shiftFields;
     }
   }
+  deleteShiftField(id: number): void {
+    console.log('Bắt đầu yêu cầu xóa shift field với ID:', id);
+  
+    Swal.fire({
+      text: "Bạn có chắc chắn muốn xóa shift field này?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Quay lại'
+    }).then((result) => {
+      console.log('Kết quả từ Swal:', result);
+  
+      if (result.isConfirmed) {
+        console.log('Xác nhận xóa, gọi API deleteShiftField');
+        
+        this.shiftFieldService.deleteshiftField(id).subscribe({
+          next: () => {
+            console.log('API trả về thành công, xóa shift field khỏi danh sách');
+            
+            // Xóa shift field khỏi danh sách
+            this.shiftFields = this.shiftFields.filter(shiftField => shiftField.id !== id);
+            console.log('Danh sách sau khi xóa:', this.shiftFields);
+  
+            this.filterShiftFields(); // Cập nhật danh sách hiển thị
+            console.log('Danh sách đã được lọc lại');
+  
+            // Thông báo thành công
+            Swal.fire({
+              icon: 'success',
+              title: 'Xóa thành công!',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'Đồng ý'
+            });
+          },
+          error: (error) => {
+            console.log('Lỗi khi gọi API xóa:', error);
+            console.log('Lỗi khi gọi API xóa:', error);
+            console.log('Mã lỗi:', error.status);
+            console.log('Thông báo lỗi chi tiết:', error.error);
+            // Lấy thông báo lỗi
+            const errorMessage = error?.error?.message || error?.message || 'Có lỗi xảy ra khi xóa shift field.';
+
+            // Hiển thị thông báo lỗi
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi!',
+              text: errorMessage,
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Đóng'
+            });
+          }
+        });
+      } else {
+        console.log('Người dùng đã hủy xóa.');
+      }
+    });
+  }
+  
+  
+  
 }

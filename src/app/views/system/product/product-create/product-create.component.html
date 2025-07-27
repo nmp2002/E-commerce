@@ -1,0 +1,146 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Thông tin chung của sản phẩm</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Product Name, Category, Group Code -->
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="productName">Tên gốc sản phẩm <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="productName" formControlName="productName" placeholder="Ví dụ: iPhone 15 Pro"
+                    [ngClass]="{ 'is-invalid': submitted && f['productName'].errors }">
+                  <div *ngIf="submitted && f['productName'].errors" class="invalid-feedback">
+                    <div *ngIf="f['productName'].errors?.['required']">Tên là bắt buộc</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="categoryId">Danh mục <span class="text-danger">*</span></label>
+                  <select class="form-control" id="categoryId" formControlName="categoryId" [ngClass]="{ 'is-invalid': submitted && f['categoryId'].errors }">
+                    <option value="" disabled>Chọn danh mục</option>
+                    <option *ngFor="let category of categories" [value]="category.id">{{category.categoryName}}</option>
+                  </select>
+                  <div *ngIf="submitted && f['categoryId'].errors" class="invalid-feedback">
+                    <div *ngIf="f['categoryId'].errors?.['required']">Danh mục là bắt buộc</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="groupCode">Mã nhóm sản phẩm <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="groupCode" formControlName="groupCode" placeholder="Ví dụ: IPHONE-15-PRO"
+                    [ngClass]="{ 'is-invalid': submitted && f['groupCode'].errors }">
+                  <div *ngIf="submitted && f['groupCode'].errors" class="invalid-feedback">
+                    <div *ngIf="f['groupCode'].errors?.['required']">Mã nhóm là bắt buộc</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="brand">Hãng <span class="text-danger">*</span></label>
+                  <select class="form-control" id="brand" formControlName="brand" [ngClass]="{ 'is-invalid': submitted && f['brand'].errors }">
+                    <option value="" disabled>Chọn hãng</option>
+                    <option *ngFor="let b of brands" [value]="b">{{b}}</option>
+                  </select>
+                  <div *ngIf="submitted && f['brand'].errors" class="invalid-feedback">
+                    <div *ngIf="f['brand'].errors?.['required']">Hãng là bắt buộc</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">Mô tả chung</label>
+              <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Các phiên bản sản phẩm</h3>
+          </div>
+          <div class="card-body" formArrayName="variants">
+            <div *ngFor="let variant of variants.controls; let i=index" [formGroupName]="i" class="variant-group border rounded p-3 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Phiên bản {{i + 1}}</h5>
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeVariant(i)" title="Xóa phiên bản này" [disabled]="variants.length <= 1">
+                  <i class="cil-trash"></i>
+                </button>
+              </div>
+              <div class="row">
+                <!-- Price, Quantity, Status -->
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="price-{{i}}">Giá <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="price-{{i}}" formControlName="price" [ngClass]="{ 'is-invalid': submitted && variant.get('price')?.errors }">
+                    <div *ngIf="submitted && variant.get('price')?.errors" class="invalid-feedback">Giá là bắt buộc và phải lớn hơn 0</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="stockQuantity-{{i}}">Số lượng <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="stockQuantity-{{i}}" formControlName="stockQuantity" [ngClass]="{ 'is-invalid': submitted && variant.get('stockQuantity')?.errors }">
+                     <div *ngIf="submitted && variant.get('stockQuantity')?.errors" class="invalid-feedback">Số lượng là bắt buộc</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="status-{{i}}">Trạng thái <span class="text-danger">*</span></label>
+                    <select class="form-control" id="status-{{i}}" formControlName="status">
+                      <option [ngValue]="1">Đang bán</option>
+                      <option [ngValue]="2">Ngừng bán</option>
+                      <option [ngValue]="0">Hết hàng</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image Upload -->
+              <div class="form-group">
+                <label for="image-{{i}}">Hình ảnh</label>
+                <input type="file" class="form-control" id="image-{{i}}" (change)="onFileSelected($event, i)" accept="image/*">
+                <img *ngIf="variant.get('previewUrl')?.value" [src]="variant.get('previewUrl')?.value" class="img-thumbnail mt-2" style="max-height: 150px;">
+              </div>
+
+              <!-- Attributes -->
+              <h6>Thuộc tính cho phiên bản này</h6>
+              <div formArrayName="attributes">
+                <div *ngFor="let attr of variantAttributes(i).controls; let j=index" [formGroupName]="j" class="row align-items-center mb-2">
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">{{ attr.get('name')?.value }}:</label>
+                  </div>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" placeholder="Giá trị" formControlName="value"
+                           [ngClass]="{ 'is-invalid': submitted && attr.get('value')?.errors }">
+                  </div>
+                </div>
+                <p *ngIf="variantAttributes(i).controls.length === 0" class="text-muted">
+                  Vui lòng chọn danh mục để có thuộc tính mặc định.
+                </p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary" (click)="addVariant()">
+              <i class="cil-plus"></i> Thêm phiên bản khác
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+              {{ loading ? 'Đang xử lý...' : 'Lưu tất cả sản phẩm' }}
+            </button>
+            <button type="button" class="btn btn-link" routerLink="/system/product/list">Hủy</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

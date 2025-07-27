@@ -15,6 +15,9 @@ const httpOptions = {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  loginWithGoogle() {
+    throw new Error('Method not implemented.');
+  }
   constructor(private http: HttpClient,
     private tokenStorage: TokenStorageService,
     private router: Router,
@@ -66,4 +69,5 @@ export class AuthService {
       lstPermission
     }, httpOptions);
   }
+  
 }

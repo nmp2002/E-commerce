@@ -1,0 +1,208 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <svg cIcon name="cil-shopping-cart" class="me-2"></svg>
+            Danh sách sản phẩm đã được đặt
+          </h3>
+          <div class="card-tools">
+            <button cButton color="info" size="sm" (click)="loadOrderedProducts()">
+              <svg cIcon name="cil-reload"></svg> Làm mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Thống kê tổng quan -->
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card bg-primary text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="mb-0">{{getTotalOrders()}}</h4>
+                      <small>Tổng đơn hàng</small>
+                    </div>
+                    <div class="align-self-center">
+                      <svg cIcon name="cil-cart" size="2xl"></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-success text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="mb-0">{{getTotalProducts()}}</h4>
+                      <small>Sản phẩm khác nhau</small>
+                    </div>
+                    <div class="align-self-center">
+                      <svg cIcon name="cil-box" size="2xl"></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-warning text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="mb-0">{{getTotalQuantity()}}</h4>
+                      <small>Tổng số lượng</small>
+                    </div>
+                    <div class="align-self-center">
+                      <svg cIcon name="cil-list-numbered" size="2xl"></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-info text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h4 class="mb-0">{{getTotalRevenue() | currency:'VND'}}</h4>
+                      <small>Tổng doanh thu</small>
+                    </div>
+                    <div class="align-self-center">
+                      <svg cIcon name="cil-money" size="2xl"></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bộ lọc tìm kiếm -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm, khách hàng..." (keyup)="applyFilter($event)">
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <svg cIcon name="cil-magnifying-glass"></svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 text-end">
+              <span class="text-muted">
+                Hiển thị {{(paginator?.pageIndex || 0) * (paginator?.pageSize || 10) + 1}}-{{Math.min((paginator?.pageIndex || 0) * (paginator?.pageSize || 10) + (paginator?.pageSize || 10), dataSource.data.length)}}
+                trong tổng số {{dataSource.data.length}} sản phẩm
+              </span>
+            </div>
+          </div>
+
+          <!-- Bảng dữ liệu -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Mã đơn hàng</th>
+                  <th>Khách hàng</th>
+                  <th>Ngày đặt</th>
+                  <th>Trạng thái</th>
+                  <th>Tên sản phẩm</th>
+                  <th>Danh mục</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá</th>
+                  <th>Thành tiền</th>
+                  <th>Mô tả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of dataSource.data | slice: (paginator?.pageIndex || 0) * (paginator?.pageSize || 10) : (paginator?.pageIndex || 0) * (paginator?.pageSize || 10) + (paginator?.pageSize || 10)">
+                  <td>
+                    <span class="badge bg-secondary">#{{item.orderId}}</span>
+                  </td>
+                  <td>
+                    <strong>{{item.customerName}}</strong>
+                  </td>
+                  <td>
+                    <small>{{item.orderDate | date:'dd/MM/yyyy HH:mm'}}</small>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="getStatusClass(item.orderStatus)">
+                      {{getStatusText(item.orderStatus)}}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="me-2">
+                        <svg cIcon name="cil-box" class="text-primary"></svg>
+                      </div>
+                      <div>
+                        <strong>{{item.productName}}</strong>
+                        <br>
+                        <small class="text-muted">ID: {{item.productId}}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">{{item.category}}</span>
+                  </td>
+                  <td>
+                    <span class="badge bg-primary">{{item.quantity}}</span>
+                  </td>
+                  <td>
+                    <strong class="text-success">{{item.unitPrice | currency:'VND'}}</strong>
+                  </td>
+                  <td>
+                    <strong class="text-danger">{{item.totalPrice | currency:'VND'}}</strong>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{item.description}}</small>
+                    <br>
+                    <a class="btn btn-sm btn-outline-info mt-1" [routerLink]="['/system/ordered-products', item.orderId, item.productId]">
+                      <svg cIcon name="cil-eye"></svg> Xem chi tiết
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngIf="dataSource.data.length === 0">
+                  <td colspan="10" class="text-center py-4">
+                    <div class="text-muted">
+                      <svg cIcon name="cil-inbox" size="2xl" class="mb-2"></svg>
+                      <br>
+                      Không có sản phẩm nào được đặt
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+                    <!-- Phân trang -->
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted">
+              Hiển thị {{(paginator?.pageIndex || 0) * (paginator?.pageSize || 10) + 1}}-{{Math.min((paginator?.pageIndex || 0) * (paginator?.pageSize || 10) + (paginator?.pageSize || 10), dataSource.data.length)}}
+              trong tổng số {{dataSource.data.length}} sản phẩm
+            </div>
+            <mat-paginator
+              [length]="dataSource.data.length"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 50]"
+              showFirstLastButtons
+              aria-label="Chọn trang">
+            </mat-paginator>
+          </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div class="card-footer" *ngIf="loading">
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <p class="mt-2 mb-0">Đang tải dữ liệu sản phẩm đã đặt...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

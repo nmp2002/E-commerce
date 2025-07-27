@@ -28,11 +28,14 @@
         <img *ngIf="field.image" [src]="'data:image/jpeg;base64,' + field.image" class="card-img-top" alt="{{ field.fieldName }}">
         <div class="card-body">
           <h5 class="card-title">{{ field.fieldName }}</h5>
-          <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ field.provinceName }}, {{ field.districtName }}, {{ field.wardName }}</p>
-          <p class="card-text"><i class="fas fa-phone"></i> {{ field.phoneNumberField }}</p>
+          <p class="card-text"><svg cIcon name="cil-location-pin"></svg> {{ field.provinceName }}, {{ field.districtName }}, {{ field.wardName }}</p>
+          <p class="card-text"><svg cIcon name="cil-phone"></svg> {{ field.phoneNumberField }}</p>
           <button cButton class="btn btn-primary btn-sm" (click)="setupField(field)">Thiết lập</button>
           <button cButton class="btn btn-info btn-sm" (click)="showFieldInfo(field)">Thông tin</button>
           <button cButton class="btn btn-primary btn-sm" (click)="checkField(i)">Xem lịch sân</button>
+          <button class="btn btn-primary btn-sm" [routerLink]="['/field/field-update', encryptData(field.id)]">
+            Chỉnh sửa
+          </button>
         </div>
       </div>
     </div>
@@ -53,7 +56,7 @@
           <div class="form-group">
             <label for="shiftFieldName">Ca sân số </label>
             <input type="number" class="form-control" id="shiftFieldName" name="shiftFieldName" [(ngModel)]="selectedField.shiftFieldName" required>
-          </div>          
+          </div>
           <div class="form-group">
             <label for="timeStart">Thời gian bắt đầu</label>
             <input type="time" class="form-control" id="timeStart" name="timeStart" [(ngModel)]="selectedField.timeStart" required>
@@ -66,26 +69,26 @@
             <label for="amountWeekday">Giá ngày trong tuần</label>
             <input type="text" class="form-control" id="amountWeekday" name="amountWeekday" [(ngModel)]="selectedField.amountWeekday" #amountWeekday="ngModel" required pattern="^\d+(\.\d{1,2})?$">
             <div *ngIf="amountWeekday.errors && (amountWeekday.dirty || amountWeekday.touched)">
-              <div *ngIf="amountWeekday.errors['required']">Giá ngày trong tuần là bắt buộc.</div>
-              <div *ngIf="amountWeekday.errors['pattern']">Giá ngày trong tuần phải là số.</div>
+              <div *ngIf="amountWeekday.errors['required']" class="error-message">Giá ngày trong tuần là bắt buộc.</div>
+              <div *ngIf="amountWeekday.errors['pattern']" class="error-message">Giá ngày trong tuần phải là số.</div>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label for="amountWeekend">Giá ngày cuối tuần</label>
             <input type="text" class="form-control" id="amountWeekend" name="amountWeekend" [(ngModel)]="selectedField.amountWeekend" #amountWeekend="ngModel" required pattern="^\d+(\.\d{1,2})?$">
             <div *ngIf="amountWeekend.errors && (amountWeekend.dirty || amountWeekend.touched)">
-              <div *ngIf="amountWeekend.errors['required']">Giá ngày cuối tuần là bắt buộc.</div>
-              <div *ngIf="amountWeekend.errors['pattern']">Giá ngày cuối tuần phải là số.</div>
+              <div *ngIf="amountWeekend.errors['required']" class="error-message">Giá ngày cuối tuần là bắt buộc.</div>
+              <div *ngIf="amountWeekend.errors['pattern']" class="error-message">Giá ngày cuối tuần phải là số.</div>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label for="fieldType">Loại sân</label>
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-info text-white">
-                  <i class="fas fa-futbol"></i>
+                  <svg cIcon name="cil-basketball"></svg>
                 </span>
               </div>
               <select class="custom-select custom-select-lg" id="fieldType" name="fieldType" [(ngModel)]="selectedField.fieldType" required>
@@ -110,7 +113,7 @@
   (showInfoModalChange)="closeInfoModalHandler($event)"
 ></app-shiftfield-info>
 
-          
+
 
 
 </div>

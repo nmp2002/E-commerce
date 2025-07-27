@@ -6,18 +6,28 @@ import { HomepageComponent } from './homepage/homepage.component';
 import{SearchFieldResultComponent} from './search-field-result/search-field-result.component'
 import { SmallFieldComponent } from './SmallField/smallField.component'
 import { PaymentComponent } from '../dashboard/payment/payment.component'
-import {PaymentResultComponent} from '../dashboard/payment-result/payment-result.component'
+import { PaymentResultComponent } from '../dashboard/payment-result/payment-result.component'
+import { DashboardComponent } from './dashBoard/dashboard.component';
 const routes: Routes = [
   {
     path: '',
     data: {
       title: $localize`Trang chủ`
     },
+    
     children: [
       {
         path: '',
         component: HomepageComponent,
         canActivate: [AuthGuardService],
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuardService],
+        data: {
+          title: 'Bảng điều khiển'
+        }
     },
       {
         path: 'search-field-result',
@@ -26,6 +36,7 @@ const routes: Routes = [
           title: 'Tìm kiếm sân'
         }
       },
+   
       {
         path: 'smallFields',
         component:  SmallFieldComponent ,

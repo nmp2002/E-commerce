@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4 class="modal-title">Chọn phiên bản cho: <strong>{{ groupCode }}</strong></h4>
+      <button type="button" class="btn-close" (click)="close()" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Đang tải các phiên bản...</p>
+      </div>
+
+      <!-- Variants List -->
+      <div *ngIf="!loading && variants.length > 0" class="variants-list">
+        <div *ngFor="let variant of variants" class="variant-card" (click)="onViewProduct(variant.id!)" tabindex="0" (keydown.enter)="onViewProduct(variant.id!)">
+          <div class="variant-image">
+            <img *ngIf="variant.image" [src]="'data:image/jpeg;base64,' + variant.image" [alt]="variant.productName">
+            <div *ngIf="!variant.image" class="img-placeholder">
+              <i class="cil-image-broken h1 text-muted"></i>
+            </div>
+          </div>
+          <div class="variant-info">
+            <h6 class="variant-name">{{ variant.productName }}</h6>
+            <div class="variant-attributes">
+              <span class="badge text-bg-light me-2"><i class="cil-paint-bucket me-1"></i>{{ getAttribute(variant, 'Color') }}</span>
+              <span class="badge text-bg-light"><i class="cil-memory me-1"></i>{{ getAttribute(variant, 'Storage') }}</span>
+            </div>
+          </div>
+          <div class="variant-price-action">
+            <span class="price">{{ variant.price | currency:'VND' }}</span>
+            <i class="cil-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Variants Message -->
+      <div *ngIf="!loading && variants.length === 0" class="text-center py-5">
+        <i class="cil-ban h1 text-muted"></i>
+        <p class="mt-2">Không tìm thấy phiên bản nào.</p>
+      </div>
+    </div>
+  </div>
+</div>

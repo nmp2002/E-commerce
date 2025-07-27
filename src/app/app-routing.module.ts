@@ -6,11 +6,19 @@ import { DefaultLayoutComponent } from './containers';
 import { LoginComponent } from './views/login/login.component';
 import { Page404Component } from './views/pages/page404/page404.component';
 import { Page500Component } from './views/pages/page500/page500.component';
+import { RegisterComponent } from './views/register/register.component';
+import { LaptopListComponent } from './views/category/laptop-list/laptop-list.component';
+import { PhoneListComponent } from './views/category/phone-list/phone-list.component';
+import { CartComponent } from './views/cart/cart.component';
+import { CheckoutComponent } from './views/checkout/checkout.component';
+import { OrderConfirmationComponent } from './views/order-confirmation/order-confirmation.component';
+import { PaymentResultComponent } from './views/checkout/payment-result/payment-result.component';
+import { OrdersComponent } from './views/orders/orders.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'homepage',
     pathMatch: 'full',
   },
   {
@@ -19,12 +27,35 @@ const routes: Routes = [
    // canActivate: [AuthGuardService],
     children: [
       {
-        path: 'dashboard',
+        path: 'homepage',
        // canActivateChild: [AuthGuardService],
         loadChildren: () =>
           import('./views/dashboard/dashboard.module').then(
             (m) => m.DashboardModule
           )
+      },
+      {
+        path: 'cart',
+        component: CartComponent,
+        canActivate: [AuthGuardService]
+      },
+      {
+        path: 'checkout',
+        component: CheckoutComponent,
+        canActivate: [AuthGuardService]
+      },
+      {
+        path: 'order-confirmation',
+        component: OrderConfirmationComponent
+      },
+      {
+        path: 'order/payment-result',
+        component: PaymentResultComponent
+      },
+      {
+        path: 'orders',
+        component: OrdersComponent,
+        canActivate: [AuthGuardService]
       },
       {
         path: 'user',
@@ -61,6 +92,12 @@ const routes: Routes = [
           import('./views/system/field/field.module').then((m) => m.FieldModule)
       },
       {
+        path: 'product',
+        canActivateChild: [AuthGuardService],
+        loadChildren: () =>
+          import('./views/system/product/product.module').then((m) => m.ProductModule)
+      },
+      {
         path: 'menu',
         canActivateChild: [AuthGuardService],
         loadChildren: () =>
@@ -87,12 +124,25 @@ const routes: Routes = [
           import('./views/system/system.module').then((m) => m.SystemModule)
       },
       {
+        path: 'ordered-products',
+        canActivateChild: [AuthGuardService],
+        loadChildren: () =>
+          import('./views/system/system.module').then((m) => m.SystemModule)
+      },
+      {
         path: 'pages',
         canActivateChild: [AuthGuardService],
         loadChildren: () =>
           import('./views/pages/pages.module').then((m) => m.PagesModule)
       },
-
+      {
+        path: 'category/laptops',
+        component: LaptopListComponent
+      },
+      {
+        path: 'category/phones',
+        component: PhoneListComponent
+      },
     ]
   },
   {
@@ -115,6 +165,10 @@ const routes: Routes = [
     data: {
       title: 'Login',
     },
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
   },
   { path: '**', redirectTo: '404' },
 ];

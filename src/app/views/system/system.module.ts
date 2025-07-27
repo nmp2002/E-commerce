@@ -3,7 +3,6 @@ import { DEFAULT_CURRENCY_CODE, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
@@ -46,9 +45,13 @@ import { SystemRoutingModule } from './system-routing.module';
 
 import { ValidCodeSystemDirective } from '../../theme/validcodesystem.directive';
 import { ActionLogManagerComponent } from './action-log/action-log-manager.component';
+import { OrderedProductsComponent } from './ordered-products/ordered-products.component';
+import { OrderProductDetailComponent } from './ordered-products/order-product-detail.component';
 
 import { NgSelectModule } from '@ng-select/ng-select';
-
+import { FieldModule } from './field/field.module';
+import { ProductModule } from './product/product.module';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   providers: [{ provide: DEFAULT_CURRENCY_CODE, useValue: '' }],
@@ -88,8 +91,15 @@ import { NgSelectModule } from '@ng-select/ng-select';
     MatDatepickerModule,
     MatNativeDateModule,
     TextMaskModule,
-    NgSelectModule
+    NgSelectModule,
+    FieldModule,
+    ProductModule,
+    RouterModule
   ],
-
+  declarations: [
+    OrderedProductsComponent,
+    OrderProductDetailComponent
+  ],
+  exports: []
 })
 export class SystemModule { }

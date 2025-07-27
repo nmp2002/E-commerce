@@ -2,7 +2,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import {
   AvatarModule,
   ButtonGroupModule,
@@ -14,6 +19,7 @@ import {
   ProgressModule,
   TableModule,
   TabsModule,
+  
 
 } from '@coreui/angular';
 import { IconModule } from '@coreui/icons-angular';
@@ -27,6 +33,7 @@ import { SmallFieldComponent } from './SmallField/smallField.component';
 import { PaymentComponent } from '../dashboard/payment/payment.component'
 import { PaymentResultComponent } from '../dashboard/payment-result/payment-result.component';
 import { MapComponent } from '../dashboard/search-field-result/map/map.component';
+import { DashboardComponent } from './dashBoard/dashboard.component';
 @NgModule({
   imports: [
     DashboardRoutingModule,
@@ -35,6 +42,7 @@ import { MapComponent } from '../dashboard/search-field-result/map/map.component
     IconModule,
     TabsModule,
     CommonModule,
+    MatTableModule,
     GridModule,
     ProgressModule,
     ReactiveFormsModule,
@@ -47,8 +55,13 @@ import { MapComponent } from '../dashboard/search-field-result/map/map.component
     TableModule,
     WidgetsModule,
     FormsModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatFormFieldModule
   ],
-  declarations: [ HomepageComponent,SearchFieldResultComponent,SmallFieldComponent,PaymentComponent,PaymentResultComponent,MapComponent]
+  declarations: [DashboardComponent, HomepageComponent,SearchFieldResultComponent,SmallFieldComponent,PaymentComponent,PaymentResultComponent,MapComponent]
 })
 export class DashboardModule {
 }

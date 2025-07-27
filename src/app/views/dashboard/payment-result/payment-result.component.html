@@ -1,11 +1,13 @@
 <div *ngIf="paymentStatus" class="payment-status-container">
-  <div class="status-box">
-    <h2 class="status-message">{{ paymentStatus }}</h2>
+  <div class="status-box" [ngClass]="{'success': paymentStatus === 'Payment success and booking status updated', 'error': paymentStatus === 'Payment failed'}">
+    <h2 class="status-message">
+      {{ paymentStatus === 'Payment success and booking status updated' ? 'Thanh toán thành công!' : 'Thanh toán thất bại' }}
+    </h2>
     <p *ngIf="paymentStatus === 'Payment success and booking status updated'" class="success-message">
-      Your payment was successful! Thank you for booking with us.
+      Thanh toán của bạn đã được thực hiện thành công! Cảm ơn bạn đã đặt sân với chúng tôi.
     </p>
     <p *ngIf="paymentStatus === 'Payment failed'" class="error-message">
-      Unfortunately, the payment failed. Please try again or contact support.
+      Rất tiếc, thanh toán đã thất bại. Vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ.
     </p>
   </div>
 </div>

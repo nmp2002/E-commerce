@@ -1,74 +1,115 @@
-<div class="text-center mb-4">
-  <button class="btn btn-primary" (click)="getCurrentLocation()">
-    Tìm nhanh sân 
-  </button>
-</div>
-<div class="closest-shifts-container text-center mb-4">
-  <h3 class="mb-3">Các sân con trống hiện tại</h3>
-  <div class="shifts-container d-flex justify-content-center flex-wrap">
-    <div *ngFor="let shift of paginatedShifts" class="shift-card p-3 m-2 border rounded shadow-sm">
-      <div>   
-        <p><strong>Tên sân:</strong> {{ shift.fieldName }}</p>
-        <p><strong>Tên sân con:</strong> {{ shift.smallFieldName }}</p>
-        <p><strong>Số tiền:</strong> {{ shift.amount}} VNĐ</p>
-        <p><strong>Thời gian bắt đầu:</strong> {{ shift.timeStart }}</p>
-        <p><strong>Thời gian kết thúc:</strong> {{ shift.timeEnd }}</p>
-      </div>
-      <div class="text-center mt-3">
-        <button 
-          class="btn btn-success" 
-          *ngIf="shift.fieldId && shift.id" 
-          (click)="bookField(shift)">
-          Đặt sân
-        </button>
+<div class="container">
+  <!-- Danh sách sân con trống -->
+  <div class="closest-shifts-container text-center mb-4">
+    <h3 class="mb-3">Các sân con trống hiện tại</h3>
+    <div class="shifts-container row">
+      <div
+        *ngFor="let shift of paginatedShifts"
+        class="shift-card col-md-3 col-sm-6 p-2">
+        <div class="border rounded shadow-sm p-3 h-100">
+          <p><strong>Tên sân:</strong> {{ shift.fieldName }}</p>
+          <p><strong>Tên sân con:</strong> {{ shift.smallFieldName }}</p>
+          <p><strong>Số tiền:</strong> {{ shift.amount }} VNĐ</p>
+          <p><strong>Thời gian bắt đầu:</strong> {{ shift.timeStart }}</p>
+          <p><strong>Thời gian kết thúc:</strong> {{ shift.timeEnd }}</p>
+          <div class="text-center mt-3">
+            <button
+              class="btn btn-success"
+              *ngIf="shift.fieldId !== undefined"
+              (click)="bookFields(shift)">
+              Đặt sân
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Phân trang -->
+    <div class="pagination mt-4">
+      <button class="btn btn-primary" (click)="prevPage()" [disabled]="currentPage === 1">Trước</button>
+      <span class="mx-2">Trang {{ currentPage }} / {{ totalPages() }}</span>
+      <button class="btn btn-primary" (click)="nextPage()" [disabled]="currentPage === totalPages()">Tiếp theo</button>
+    </div>
+  </div>
+   <!-- Tìm kiếm sân -->
+   <div class="search-controls d-flex justify-content-between align-items-center mb-4">
+    <!-- Nút tìm nhanh sân -->
+
+  <div class="search-button d-flex align-items-center me-3">
+    <label for="radius" class="form-label me-2">Bán kính (km):</label>
+    <input
+      type="number"
+      id="radius"
+      class="form-control w-auto"
+      [(ngModel)]="radius"
+      min="1"
+      max="100"
+      placeholder="Nhập bán kính"
+    />
+    <button
+      class="btn btn-primary ms-3"
+      (click)="getCurrentLocationAndFindNearbyFields()"
+    >
+      Tìm kiếm
+    </button>
   </div>
 
-  <!-- Phân trang -->
-  <div class="pagination mt-4">
-    <button class="btn btn-primary" (click)="prevPage()" [disabled]="currentPage === 1">Trước</button>
-    <span class="mx-2">Trang {{ currentPage }} / {{ totalPages() }}</span>
-    <button class="btn btn-primary" (click)="nextPage()" [disabled]="currentPage === totalPages()">Tiếp theo</button>
-  </div>
-</div>
 
-
-<div class="row">
-  <div *ngFor="let field of fields; index as i" class="col-md-4 mb-4">
-    <div class="card">
-      <div class="image-container">
-        <img
-          *ngIf="field.image"
-          [src]="'data:image/jpeg;base64,' + field.image"
-          class="card-img-top"
-          alt="{{ field.fieldName }}"
-        />
+<!-- Modal Chi Tiết Sân -->
+<div class="modal fade" id="fieldDetailModal" tabindex="-1" role="dialog" aria-labelledby="fieldDetailModalLabel" aria-hidden="true" [ngClass]="{ 'show': showFieldDetailModal, 'd-block': showFieldDetailModal }">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="fieldDetailModalLabel">Các sân trong phạm vi bán kính {{ radius }} km:</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <div class="card-body">
-        <h5 class="card-title text-center">{{ field.fieldName }}</h5>
-        <div>
-          <p><strong>Tỉnh/Thành phố:</strong> {{ field.provinceName }}</p>
-          <p><strong>Quận/Huyện:</strong> {{ field.districtName }}</p>
-          <p><strong>Phường/Xã:</strong> {{ field.wardName }}</p>
-          <p><strong>Địa chỉ :</strong>{{ field.address }}</p>
-          <p><strong>Số điện thoại liên hệ :</strong>{{ field.phoneNumberField }}</p>
-          <!-- Thêm bản đồ -->
-          <app-map
-          [address]="field.address || ''"
-          [uniqueId]="'map-' + i"
-        ></app-map>
-        
+      <div class="modal-body">
+        <div *ngIf="nearbyFields.length > 0">
+          <div class="row">
+            <ng-container *ngFor="let field of nearbyFields; index as i">
+              <div *ngIf="field.status == 1" class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                  <img
+                    *ngIf="field.image"
+                    [src]="'data:image/jpeg;base64,' + field.image"
+                    class="card-img-top"
+                    alt="{{ field.fieldName }}"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title text-center">{{ field.fieldName }}</h5>
+                    <p><strong>Tỉnh/Thành phố:</strong> {{ field.provinceName }}</p>
+                    <p><strong>Quận/Huyện:</strong> {{ field.districtName }}</p>
+                    <p><strong>Phường/Xã:</strong> {{ field.wardName }}</p>
+                    <p><strong>Địa chỉ :</strong> {{ field.address }}</p>
+                    <p><strong>Số điện thoại liên hệ :</strong> {{ field.phoneNumberField }}</p>
 
-          <div class="text-center mt-3">
-            <button 
-            class="btn btn-success" 
-            *ngIf="field.id !== undefined" 
-            (click)="bookField(field)">
-           Chi tiết sân 
-          </button>
-          
+                    <!-- Hiển thị khoảng cách -->
+                    <p><strong>Khoảng cách đến chỗ tôi:</strong> {{ field.distance }} km</p>
+
+                    <app-map
+                      [address]="field.address || ''"
+                      [uniqueId]="'map-' + i"
+                      (click)="openMapToAddress(field.address || '')"
+                    ></app-map>
+                    <div class="text-center mt-3">
+                      <button
+                        class="btn btn-success"
+                        *ngIf="field.id !== undefined"
+                        (click)="bookField(field)"
+                      >
+                        Chi tiết sân
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
           </div>
+        </div>
+        <div *ngIf="nearbyFields.length === 0">
+          <p class="text-center">Không có sân nào trong phạm vi bán kính {{ radius }} km.</p>
         </div>
       </div>
     </div>
@@ -77,6 +118,63 @@
 
 
 
+    <!-- Dropdown chọn sân -->
+    <div class="field-select d-flex align-items-center">
+      <label for="fieldNameSelect" class="form-label me-2">Chọn sân:</label>
+      <select
+        id="fieldNameSelect"
+        class="form-select w-auto"
+        [(ngModel)]="selectedFieldName"
+        (change)="filterFields()">
+        <option value="">Chọn sân</option>
+        <option *ngFor="let field of fields" [value]="field.fieldName">
+          {{ field.fieldName }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <!-- Danh sách sân -->
+  <div class="row">
+    <ng-container *ngFor="let field of filteredFields; index as i">
+      <div *ngIf="field.status == 1" class="col-md-3 col-sm-6 mb-4">
+        <div class="card h-100">
+          <img
+            *ngIf="field.image"
+            [src]="'data:image/jpeg;base64,' + field.image"
+            class="card-img-top"
+            alt="{{ field.fieldName }}"
+          />
+          <div class="card-body">
+            <h5 class="card-title text-center">{{ field.fieldName }}</h5>
+            <p><strong>Tỉnh/Thành phố:</strong> {{ field.provinceName }}</p>
+            <p><strong>Quận/Huyện:</strong> {{ field.districtName }}</p>
+            <p><strong>Phường/Xã:</strong> {{ field.wardName }}</p>
+            <p><strong>Địa chỉ :</strong> {{ field.address }}</p>
+            <p><strong>Số điện thoại liên hệ :</strong> {{ field.phoneNumberField }}</p>
+            <app-map
+            [address]="field.address || ''"
+            [uniqueId]="'map-' + i"
+            (click)="openMapToAddress(field.address || '')"
+          ></app-map>
 
+            <div class="text-center mt-3">
+              <button
+                class="btn btn-success"
+                *ngIf="field.id !== undefined"
+                (click)="bookField(field)">
+                Chi tiết sân
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
 
-
+  <!-- Phân trang -->
+  <div class="pagination mt-4 text-center">
+    <button class="btn btn-primary" (click)="prevPageFields()" [disabled]="currentPageFields === 1">Trước</button>
+    <span class="mx-2">Trang {{ currentPageFields }} / {{ totalPagesFields() }}</span>
+    <button class="btn btn-primary" (click)="nextPageFields()" [disabled]="currentPageFields === totalPagesFields()">Tiếp theo</button>
+  </div>
+</div>

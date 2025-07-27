@@ -1,0 +1,82 @@
+<div class="container py-4">
+  <h2 class="fw-bold mb-4 text-center">Điện Thoại Chính Hãng - Giá Tốt</h2>
+
+  <!-- Bộ lọc -->
+  <div class="row g-3 mb-4 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Hãng</label>
+      <select class="form-select" [(ngModel)]="selectedBrand" (change)="onFilterChange()">
+        <option value="">Tất cả</option>
+        <option *ngFor="let b of brands" [value]="b">{{b}}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">RAM</label>
+      <select class="form-select" [(ngModel)]="selectedRam" (change)="onFilterChange()">
+        <option value="">Tất cả</option>
+        <option *ngFor="let r of rams" [value]="r">{{r}}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Bộ nhớ</label>
+      <select class="form-select" [(ngModel)]="selectedStorage" (change)="onFilterChange()">
+        <option value="">Tất cả</option>
+        <option *ngFor="let s of storages" [value]="s">{{s}}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Tìm kiếm</label>
+      <input class="form-control" [(ngModel)]="searchText" (input)="onFilterChange()" placeholder="Nhập tên điện thoại...">
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Danh sách sản phẩm -->
+  <div class="row g-4" *ngIf="!loading">
+    <div class="col-md-4 col-lg-3" *ngFor="let productGroup of displayProducts">
+      <div class="card h-100 shadow-sm position-relative product-card" (click)="productGroup.representativeId && viewProduct(productGroup.representativeId)">
+        <img *ngIf="productGroup.image" [src]="'data:image/jpeg;base64,' + productGroup.image" [alt]="productGroup.name" class="card-img-top">
+        <div *ngIf="!productGroup.image" class="img-placeholder bg-light d-flex align-items-center justify-content-center">
+          <i class="cil-mobile h1 text-muted"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{productGroup.name}}</h5>
+          <div class="mb-2" *ngIf="productGroup.brand">
+            <span class="badge bg-primary me-2">{{productGroup.brand}}</span>
+          </div>
+          <div class="mb-2">
+            <span *ngIf="productGroup.minPrice === productGroup.maxPrice" class="text-success fw-bold">
+              {{productGroup.minPrice | currency:'VND'}}
+            </span>
+            <span *ngIf="productGroup.minPrice !== productGroup.maxPrice" class="text-success fw-bold">
+             {{productGroup.minPrice | currency:'VND'}} - {{productGroup.maxPrice | currency:'VND'}}
+            </span>
+          </div>
+          <div class="mt-auto d-flex gap-2">
+            <button class="btn btn-outline-primary flex-fill"
+                    *ngIf="productGroup.representativeId !== undefined && productGroup.representativeId !== null"
+                    (click)="viewProduct(productGroup.representativeId); $event.stopPropagation()">
+              Xem chi tiết
+            </button>
+            <button class="btn btn-success flex-fill" (click)="addToCart(productGroup); $event.stopPropagation()">Thêm vào giỏ</button>
+            <button class="btn btn-primary flex-fill" (click)="buyNow(productGroup); $event.stopPropagation()">Mua ngay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thông báo không có sản phẩm -->
+  <div *ngIf="!loading && displayProducts.length === 0" class="text-center my-5">
+    <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp với tiêu chí tìm kiếm</p>
+  </div>
+
+  <!-- Phần so sánh sản phẩm có thể sẽ cần được làm lại logic, tạm thời ẩn đi -->
+  <!-- <div *ngIf="compareList.length" class="compare-popup card shadow-lg p-4 mt-5"> ... </div> -->
+</div>

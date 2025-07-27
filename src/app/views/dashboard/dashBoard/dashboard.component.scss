@@ -1,0 +1,75 @@
+.dashboard-container {
+  margin: 10px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.dashboard-card {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.card-icon {
+  color: #1976d2;
+}
+.chart-card {
+  grid-column: span 2; /* Tạo card chiếm 2 cột để hiển thị biểu đồ */
+}
+
+mat-card h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+mat-card h3 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+mat-card p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.activity-card, .maintenance-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activity-card mat-card, .maintenance-card mat-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+}
+
+h2 {
+  margin-top: 10px;
+  font-size: 20px;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  mat-card {
+    padding: 15px;
+  }
+}

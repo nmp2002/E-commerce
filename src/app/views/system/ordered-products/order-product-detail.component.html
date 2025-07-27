@@ -1,0 +1,248 @@
+<div class="container-fluid py-4">
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Đang tải...</span>
+    </div>
+    <p class="mt-2 mb-0">Đang tải chi tiết sản phẩm...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && orderItem">
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-1">
+              <svg cIcon name="cil-shopping-cart" class="me-2 text-primary"></svg>
+              Chi tiết sản phẩm đã đặt
+            </h2>
+            <p class="text-muted mb-0">Mã đơn hàng: #{{orderId}} | Sản phẩm: #{{productId}}</p>
+          </div>
+          <div>
+            <a class="btn btn-outline-secondary" routerLink="/system/ordered-products">
+              <svg cIcon name="cil-arrow-left" class="me-1"></svg>
+              Quay lại danh sách
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Information -->
+    <div class="row mb-4 align-items-stretch">
+      <div class="col-lg-8 h-100">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <svg cIcon name="cil-box" class="me-2"></svg>
+              Thông tin sản phẩm
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="d-flex flex-column h-100">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Tên sản phẩm:</label>
+                    <p class="h5 text-primary mb-0">{{product?.productName || 'Sản phẩm #' + productId}}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Mã sản phẩm:</label>
+                    <p class="h6 mb-0">{{productId}}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Danh mục:</label>
+                    <div>
+                      <span class="badge bg-light text-dark">{{product?.category?.categoryName || 'Không xác định'}}</span>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Mô tả:</label>
+                    <p class="text-muted mb-0">{{product?.description || 'Không có mô tả'}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex flex-column h-100 justify-content-center">
+                  <div class="mb-3 text-center">
+                    <label class="form-label fw-bold text-muted small">Số lượng:</label>
+                    <div>
+                      <span class="badge bg-primary fs-4 px-3 py-2">{{orderItem.quantity}}</span>
+                    </div>
+                  </div>
+                  <div class="mb-3 text-center">
+                    <label class="form-label fw-bold text-muted small">Đơn giá:</label>
+                    <p class="h4 text-success mb-0">{{orderItem.price | currency:'VND'}}</p>
+                  </div>
+                  <div class="mb-3 text-center">
+                    <label class="form-label fw-bold text-muted small">Thành tiền:</label>
+                    <p class="h3 text-danger fw-bold mb-0">{{getTotalPrice() | currency:'VND'}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Status -->
+      <div class="col-lg-4 h-100">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <svg cIcon name="cil-info" class="me-2"></svg>
+              Trạng thái đơn hàng
+            </h5>
+          </div>
+          <div class="card-body text-center d-flex flex-column justify-content-center">
+            <div class="mb-3">
+              <span class="badge fs-5" [ngClass]="getStatusClass(order?.status || 0)">
+                {{getStatusText(order?.status || 0)}}
+              </span>
+            </div>
+            <div class="mb-3">
+              <small class="text-muted">Cập nhật lần cuối:</small><br>
+              <strong>{{order?.orderDate | date:'dd/MM/yyyy HH:mm'}}</strong>
+            </div>
+            <!-- Nút cập nhật trạng thái -->
+            <div class="mt-3" *ngIf="canUpdateStatus()">
+              <button class="btn btn-success btn-sm"
+                      (click)="updateOrderStatus()"
+                      [disabled]="loading">
+                <svg cIcon name="cil-truck" class="me-1"></svg>
+                Bắt đầu giao hàng
+              </button>
+              <small class="d-block text-muted mt-1">
+                Chuyển từ "Đã xác nhận" sang "Đang giao"
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order and Customer Information -->
+    <div class="row mb-4 align-items-stretch">
+      <!-- Order Details -->
+      <div class="col-lg-6 h-100">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <svg cIcon name="cil-receipt" class="me-2"></svg>
+              Thông tin đơn hàng
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="d-flex flex-column h-100">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Mã đơn hàng:</label>
+                    <p class="h6 mb-0">#{{order?.id}}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Ngày đặt:</label>
+                    <p class="h6 mb-0">{{order?.orderDate | date:'dd/MM/yyyy HH:mm'}}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Tổng tiền đơn hàng:</label>
+                    <p class="h5 text-success mb-0">{{order?.totalAmount | currency:'VND'}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex flex-column h-100">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Địa chỉ giao hàng:</label>
+                    <p class="text-muted mb-0">{{order?.shippingAddress || 'Không có thông tin'}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Information -->
+      <div class="col-lg-6 h-100">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+              <svg cIcon name="cil-user" class="me-2"></svg>
+              Thông tin khách hàng
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="d-flex flex-column h-100">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Mã khách hàng:</label>
+                    <p class="h6 mb-0">#{{order?.userId}}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Tên khách hàng:</label>
+                    <p class="h6 text-primary mb-0">{{user?.fullname || 'Không xác định'}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex flex-column h-100">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Email:</label>
+                    <p class="h6 mb-0">{{user?.email || 'Không có thông tin'}}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-muted small">Số điện thoại:</label>
+                    <p class="h6 mb-0">{{user?.telephone || 'Không có thông tin'}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <button class="btn btn-primary me-2" (click)="loadOrderDetail()">
+              <svg cIcon name="cil-reload" class="me-1"></svg>
+              Làm mới
+            </button>
+            <a class="btn btn-outline-secondary me-2" routerLink="/system/ordered-products">
+              <svg cIcon name="cil-list" class="me-1"></svg>
+              Danh sách sản phẩm
+            </a>
+            <button class="btn btn-outline-info" (click)="printDetails()">
+              <svg cIcon name="cil-print" class="me-1"></svg>
+              In chi tiết
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Not Found -->
+  <div *ngIf="!loading && !orderItem" class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+          <svg cIcon name="cil-warning" size="3xl" class="text-warning mb-3"></svg>
+          <h4 class="text-muted">Không tìm thấy thông tin</h4>
+          <p class="text-muted">Sản phẩm này không tồn tại trong đơn hàng hoặc đã bị xóa.</p>
+          <a class="btn btn-primary" routerLink="/system/ordered-products">
+            <svg cIcon name="cil-arrow-left" class="me-1"></svg>
+            Quay lại danh sách
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

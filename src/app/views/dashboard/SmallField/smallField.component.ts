@@ -11,6 +11,8 @@ import { ShiftService } from '../../../_services/ShiftService.service';
 import { formatDate ,DatePipe ,} from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+
 interface ShiftFieldWithSelection extends TblShiftField {
   selected?: boolean;
   smallFieldName?: string; 
@@ -27,7 +29,7 @@ export class SmallFieldComponent implements OnInit {
   bookingForm: FormGroup;
   @Output() sendAvailableShift: EventEmitter<any> = new EventEmitter<any>();
   @Input() fields: TblField[] = [];
-  
+  isDateSelected: boolean = false; 
   smallFields: TblSmallField[] = [];
   fieldId: number;
   provinceName: string;
@@ -68,11 +70,12 @@ export class SmallFieldComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
     const storedFieldId = localStorage.getItem('fieldId');
     const storedProvinceId = localStorage.getItem('provinceId');
     const storedDistrictId = localStorage.getItem('districtId');
     const storedWardId = localStorage.getItem('wardId');
-
+    this.restoreState();
     if (storedFieldId && storedProvinceId && storedDistrictId && storedWardId) {
       this.fieldId = +storedFieldId;
       this.fieldService.getCityById(+storedProvinceId).subscribe((city: any) => {
@@ -96,13 +99,24 @@ export class SmallFieldComponent implements OnInit {
       this.currentTime = new Date();
     }, 1000);
   }
-  ngOnDestroy(): void {
-    localStorage.removeItem('fieldId');
-    localStorage.removeItem('provinceid');
-    localStorage.removeItem('districtId');
-    localStorage.removeItem('wardId');
-    console.log('Cleared session storage values.');
+ // Lưu trạng thái của component trước khi điều hướng
+ saveState(): void {
+  const state = {
+    fields: this.fields,
+
+  };
+  sessionStorage.setItem('componentState', JSON.stringify(state));
+}
+
+// Khôi phục trạng thái từ sessionStorage
+restoreState(): void {
+  const savedState = sessionStorage.getItem('componentState');
+  if (savedState) {
+    const state = JSON.parse(savedState);
+    this.fields = state.fields || [];
+ 
   }
+}
   loadSmallFields(): void {
     this.fieldService.getSmallFieldsByFieldId(this.fieldId).subscribe(data => {
       this.smallFields = data.map(field => ({
@@ -235,8 +249,12 @@ export class SmallFieldComponent implements OnInit {
 
   onDateChange(event: any): void {
     this.selectedDate = event.target.value;
+    const formattedDate = this.datePipe.transform( this.selectedDate , 'dd/MM/yyyy');
     this.loadBookings(); 
     this.clearShiftSelection(); 
+    this.isDateSelected = !!this.selectedDate; 
+    
+    
   }
 
   isWeekend(date: string): boolean {
@@ -323,10 +341,6 @@ export class SmallFieldComponent implements OnInit {
   }
   
   
-
-
-  
-  
   updateBookingShiftInfo(): void {
     const shiftDetails = this.selectedShiftFields.map(sf => {
       const amount = this.isWeekend(this.selectedDate) ? sf.amountWeekend : sf.amountWeekday;
@@ -342,35 +356,48 @@ export class SmallFieldComponent implements OnInit {
   
   
 
+
   submitBooking(): void {
     this.submitted = true;
+  
     if (this.selectedShiftFields.length > 0) {
       this.fieldService.findByIdField(this.fieldId).subscribe(field => {
         if (!field) {
           console.error('Field not found');
+          Swal.fire({
+            icon: 'error',
+            title: 'Không tìm thấy sân',
+            text: 'Vui lòng kiểm tra lại thông tin sân!',
+          });
           return;
         }
   
+        let bookingSuccess = false;
+  
         this.selectedShiftFields.forEach(shiftField => {
-          // Tìm smallField dựa trên fieldType của shiftField
           const smallField = this.smallFields.find(sf => sf.fieldType === shiftField.fieldType);
-          
+  
           if (!smallField) {
             console.error('Small field not found for shift field:', shiftField);
+            Swal.fire({
+              icon: 'error',
+              title: 'Không tìm thấy khu vực',
+              text: 'Vui lòng kiểm tra lại thông tin khu vực!',
+            });
             return;
           }
   
           const booking: TblBooking = {
-            bookingId: 0, 
+            bookingId: 0,
             fieldId: this.fieldId || 0,
-            guestId: 0, 
+            guestId: 0,
             shiftFieldId: shiftField.id || 0,
-          smallFieldId: shiftField.smallFieldId || 0, 
-          nameField: field.fieldName,
-          smallFieldName: shiftField.smallFieldName || '', 
+            smallFieldId: shiftField.smallFieldId || 0,
+            nameField: field.fieldName,
+            smallFieldName: shiftField.smallFieldName || '',
             nameGuest: this.bookingName,
             phoneNumberGuest: this.bookingPhone,
-            totalPayment: this.calculateTotalPayment(shiftField).toString(), 
+            totalPayment: this.calculateTotalPayment(shiftField).toString(),
             timeStart: shiftField.timeStart,
             day: new Date(this.selectedDate),
             timeEnd: shiftField.timeEnd,
@@ -380,10 +407,9 @@ export class SmallFieldComponent implements OnInit {
             createdDate: new Date(),
             createdBy: 'admin',
             modifiedDate: new Date(),
-            modifiedBy: 'admin'
+            modifiedBy: 'admin',
           };
   
-          // Lưu hoặc cập nhật booking
           this.bookingService.saveOrUpdateBooking(
             booking.bookingId || 0,
             booking.fieldId || 0,
@@ -405,20 +431,49 @@ export class SmallFieldComponent implements OnInit {
             booking.createdBy || 'admin',
             booking.modifiedDate || new Date(),
             booking.modifiedBy || 'admin'
-          ).subscribe(response => {
-            const bookingId = response.id;
-        
-            if (bookingId) {
-              this.router.navigate(['/dashboard/payment', bookingId]);
-            } else {
-              console.error('Failed to retrieve booking ID.');
+          ).subscribe(
+            response => {
+              const bookingId = response.id;
+  
+              if (bookingId) {
+                bookingSuccess = true;
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Chọn ca sân thành công',
+                  text: 'Vui lòng thanh toán để đặt sân thành công ...',
+                }).then(() => {
+                  this.router.navigate(['/homepage/payment', bookingId]);
+                });
+              } else {
+                console.error('Failed to retrieve booking ID.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Lỗi đặt sân',
+                  text: 'Không thể lấy ID đặt sân. Vui lòng thử lại sau!',
+                });
+              }
+            },
+            error => {
+              console.error('Booking error:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Lỗi hệ thống',
+                text: 'Có lỗi xảy ra trong quá trình đặt sân. Vui lòng thử lại!',
+              });
             }
-          });
+          );
         });
   
-        this.hideBookingForm();
+        if (bookingSuccess) {
+          this.hideBookingForm();
+        }
       });
     } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Chưa chọn ca đặt sân',
+        text: 'Vui lòng chọn ít nhất một ca để đặt sân!',
+      });
       console.error('No shifts selected for booking.');
     }
   }
@@ -449,7 +504,24 @@ export class SmallFieldComponent implements OnInit {
 
   
   removeShift(index: number): void {
+    // Lấy thông tin ca sân cần xóa
+    const removedShift = this.selectedShiftFields[index];
+  
+    // Xóa ca sân khỏi danh sách selectedShiftFields
     this.selectedShiftFields.splice(index, 1);
+  
+    // Tìm ca sân trong shiftFieldsMap và cập nhật trạng thái selected
+    Object.values(this.shiftFieldsMap).forEach(shiftFields => {
+      const shiftToUpdate = shiftFields.find(
+        shift => shift.id === removedShift.id && shift.smallFieldId === removedShift.smallFieldId
+      );
+      if (shiftToUpdate) {
+        shiftToUpdate.selected = false; // Bỏ trạng thái được chọn
+      }
+    });
+  
+    // Cập nhật thông tin booking
     this.updateBookingShiftInfo();
   }
+  
 }

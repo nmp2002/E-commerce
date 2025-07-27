@@ -1,0 +1,116 @@
+// style for orders component
+
+.orders-container {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding-top: 40px;
+}
+
+.orders-header {
+  text-align: center;
+  .orders-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+  .orders-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+  }
+}
+
+.orders-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(44, 62, 80, 0.08);
+  padding: 0;
+  margin-bottom: 32px;
+  .card-header {
+    background: #f1f3f4;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0;
+    padding: 16px 24px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #34495e;
+  }
+  .card-body {
+    padding: 24px;
+  }
+}
+
+.orders-list {
+  .order-item {
+    border-bottom: 1px solid #e9ecef;
+    padding: 18px 0;
+    &:last-child {
+      border-bottom: none;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      .order-id {
+        font-weight: 600;
+        color: #007bff;
+        margin-bottom: 0;
+      }
+      .order-status {
+        font-size: 0.95rem;
+      }
+    }
+    .order-details {
+      margin-bottom: 8px;
+      .order-total {
+        font-weight: 500;
+        color: #2ecc71;
+      }
+    }
+    .order-actions {
+      margin-top: 8px;
+      button {
+        min-width: 110px;
+      }
+    }
+  }
+}
+
+.badge {
+  font-size: 0.95em;
+  padding: 0.5em 0.8em;
+  border-radius: 8px;
+}
+
+.modal-content {
+  border-radius: 14px;
+}
+
+.modal-header {
+  background: #f1f3f4;
+  border-radius: 14px 14px 0 0;
+}
+
+.modal-title {
+  font-weight: 700;
+  color: #007bff;
+}
+
+.table {
+  th, td {
+    vertical-align: middle !important;
+  }
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 768px) {
+  .orders-card .card-body {
+    padding: 12px;
+  }
+  .orders-header .orders-title {
+    font-size: 1.3rem;
+  }
+}

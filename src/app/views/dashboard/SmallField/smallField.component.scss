@@ -1,35 +1,35 @@
 /* Container cho toàn bộ */
 .container {
-  padding: 20px;
+  padding: 10px; /* Giảm padding để thu nhỏ khoảng cách */
 }
 
 /* Các ô chọn ca */
 .shift-boxes {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between; /* Cân chỉnh các hộp đều */
+  gap: 8px; /* Giảm khoảng cách giữa các hộp */
+  justify-content: space-between;
 }
 
 /* Các ô shift */
 .shift-box {
-  flex: 1 1 calc(50% - 10px); /* Điều chỉnh kích thước và khoảng cách */
+  flex: 1 1 calc(48% - 8px); /* Điều chỉnh để nhỏ hơn */
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 8px;
-  padding: 20px;
+  padding: 15px; /* Giảm padding để nhỏ hơn */
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px); /* Giảm hiệu ứng hover */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   }
 
   p {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Giảm kích thước chữ */
     color: #333;
   }
 }
@@ -50,11 +50,11 @@
 
 .booking-form {
   width: 100%;
-  max-width: 450px;
+  max-width: 400px; /* Giảm chiều rộng tối đa */
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
-  padding: 25px;
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px; /* Giảm padding */
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -64,8 +64,8 @@
 
 .booking-form .btn-primary {
   width: 100%;
-  padding: 12px 0;
-  font-size: 1.1rem;
+  padding: 10px 0; /* Giảm padding của nút */
+  font-size: 1rem; /* Giảm kích thước chữ */
   font-weight: bold;
   background-color: #007bff;
   border-color: #007bff;
@@ -81,11 +81,11 @@
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 4px;
-  padding: 12px;
+  padding: 10px; /* Giảm padding */
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Giảm khoảng cách giữa các box */
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.8rem; /* Giảm kích thước chữ */
 }
 
 .booked-status {
@@ -112,14 +112,15 @@
   opacity: 0.5;
   transition: opacity 0.3s ease;
 }
+
 /* Nút "Đặt sân nhỏ" */
 .btn-success {
   background-color: #28a745;
   border-color: #28a745;
   color: white;
-  font-size: 1rem;
+  font-size: 0.9rem; /* Giảm kích thước chữ của nút */
   font-weight: bold;
-  padding: 12px 20px;
+  padding: 10px 15px; /* Giảm padding */
   border-radius: 5px;
   text-transform: uppercase;
   cursor: pointer;
@@ -128,16 +129,16 @@
   &:hover {
     background-color: #218838;
     border-color: #1e7e34;
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   }
 
   &:active {
-    transform: translateY(1px); /* Nút có hiệu ứng đẩy xuống khi nhấn */
+    transform: translateY(1px);
   }
 
   /* Nút khi bị vô hiệu hóa */
@@ -153,7 +154,7 @@
 @keyframes fadeIn {
   0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   100% {
     opacity: 1;

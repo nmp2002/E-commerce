@@ -1,0 +1,142 @@
+<div class="container-fluid" *ngIf="order">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Chi tiết đơn hàng #{{order.orderId}}</h2>
+        <div class="actions">
+          <button cButton color="info" size="sm" (click)="printOrder()">
+            <svg cIcon name="cil-print"></svg> In đơn hàng
+          </button>
+          <button cButton color="secondary" size="sm" [routerLink]="['/order/list']">
+            <svg cIcon name="cil-arrow-left"></svg> Quay lại
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Thông tin đơn hàng -->
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4 class="card-title">Thông tin đơn hàng</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Mã đơn hàng:</strong> #{{order.orderId}}</p>
+              <p><strong>Ngày đặt:</strong> {{order.orderDate | date:'dd/MM/yyyy HH:mm'}}</p>
+              <p><strong>Trạng thái:</strong>
+                <span class="badge" [ngClass]="getStatusClass(order.status)">
+                  {{getStatusText(order.status)}}
+                </span>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Tổng tiền:</strong> {{order.totalAmount | currency:'VND'}}</p>
+              <p><strong>Địa chỉ giao hàng:</strong> {{order.shippingAddress}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danh sách sản phẩm -->
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Danh sách sản phẩm</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th>Đơn giá</th>
+                  <th>Số lượng</th>
+                  <th>Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of orderItems">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <img [src]="item.product?.image"
+                           class="product-image me-3"
+                           [alt]="item.product?.productName">
+                      <div>
+                        <h6 class="mb-0">{{item.product?.productName}}</h6>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{item.price | currency:'VND'}}</td>
+                  <td>{{item.quantity}}</td>
+                  <td>{{item.price * item.quantity | currency:'VND'}}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                  <td><strong>{{order.totalAmount | currency:'VND'}}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cập nhật trạng thái và lịch sử -->
+    <div class="col-md-4">
+      <!-- Cập nhật trạng thái -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4 class="card-title">Cập nhật trạng thái</h4>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <button *ngFor="let status of OrderStatus | keyvalue"
+                    class="btn"
+                    [class.btn-warning]="status.value === OrderStatus.PENDING"
+                    [class.btn-info]="status.value === OrderStatus.PROCESSING"
+                    [class.btn-primary]="status.value === OrderStatus.SHIPPED"
+                    [class.btn-success]="status.value === OrderStatus.DELIVERED"
+                    [class.btn-danger]="status.value === OrderStatus.CANCELLED"
+                    [disabled]="order.status === status.value"
+                    (click)="updateOrderStatus(status.value)">
+              {{getStatusText(status.value)}}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lịch sử cập nhật -->
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Lịch sử cập nhật</h4>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item" *ngFor="let history of statusHistory">
+              <div class="timeline-marker" [ngClass]="getStatusClass(history.status)"></div>
+              <div class="timeline-content">
+                <h6 class="mb-1">{{getStatusText(history.status)}}</h6>
+                <p class="text-muted mb-0">
+                  {{history.timestamp | date:'dd/MM/yyyy HH:mm'}}
+                </p>
+                <p *ngIf="history.note" class="mt-1">{{history.note}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" *ngIf="!order && !loading">
+  <div class="alert alert-warning">
+    <svg cIcon name="cil-exclamation-triangle" class="me-2"></svg>
+    Không tìm thấy thông tin đơn hàng
+  </div>
+</div>

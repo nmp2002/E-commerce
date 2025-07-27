@@ -4,6 +4,7 @@ import { TokenStorageService } from '../../_services/token-storage.service';
 import { navItems } from './_nav';
 import { UserIdleService } from 'angular-user-idle';
 import { AuthService } from '../../_services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +31,25 @@ export class DefaultLayoutComponent implements OnInit {
 
     var navItemsValue = this.tokenStorage.getListMenuTree();
     this.navItems = navItemsValue != null && navItemsValue != undefined ? navItemsValue : [];
+    if (this.isLoggedIn) {
+    this.notificationService.connect().subscribe(
+      (notification: string) => {
+        this.notificationContent = notification;
+        this.isShowNotification = true;
+
+        // Hiển thị SweetAlert
+        Swal.fire({
+          title: 'Thông báo mới',
+          text: this.notificationContent,
+          icon: 'info',
+          confirmButtonText: 'OK'
+        });
+      },
+      (error) => {
+        console.error('Lỗi khi nhận thông báo:', error);
+      }
+    );
+  }
   }
 
   loadDataControl() {

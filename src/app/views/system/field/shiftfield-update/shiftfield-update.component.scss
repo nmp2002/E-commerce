@@ -41,7 +41,11 @@
       }
     }
   }
-
+  .error-message {
+    color: red; /* Đặt màu chữ thành đỏ */
+    font-size: 14px; /* Tùy chỉnh kích thước chữ nếu cần */
+    margin-top: 4px; /* Khoảng cách với các thành phần khác */
+  }
   .card {
     border: none;
     border-radius: 10px;
@@ -136,3 +140,4 @@
     }
   }
 }
+

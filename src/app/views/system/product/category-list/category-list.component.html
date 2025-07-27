@@ -1,0 +1,44 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Danh sách danh mục</h4>
+      <button class="btn btn-primary" (click)="addCategory()">
+        <i class="fas fa-plus"></i> Thêm danh mục
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên danh mục</th>
+              <th>Danh mục cha</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let category of categories">
+              <td>{{category.id}}</td>
+              <td>{{category.categoryName}}</td>
+              <td>{{getParentCategoryName(category.parentId)}}</td>
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-warning btn-sm" (click)="editCategory(category.id!)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteCategory(category.id!)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="categories.length === 0">
+              <td colspan="4" class="text-center">Không có danh mục nào</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

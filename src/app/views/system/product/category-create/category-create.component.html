@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Tạo danh mục mới</h3>
+          <div class="card-tools">
+          </div>
+        </div>
+        <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+          <div class="card-body">
+            <div class="form-group">
+              <label for="name">Tên danh mục</label>
+              <input type="text" class="form-control" id="name" formControlName="categoryName"
+                [ngClass]="{'is-invalid': categoryForm.get('categoryName')?.invalid && categoryForm.get('categoryName')?.touched}">
+              <div class="invalid-feedback" *ngIf="categoryForm.get('categoryName')?.errors?.['required']">
+                Vui lòng nhập tên danh mục
+              </div>
+              <div class="invalid-feedback" *ngIf="categoryForm.get('categoryName')?.errors?.['minlength']">
+                Tên danh mục phải có ít nhất 3 ký tự
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Mô tả</label>
+              <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="parentId">Danh mục cha</label>
+              <select class="form-control" id="parentId" formControlName="parentId">
+                <option [ngValue]="null">Không có</option>
+                <!-- Add parent categories here -->
+              </select>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid || loading">
+              <i class="cil-save"></i> Lưu
+              <span class="spinner-border spinner-border-sm ml-1" *ngIf="loading"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

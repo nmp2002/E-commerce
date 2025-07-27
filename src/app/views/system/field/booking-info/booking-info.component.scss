@@ -108,21 +108,22 @@
             padding: 0.75rem;
             border: 1px solid #ddd;
   
-            &.badge {
-              font-size: 0.85rem;
-              padding: 0.5rem;
+            .badge {
+              font-weight: bold;
+              padding: 5px 10px;
               border-radius: 5px;
-  
-              &.badge-success {
-                background: #d4edda;
-                color: #155724;
+              &-success {
+                background-color: #d4edda; // Sáng hơn màu xanh lá
+                color: #155724;           // Màu chữ tương phản
+                box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); // Tăng độ sáng với hiệu ứng ánh sáng
               }
-  
-              &.badge-danger {
-                background: #f8d7da;
-                color: #721c24;
+              &-danger {
+                background-color: #f8d7da; // Sáng hơn màu đỏ
+                color: #721c24;           // Màu chữ tương phản
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); // Tăng độ sáng với hiệu ứng ánh sáng
               }
             }
+            
   
             .btn {
               font-size: 0.85rem;
@@ -149,6 +150,24 @@
           }
         }
       }
+    }
+  }
+  
+  .badge {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+  
+    &-success {
+      background-color: #d4edda; // Màu nền sáng hơn
+      color: #155724;           // Màu chữ
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); // Hiệu ứng ánh sáng
+    }
+  
+    &-danger {
+      background-color: #f8d7da; // Màu nền sáng hơn
+      color: #721c24;           // Màu chữ
+     
     }
   }
   

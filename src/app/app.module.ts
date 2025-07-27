@@ -18,6 +18,7 @@ import {
   PerfectScrollbarConfigInterface,
   PerfectScrollbarModule,
 } from 'ngx-perfect-scrollbar';
+import { ToastrModule } from 'ngx-toastr';
 
 // Import routing module
 import { AppRoutingModule } from './app-routing.module';
@@ -47,13 +48,12 @@ import {
   ListGroupModule,
   NavModule,
   ProgressModule,
-  SharedModule,
   SidebarModule,
   TabsModule,
   UtilitiesModule,
   TableModule,
   CarouselModule,
-  
+
 } from '@coreui/angular';
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
@@ -76,6 +76,15 @@ import { LoadingService } from './_services/loading.service';
 import { AuthInterceptor } from './_helpers/auth.interceptor';
 //import { UserIdleModule } from 'angular-user-idle';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { RegisterComponent } from './views/register/register.component';
+import { LaptopListComponent } from './views/category/laptop-list/laptop-list.component';
+import { PhoneListComponent } from './views/category/phone-list/phone-list.component';
+import { CartComponent } from './views/cart/cart.component';
+import { CheckoutComponent } from './views/checkout/checkout.component';
+import { OrderConfirmationComponent } from './views/order-confirmation/order-confirmation.component';
+import { SharedModule } from './shared/shared.module';
+import { PaymentResultComponent } from './views/checkout/payment-result/payment-result.component';
+import { OrdersComponent } from './views/orders/orders.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -98,7 +107,7 @@ export function jwtOptionsFactory(tokenService: TokenStorageService) {
 }
 
 @NgModule({
-  declarations: [AppComponent, ...APP_CONTAINERS],
+  declarations: [AppComponent, ...APP_CONTAINERS, RegisterComponent, LaptopListComponent, PhoneListComponent, CartComponent, CheckoutComponent, OrderConfirmationComponent, PaymentResultComponent, OrdersComponent],
   imports: [
     NgMultiSelectDropDownModule.forRoot(),
     JwtModule.forRoot({
@@ -113,6 +122,7 @@ export function jwtOptionsFactory(tokenService: TokenStorageService) {
     BrowserModule,
     CKEditorModule,
     BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     AppRoutingModule,
     AvatarModule,
     BreadcrumbModule,
@@ -157,7 +167,7 @@ export function jwtOptionsFactory(tokenService: TokenStorageService) {
     MatNativeDateModule,
     CdkTableModule,
     CdkTreeModule,
-    ChartjsModule 
+    ChartjsModule
   ],
   exports: [MatIconModule, MatButtonModule],
   providers: [

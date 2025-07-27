@@ -62,7 +62,7 @@ export class FieldCheckingComponent implements OnInit {
     this.minDate = formatDate(new Date(), 'yyyy-MM-dd', 'en');
     this.bookingForm = this.fb.group({
       bookingName: ['', Validators.required],
-      bookingPhone: ['', [Validators.required, Validators.pattern('^\\d{10}$')]], // Adjust pattern as needed
+      bookingPhone: ['', [Validators.required, Validators.pattern('^\\d{10}$')]], 
       bookingEmail: ['', [Validators.required, Validators.email]]
     });
     this.currentTime = new Date();
@@ -111,7 +111,7 @@ export class FieldCheckingComponent implements OnInit {
   }
 
   loadShiftFields(): void {
-    this.shiftFieldsMap = {}; // Khởi tạo lại bản đồ ca sân
+    this.shiftFieldsMap = {};
     
     this.smallFields.forEach(smallField => {
       this.shiftFieldService.getShiftFieldsByFieldType(this.fieldId, smallField.fieldType || '').subscribe({
@@ -240,7 +240,7 @@ export class FieldCheckingComponent implements OnInit {
       shiftField.selected = !shiftField.selected;
       
       if (shiftField.selected) {
-        // Cập nhật smallFieldId và smallFieldName khi chọn
+     
         shiftField.smallFieldId = smallFieldId;
         const smallField = this.smallFields.find(sf => sf.id === smallFieldId);
         if (smallField) {
@@ -248,7 +248,7 @@ export class FieldCheckingComponent implements OnInit {
           this.selectedShiftFields.push(shiftField);
         }
       } else {
-        // Xóa khỏi danh sách các ca sân đã chọn
+      
         const index = this.selectedShiftFields.findIndex(sf => sf.id === shiftField.id && sf.smallFieldId === smallFieldId);
         if (index > -1) {
           this.selectedShiftFields.splice(index, 1);
@@ -292,7 +292,7 @@ export class FieldCheckingComponent implements OnInit {
         }
   
         this.selectedShiftFields.forEach(shiftField => {
-          // Tìm smallField dựa trên fieldType của shiftField
+      
           const smallField = this.smallFields.find(sf => sf.fieldType === shiftField.fieldType);
           
           if (!smallField) {
@@ -323,7 +323,7 @@ export class FieldCheckingComponent implements OnInit {
             modifiedBy: 'admin'
           };
   
-          // Lưu hoặc cập nhật booking
+     
           this.bookingService.saveOrUpdateBooking(
             booking.bookingId || 0,
             booking.fieldId || 0,
@@ -422,7 +422,7 @@ export class FieldCheckingComponent implements OnInit {
         });
       }
       
-      // Mở khóa sân
+    
       unlockField(smallField: any): void {
         Swal.fire({
           text: "Bạn có chắc chắn muốn mở khóa sân?",
@@ -465,7 +465,7 @@ export class FieldCheckingComponent implements OnInit {
     const currentTime = this.datePipe.transform(this.currentTime, 'HH:mm:ss');
     
     if (!currentDate || !currentTime) {
-      return 'Sẵn sàng'; // Default status if date or time can't be transformed
+      return 'Sẵn sàng';
     }
   
     const matchingBooking = this.bookings.find(booking =>
@@ -475,7 +475,7 @@ export class FieldCheckingComponent implements OnInit {
     );
   
     if (matchingBooking) {
-      // Tạo chuỗi chứa thông tin của khách
+    
       return `Tên người đặt: ${matchingBooking.nameGuest || 'N/A'}, Số điện thoại: ${matchingBooking.phoneNumberGuest || 'N/A'}`;
     }
   

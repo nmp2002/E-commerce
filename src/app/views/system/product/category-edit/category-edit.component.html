@@ -1,0 +1,43 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">{{category.id ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}}</h4>
+      <button cButton color="secondary" size="sm" [routerLink]="['/category/list']">
+        <svg cIcon name="cil-arrow-left"></svg> Quay lại
+      </button>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="name">Tên danh mục</label>
+          <input type="text" class="form-control" id="name" name="name"
+                 [(ngModel)]="category.categoryName" required minlength="3"
+                 [ngClass]="{'is-invalid': !category.categoryName  && category.categoryName  !== undefined}">
+          <div class="invalid-feedback" *ngIf="!category.categoryName  && category.categoryName  !== undefined">
+            Tên danh mục là bắt buộc
+          </div>
+          <div class="invalid-feedback" *ngIf="category.categoryName && category.categoryName.length < 3">
+            Tên danh mục phải có ít nhất 3 ký tự
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="parentId">Danh mục cha</label>
+          <select class="form-control" id="parentId" name="parentId" [(ngModel)]="category.parentId">
+            <option [ngValue]="undefined">Không có</option>
+            <option *ngFor="let cat of categories" [ngValue]="cat.id" [disabled]="cat.id === category.id">
+              {{cat.categoryName}}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" [disabled]="!category.categoryName || category.categoryName.length < 3 || loading">
+            <span class="spinner-border spinner-border-sm mr-1" *ngIf="loading"></span>
+            {{category.id ? 'Cập nhật' : 'Thêm mới'}}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

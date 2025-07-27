@@ -4,7 +4,7 @@ html {
 }
 
 .div_login {
-    background: url("../assets/images/logoACE.jpg") no-repeat center center fixed;
+    background: url("../assets/images/logo.jpg") no-repeat center center fixed;
     background-size: cover;
     width: 100vw; /* Chiều rộng toàn màn hình */
     height: 100vh; /* Chiều cao toàn màn hình */
@@ -12,7 +12,7 @@ html {
     align-items: center;
     justify-content: center;
   }
-  
+
 
 .sidebar {
     --cui-sidebar-bg: #ae1c3f;
@@ -339,4 +339,8 @@ c-carousel-indicators button:focus {
 
 .btn-avatar:hover, .btn-avatar:focus,.btn-avatar::selection {
     border-color: transparent !important;
+}
+
+.main-wrapper-with-sidebar-padding {
+  margin-left: 250px; /* Adjust this value to match your sidebar width */
 }

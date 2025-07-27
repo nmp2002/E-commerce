@@ -33,7 +33,7 @@ export class UserService {
     return this.http.get<any>(API_URL + 'delete?userName=' + userName, httpOptions);
   }
 
-  
+
 
   lockUser(userName: string): Observable<any> {
     return this.http.get<any>(API_URL + 'lock?userName=' + userName, httpOptions);
@@ -82,5 +82,30 @@ export class UserService {
       userName, email, page, size
     }, httpOptions);
   }
+// Đếm số lượng user hoạt động
+countActiveUsers(): Observable<number> {
+  return this.http.get<number>(`${API_URL}countActiveUsers`, httpOptions);
+}
 
+// Đếm số lượng user không hoạt động
+countInactiveUsers(): Observable<number> {
+  return this.http.get<number>(`${API_URL}countInactiveUsers`, httpOptions);
+}
+publicRegister(
+  username: string,
+  email: string,
+  password: string,
+  fullname: string,
+  address: string,
+  telephone: string
+): Observable<any> {
+  return this.http.post(API_URL + 'publicRegister', {
+    username,
+    email,
+    password,
+    fullname,
+    address,
+    telephone
+  }, httpOptions);
+}
 }

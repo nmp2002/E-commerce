@@ -1,0 +1,149 @@
+<div class="confirmation-container py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="confirmation-card">
+          <!-- Header -->
+          <div class="confirmation-header text-center">
+            <div class="success-icon">
+              <i class="cil-check-circle"></i>
+            </div>
+            <h2 class="confirmation-title">Đặt hàng thành công!</h2>
+            <p class="confirmation-subtitle">Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi</p>
+          </div>
+
+          <!-- Thông tin đơn hàng -->
+          <div class="order-info" *ngIf="orderData">
+            <div class="info-section">
+              <h5 class="section-title">
+                <i class="cil-receipt me-2"></i>
+                Thông tin đơn hàng
+              </h5>
+
+              <div class="order-details">
+                <div class="detail-item">
+                  <span class="label">Mã đơn hàng:</span>
+                  <span class="value order-number">{{ orderNumber }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Trạng thái:</span>
+                  <span class="value">{{ statusLabel }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Tổng tiền:</span>
+                  <span class="value total-amount">{{ orderData.total | currency:'VND' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Phương thức thanh toán:</span>
+                  <span class="value">{{ getPaymentMethodLabel(orderData.formData.paymentMethod) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thông tin giao hàng -->
+            <div class="info-section">
+              <h5 class="section-title">
+                <i class="cil-location-pin me-2"></i>
+                Thông tin giao hàng
+              </h5>
+
+              <div class="shipping-details">
+                <div class="detail-item">
+                  <span class="label">Người nhận:</span>
+                  <span class="value">{{ orderData.formData.fullName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Số điện thoại:</span>
+                  <span class="value">{{ orderData.formData.phone }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Email:</span>
+                  <span class="value">{{ orderData.formData.email }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Địa chỉ:</span>
+                  <span class="value">{{ orderData.formData.address }}, {{ orderData.formData.district }}, {{ orderData.formData.city }}</span>
+                </div>
+                <div class="detail-item" *ngIf="orderData.formData.note">
+                  <span class="label">Ghi chú:</span>
+                  <span class="value">{{ orderData.formData.note }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Danh sách sản phẩm -->
+            <div class="info-section">
+              <h5 class="section-title">
+                <i class="cil-basket me-2"></i>
+                Sản phẩm đã đặt
+              </h5>
+
+              <div class="order-items">
+                <div class="order-item" *ngFor="let item of orderData.items">
+                  <div class="item-info">
+                    <div class="item-image">
+                      <img [src]="item.image" [alt]="item.name">
+                    </div>
+                    <div class="item-details">
+                      <h6 class="item-name">{{ item.name }}</h6>
+                      <p class="item-quantity">Số lượng: {{ item.quantity }}</p>
+                    </div>
+                  </div>
+                  <div class="item-price">
+                    {{ item.price * item.quantity | currency:'VND' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thông báo tiếp theo -->
+          <div class="next-steps">
+            <h5 class="section-title">
+              <i class="cil-info me-2"></i>
+              Những bước tiếp theo
+            </h5>
+
+            <div class="steps-list">
+              <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                  <h6>Xác nhận đơn hàng</h6>
+                  <p>Chúng tôi sẽ gửi email xác nhận đơn hàng trong vòng 24 giờ</p>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                  <h6>Chuẩn bị và giao hàng</h6>
+                  <p>Đơn hàng sẽ được chuẩn bị và giao trong 2-5 ngày làm việc</p>
+                </div>
+              </div>
+
+              <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                  <h6>Nhận hàng</h6>
+                  <p>Kiểm tra và thanh toán khi nhận hàng (nếu chọn COD)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="confirmation-actions">
+            <button class="btn btn-primary btn-lg" (click)="continueShopping()">
+              <i class="cil-basket me-2"></i>
+              Tiếp tục mua sắm
+            </button>
+            <button class="btn btn-outline-secondary btn-lg" (click)="viewOrders()">
+              <i class="cil-list me-2"></i>
+              Xem đơn hàng của tôi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
