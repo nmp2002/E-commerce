@@ -38,6 +38,7 @@ chrome-profiler-events*.json
 /coverage
 /libpeerconnection.log
 testem.log
+node_modules.rar
 /typings
 
 # System files
