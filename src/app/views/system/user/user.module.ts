@@ -1,5 +1,5 @@
-import { NGX_MAT_DATE_FORMATS, NgxMatDateFormats, NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
-import { NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, NgxMatMomentModule } from '@angular-material-components/moment-adapter';
+// import { NGX_MAT_DATE_FORMATS, NgxMatDateFormats, NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+// import { NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, NgxMatMomentModule } from '@angular-material-components/moment-adapter';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -52,17 +52,17 @@ import { UserRoutingModule } from './user-routing.module';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgSelectModule } from '@ng-select/ng-select';
 
-const MY_DATETIME_FORMAT: NgxMatDateFormats = {
-  parse: {
-    dateInput: 'DD/MM/YYYY HH:mm',
-  },
-  display: {
-    dateInput: 'DD/MM/YYYY HH:mm',
-    monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
+// const MY_DATETIME_FORMAT: NgxMatDateFormats = {
+//   parse: {
+//     dateInput: 'DD/MM/YYYY HH:mm',
+//   },
+//   display: {
+//     dateInput: 'DD/MM/YYYY HH:mm',
+//     monthYearLabel: 'MMM YYYY',
+//     dateA11yLabel: 'LL',
+//     monthYearA11yLabel: 'MMMM YYYY',
+//   },
+// };
 
 const MY_DATE_FORMAT = {
   parse: {
@@ -121,12 +121,7 @@ const MY_DATE_FORMAT = {
     NgxMaskModule.forRoot({
       showMaskTyped: true
     }),
-    NgxMatTimepickerModule,
-    NgxMatDatetimePickerModule,
-    NgxMatMomentModule,
-    MatDatepickerModule,
-    NgxMatMomentModule,
-    NgxMatDatetimePickerModule
+    MatDatepickerModule
   ],
   declarations: [
     UserManagerComponent,
@@ -140,9 +135,7 @@ const MY_DATE_FORMAT = {
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE],
     },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },
-    { provide: NGX_MAT_DATE_FORMATS, useValue: MY_DATETIME_FORMAT },
-    { provide: NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: false } }
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT }
   ],
 })
 export class UserModule { }
