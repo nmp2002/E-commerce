@@ -2,68 +2,61 @@
   <!-- Thanh chuyển đổi giữa các loại sản phẩm -->
   <!-- Thanh chuyển đổi đẹp, chuyên nghiệp -->
   <div class="category-switch mb-4">
-    <a [routerLink]="['/category/laptops']" class="switch-item">
+    <a [routerLink]="['/category/laptops']" class="switch-item" [ngClass]="{active: false}">
       <i class="cil-laptop"></i>
       <span>Laptop</span>
     </a>
-    <a [routerLink]="['/category/phones']" class="switch-item active">
+    <a [routerLink]="['/category/phones']" class="switch-item" [ngClass]="{active: false}">
       <i class="cil-mobile"></i>
       <span>Điện thoại</span>
     </a>
-    <a [routerLink]="['/category/chargers']" class="switch-item">
+    <a [routerLink]="['/category/chargers']" class="switch-item" [ngClass]="{active: false}">
       <i class="cil-battery-full"></i>
       <span>Sạc điện thoại</span>
     </a>
-    <a [routerLink]="['/category/headphones']" class="switch-item">
+    <a [routerLink]="['/category/headphones']" class="switch-item active">
       <i class="cil-headphones"></i>
       <span>Tai nghe</span>
     </a>
   </div>
-  <h2 class="fw-bold mb-4 text-center">Điện Thoại Chính Hãng - Giá Tốt</h2>
-
+  <h2 class="fw-bold mb-4 text-center">Tai Nghe Chính Hãng - Giá Tốt</h2>
   <!-- Bộ lọc -->
   <div class="row g-3 mb-4 align-items-end">
-    <div class="col-md-3">
+    <div class="col-md-4">
       <label class="form-label fw-semibold">Hãng</label>
       <select class="form-select" [(ngModel)]="selectedBrand" (change)="onFilterChange()">
         <option value="">Tất cả</option>
         <option *ngFor="let b of brands" [value]="b">{{b}}</option>
       </select>
     </div>
-    <div class="col-md-3">
-      <label class="form-label fw-semibold">RAM</label>
-      <select class="form-select" [(ngModel)]="selectedRam" (change)="onFilterChange()">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Loại</label>
+      <select class="form-select" [(ngModel)]="selectedType" (change)="onFilterChange()">
         <option value="">Tất cả</option>
-        <option *ngFor="let r of rams" [value]="r">{{r}}</option>
+        <option *ngFor="let t of types" [value]="t">{{t}}</option>
       </select>
     </div>
-    <div class="col-md-3">
-      <label class="form-label fw-semibold">Bộ nhớ</label>
-      <select class="form-select" [(ngModel)]="selectedStorage" (change)="onFilterChange()">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Không dây</label>
+      <select class="form-select" [(ngModel)]="selectedWireless" (change)="onFilterChange()">
         <option value="">Tất cả</option>
-        <option *ngFor="let s of storages" [value]="s">{{s}}</option>
+        <option *ngFor="let w of wirelessOptions" [value]="w">{{w}}</option>
       </select>
-    </div>
-    <div class="col-md-3">
-      <label class="form-label fw-semibold">Tìm kiếm</label>
-      <input class="form-control" [(ngModel)]="searchText" (input)="onFilterChange()" placeholder="Nhập tên điện thoại...">
     </div>
   </div>
-
   <!-- Loading spinner -->
   <div *ngIf="loading" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
-
   <!-- Danh sách sản phẩm -->
   <div class="row g-4" *ngIf="!loading">
     <div class="col-md-4 col-lg-3" *ngFor="let productGroup of displayProducts">
       <div class="card h-100 shadow-sm position-relative product-card" (click)="productGroup.representativeId && viewProduct(productGroup.representativeId)">
         <img *ngIf="productGroup.image" [src]="'data:image/jpeg;base64,' + productGroup.image" [alt]="productGroup.name" class="card-img-top">
         <div *ngIf="!productGroup.image" class="img-placeholder bg-light d-flex align-items-center justify-content-center">
-          <i class="cil-mobile h1 text-muted"></i>
+          <i class="cil-headphones h1 text-muted"></i>
         </div>
         <div class="card-body">
           <h5 class="card-title fw-bold">{{productGroup.name}}</h5>
@@ -91,12 +84,8 @@
       </div>
     </div>
   </div>
-
   <!-- Thông báo không có sản phẩm -->
   <div *ngIf="!loading && displayProducts.length === 0" class="text-center my-5">
     <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp với tiêu chí tìm kiếm</p>
   </div>
-
-  <!-- Phần so sánh sản phẩm có thể sẽ cần được làm lại logic, tạm thời ẩn đi -->
-  <!-- <div *ngIf="compareList.length" class="compare-popup card shadow-lg p-4 mt-5"> ... </div> -->
 </div>

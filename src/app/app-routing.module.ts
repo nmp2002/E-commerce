@@ -14,6 +14,8 @@ import { CheckoutComponent } from './views/checkout/checkout.component';
 import { OrderConfirmationComponent } from './views/order-confirmation/order-confirmation.component';
 import { PaymentResultComponent } from './views/checkout/payment-result/payment-result.component';
 import { OrdersComponent } from './views/orders/orders.component';
+import { HeadphoneListComponent } from './views/category/headphone-list/headphone-list.component';
+import { ChargerListComponent } from './views/category/charger-list/charger-list.component';
 
 const routes: Routes = [
   {
@@ -142,6 +144,14 @@ const routes: Routes = [
       {
         path: 'category/phones',
         component: PhoneListComponent
+      },
+      {
+        path: 'category/headphones',
+        component: HeadphoneListComponent
+      },
+      {
+        path: 'category/chargers',
+        component: ChargerListComponent
       },
     ]
   },

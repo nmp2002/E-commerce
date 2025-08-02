@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
   }
 
   reloadPage(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/homepage']);
   }
   redirectToHome(): void {
     this.router.navigate(['/']); // Chuyển hướng về trang chủ

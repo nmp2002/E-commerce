@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ProductService } from '../../../_services/product.service';
 import { Product } from '../../../model/product.model';
 import { ToastrService } from 'ngx-toastr';
@@ -24,18 +24,20 @@ interface DisplayProduct {
 }
 
 @Component({
-  selector: 'app-phone-list',
-  templateUrl: './phone-list.component.html',
-  styleUrls: ['./phone-list.component.scss']
+  selector: 'app-product-category-list',
+  templateUrl: './product-category-list.component.html',
+  styleUrls: ['./product-category-list.component.scss']
 })
-export class PhoneListComponent implements OnInit {
+export class ProductCategoryListComponent implements OnInit {
+  @Input() categoryType: 'laptop' | 'phone' = 'laptop';
+
   cartId: number | null = null;
-  allPhones: Product[] = [];
+  allProducts: Product[] = [];
   displayProducts: DisplayProduct[] = [];
 
-  brands = ['Apple', 'Samsung', 'Xiaomi', 'OPPO', 'Vivo'];
-  rams = ['8GB', '12GB'];
-  storages = ['64GB', '128GB', '256GB', '512GB'];
+  brands: string[] = [];
+  rams: string[] = [];
+  storages: string[] = [];
 
   selectedBrand = '';
   selectedRam = '';
@@ -44,14 +46,10 @@ export class PhoneListComponent implements OnInit {
   loading = false;
 
   compareList: Product[] = [];
-
   selectedGroupCode: string | null = null;
-
-  // Thêm các thuộc tính để sửa lỗi
-  isLoggedIn: boolean = false; // Cần cập nhật theo logic đăng nhập thực tế
-  currentProduct: Product | null = null; // Cần gán khi chọn sản phẩm
-  quantity: number = 1; // Số lượng mặc định
-
+  isLoggedIn: boolean = false;
+  currentProduct: Product | null = null;
+  quantity: number = 1;
   minPrice: number = 0;
   maxPrice: number = 0;
 
@@ -67,53 +65,43 @@ export class PhoneListComponent implements OnInit {
   this.isLoggedIn = !!this.tokenStorage.getUser();
     this.isLoggedIn = !!this.tokenStorage.getUser();
     this.loadSearchFilters();
-    this.loadPhones();
+    this.loadProducts();
   }
 
-  loadPhones(): void {
+  get categoryId(): number {
+    return this.categoryType === 'laptop' ? 21 : 2;
+  }
+
+  loadProducts(): void {
     this.loading = true;
-    // Assuming category 2 is for phones
-    this.productService.getProductsByCategoryId(2).subscribe({
+    this.productService.getProductsByCategoryId(this.categoryId).subscribe({
       next: (data) => {
-        console.log("Raw data from API:", data); // Log dữ liệu thô
-        this.allPhones = data;
+        this.allProducts = data;
+        this.extractFilterOptions();
         this.applyFiltersAndGrouping();
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading phones:', error);
-        this.toastr.error('Không thể tải danh sách điện thoại');
+        this.toastr.error('Không thể tải danh sách sản phẩm');
         this.loading = false;
       }
     });
   }
 
-  loadSearchFilters(): void {
-    // Đọc dữ liệu tìm kiếm từ sessionStorage
-    const searchData = sessionStorage.getItem('searchFormData');
-    if (searchData) {
-      try {
-        const filters = JSON.parse(searchData);
-        console.log('Loaded search filters:', filters);
-
-        // Áp dụng các filter từ homepage
-        if (filters.brand) {
-          this.selectedBrand = filters.brand;
-        }
-        if (filters.search) {
-          this.searchText = filters.search;
-        }
-
-        // Lưu price range để sử dụng trong filter
-        this.minPrice = filters.minPrice || 0;
-        this.maxPrice = filters.maxPrice || 0;
-
-        // Xóa dữ liệu tìm kiếm khỏi sessionStorage sau khi đã sử dụng
-        sessionStorage.removeItem('searchFormData');
-      } catch (error) {
-        console.error('Error parsing search data:', error);
-      }
-    }
+  extractFilterOptions(): void {
+    const brands = new Set<string>();
+    const rams = new Set<string>();
+    const storages = new Set<string>();
+    this.allProducts.forEach(product => {
+      if (product.brand) brands.add(product.brand);
+      product.attributes?.forEach(attr => {
+        if (attr.name.toLowerCase() === 'ram') rams.add(attr.value);
+        if (attr.name.toLowerCase() === 'storage' || attr.name.toLowerCase() === 'ổ cứng') storages.add(attr.value);
+      });
+    });
+    this.brands = Array.from(brands);
+    this.rams = Array.from(rams);
+    this.storages = Array.from(storages);
   }
 
   parseRam(productName: string): string | null {
@@ -129,57 +117,39 @@ export class PhoneListComponent implements OnInit {
   }
 
   applyFiltersAndGrouping(): void {
-    // 1. Filter the flat list first
-    const filtered = this.allPhones.filter(phone => {
-      const brandMatch = !this.selectedBrand || (phone.brand && phone.brand.toLowerCase().includes(this.selectedBrand.toLowerCase()));
-      const parsedRam = this.parseRam(phone.productName);
+    const filtered = this.allProducts.filter(product => {
+      const brandMatch = !this.selectedBrand || (product.brand && product.brand.toLowerCase().includes(this.selectedBrand.toLowerCase()));
+      const parsedRam = this.parseRam(product.productName);
       const ramMatch = !this.selectedRam || (parsedRam !== null && parsedRam.toLowerCase().includes(this.selectedRam.toLowerCase()));
-      const parsedStorage = this.parseStorage(phone.productName);
+      const parsedStorage = this.parseStorage(product.productName);
       const storageMatch = !this.selectedStorage || (parsedStorage !== null && parsedStorage.toLowerCase().includes(this.selectedStorage.toLowerCase()));
-      const searchMatch = !this.searchText || phone.productName.toLowerCase().includes(this.searchText.toLowerCase());
-
-      // Thêm price filter
+      const searchMatch = !this.searchText || product.productName.toLowerCase().includes(this.searchText.toLowerCase());
       const priceMatch = !this.minPrice && !this.maxPrice ||
-                        (phone.price >= this.minPrice && phone.price <= this.maxPrice);
-
+                        (product.price >= this.minPrice && product.price <= this.maxPrice);
       return brandMatch && ramMatch && storageMatch && searchMatch && priceMatch;
     });
-
-    // 2. Group the filtered list
     const grouped = new Map<string, Product[]>();
-    filtered.forEach(phone => {
-      const groupKey = phone.groupCode || `product-${phone.id}`; // Use groupCode or fallback to unique ID
+    filtered.forEach(product => {
+      const groupKey = product.groupCode || `product-${product.id}`;
       const group = grouped.get(groupKey);
       if (group) {
-        group.push(phone);
+        group.push(product);
       } else {
-        grouped.set(groupKey, [phone]);
+        grouped.set(groupKey, [product]);
       }
     });
-
-    // 3. Create display models from the groups
     this.displayProducts = Array.from(grouped.values()).map(group => {
       const representative = group[0];
-      const prices = group.map(p => p.price).filter(p => typeof p === 'number'); // Lọc ra các giá trị là số
-      console.log('GroupCode:', representative.groupCode, 'Prices array:', prices); // Log mảng giá
-      const minPrice = prices.length > 0 ? Math.min(...prices) : 0; // Xử lý khi mảng rỗng
-      const maxPrice = prices.length > 0 ? Math.max(...prices) : 0; // Xử lý khi mảng rỗng
-
-      // Lấy thuộc tính nổi bật từ phiên bản đại diện
+      const prices = group.map(p => p.price).filter(p => typeof p === 'number');
+      const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+      const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
       const colorAttr = representative.attributes?.find(a => a.name.toLowerCase() === 'color');
-      const storageAttr = representative.attributes?.find(a => a.name.toLowerCase() === 'storage');
+      const storageAttr = representative.attributes?.find(a => a.name.toLowerCase() === 'storage' || a.name.toLowerCase() === 'ổ cứng');
       const ramAttr = representative.attributes?.find(a => a.name.toLowerCase() === 'ram');
-
-      // Tổng hợp số lượng tồn kho của cả nhóm
       const totalStock = group.reduce((sum, p) => sum + (p.stockQuantity || 0), 0);
-
-      // Lấy mô tả ngắn nếu có
-      const shortDescription = representative.description ? representative.description.split('.').slice(0,1).join('.') : '';
-
-      // Attempt to get a cleaner base name, used as a fallback
+      const shortDescription = representative.description ? representative.description.split('.')[0] : '';
       const baseName = representative.productName.split('-')[0].trim();
-
-      const displayProduct = {
+      return {
         groupCode: representative.groupCode || `product-${representative.id}`,
         name: representative.groupCode || baseName,
         image: representative.image,
@@ -195,8 +165,6 @@ export class PhoneListComponent implements OnInit {
         stockQuantity: totalStock,
         shortDescription
       };
-      console.log('GroupCode:', displayProduct.groupCode, 'minPrice:', minPrice, 'maxPrice:', maxPrice);
-      return displayProduct;
     });
   }
 
@@ -204,32 +172,32 @@ export class PhoneListComponent implements OnInit {
     this.applyFiltersAndGrouping();
   }
 
-  addToCompare(phone: Product): void {
-    if (!this.compareList.find(p => p.id === phone.id) && this.compareList.length < 3) {
-      this.compareList.push(phone);
+  addToCompare(product: Product): void {
+    if (!this.compareList.find(p => p.id === product.id) && this.compareList.length < 3) {
+      this.compareList.push(product);
     }
   }
 
-  removeFromCompare(phone: Product): void {
-    this.compareList = this.compareList.filter(p => p.id !== phone.id);
+  removeFromCompare(product: Product): void {
+    this.compareList = this.compareList.filter(p => p.id !== product.id);
   }
 
   clearCompare(): void {
     this.compareList = [];
   }
 
-  isInCompareList(phone: Product): boolean {
-    return this.compareList.some(p => p.id === phone.id);
+  isInCompareList(product: Product): boolean {
+    return this.compareList.some(p => p.id === product.id);
   }
 
-  getRatingValue(phone: Product): number {
-    const ratingAttribute = phone.attributes?.find(a => a.name === 'Rating');
+  getRatingValue(product: Product): number {
+    const ratingAttribute = product.attributes?.find(a => a.name === 'Rating');
     const ratingValue = ratingAttribute ? parseFloat(ratingAttribute.value) : 0;
     return isNaN(ratingValue) ? 0 : ratingValue;
   }
 
-  getAttributeValue(phone: Product, attributeName: string): string {
-    const attr = phone.attributes?.find(a => a.name === attributeName);
+  getAttributeValue(product: Product, attributeName: string): string {
+    const attr = product.attributes?.find(a => a.name === attributeName);
     return attr ? attr.value : 'N/A';
   }
 
@@ -244,46 +212,37 @@ export class PhoneListComponent implements OnInit {
   viewProduct(id: number): void {
     if (id) {
       this.router.navigate(['/product/detail', id]);
-      this.onCloseModal(); // Close modal after navigating
+      this.onCloseModal();
     }
   }
 
   getCartId(userId: number): void {
     this.cartService.getCart(userId).subscribe({
       next: cart => {
-        console.log('cart object:', cart);
         this.cartId = cart.cartId || cart.id;
-        console.log('cartId:', this.cartId);
       },
       error: (error) => {
-        console.error('Error getting cart ID:', error);
         this.toastr.error('Không thể lấy ID giỏ hàng');
       }
     });
   }
 
   addToCart(product: any, quantity: number = 1): void {
-    // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
       this.toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
       this.router.navigate(['/login']);
       return;
     }
-
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
       this.toastr.error('Không thể xác định người dùng');
       return;
     }
-
-    // Sử dụng method addToCart với đúng signature
     this.cartService.addToCart(user.id, product.representativeId, quantity).subscribe({
-      next: (response) => {
-        console.log('Added to cart:', response);
+      next: () => {
         this.toastr.success('Đã thêm sản phẩm vào giỏ hàng');
       },
-      error: (error) => {
-        console.error('Error adding to cart:', error);
+      error: () => {
         this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng');
       }
     });
@@ -291,42 +250,51 @@ export class PhoneListComponent implements OnInit {
 
   getImageUrl(image: string | null | undefined): string {
     if (!image || image.trim() === '') return '';
-    if (image.startsWith('/9j/')) return 'data:image/jpeg;base64,' + image; // base64 JPEG
+    if (image.startsWith('/9j/')) return 'data:image/jpeg;base64,' + image;
     if (image.startsWith('http')) return image;
     if (image.startsWith('/')) return 'http://localhost:8080' + image;
     return image;
   }
 
   buyNow(product: any): void {
-  console.log('buyNow click', product, this.isLoggedIn, this.tokenStorage.getUser());
-    // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
       this.toastr.warning('Vui lòng đăng nhập để mua sản phẩm');
       this.router.navigate(['/login']);
       return;
     }
-
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
       this.toastr.error('Không thể xác định người dùng');
       return;
     }
-
-    // Tạo checkout item từ product group
     const checkoutItem = {
       id: product.representativeId,
       name: product.name,
       image: this.getImageUrl(product.image),
       quantity: 1,
-      price: product.minPrice, // Sử dụng giá thấp nhất
+      price: product.minPrice,
       selected: true
     };
-
-    console.log('Buy now item:', checkoutItem);
-
-    // Chuyển đến trang checkout với sản phẩm được chọn
     this.router.navigate(['/checkout'], {
       state: { selectedItems: [checkoutItem] }
     });
+  }
+
+  loadSearchFilters(): void {
+    const searchData = sessionStorage.getItem('searchFormData');
+    if (searchData) {
+      try {
+        const filters = JSON.parse(searchData);
+        if (filters.brand) {
+          this.selectedBrand = filters.brand;
+        }
+        if (filters.search) {
+          this.searchText = filters.search;
+        }
+        this.minPrice = filters.minPrice || 0;
+        this.maxPrice = filters.maxPrice || 0;
+        sessionStorage.removeItem('searchFormData');
+      } catch (error) {}
+    }
   }
 }
