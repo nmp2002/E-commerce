@@ -1,4 +1,24 @@
 <div class="container py-4">
+  <!-- Thanh chuyển đổi giữa các loại sản phẩm -->
+  <!-- Thanh chuyển đổi đẹp, chuyên nghiệp -->
+  <div class="category-switch mb-4">
+    <a [routerLink]="['/category/laptops']" class="switch-item active">
+      <i class="cil-laptop"></i>
+      <span>Laptop</span>
+    </a>
+    <a [routerLink]="['/category/phones']" class="switch-item">
+      <i class="cil-mobile"></i>
+      <span>Điện thoại</span>
+    </a>
+    <a [routerLink]="['/category/chargers']" class="switch-item">
+      <i class="cil-battery-full"></i>
+      <span>Sạc điện thoại</span>
+    </a>
+    <a [routerLink]="['/category/headphones']" class="switch-item">
+      <i class="cil-headphones"></i>
+      <span>Tai nghe</span>
+    </a>
+  </div>
   <h2 class="fw-bold mb-4 text-center">Laptop Chính Hãng - Giá Tốt</h2>
 
   <!-- Bộ lọc -->

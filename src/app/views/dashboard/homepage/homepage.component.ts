@@ -14,6 +14,45 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./homepage.component.scss']
 })
 export class HomepageComponent implements OnInit, AfterViewInit {
+  categoryOptions: { value: number|string, name: string }[] = [{ value: '', name: 'Tất cả danh mục' }];
+
+  // Brand cứng cho từng category
+  brandOptions: { [key: string]: { value: string, name: string }[] } = {
+    'laptop': [
+      { value: '', name: 'Tất cả thương hiệu' },
+      { value: 'apple', name: 'Apple' },
+      { value: 'asus', name: 'Asus' },
+      { value: 'dell', name: 'Dell' },
+      { value: 'hp', name: 'HP' },
+      { value: 'lenovo', name: 'Lenovo' },
+      { value: 'msi', name: 'MSI' }
+    ],
+    'phone': [
+      { value: '', name: 'Tất cả thương hiệu' },
+      { value: 'apple', name: 'Apple' },
+      { value: 'samsung', name: 'Samsung' },
+      { value: 'xiaomi', name: 'Xiaomi' },
+      { value: 'oppo', name: 'Oppo' },
+      { value: 'vivo', name: 'Vivo' }
+    ],
+    'charger': [
+      { value: '', name: 'Tất cả thương hiệu' },
+      { value: 'anker', name: 'Anker' },
+      { value: 'ugreen', name: 'Ugreen' },
+      { value: 'apple', name: 'Apple' },
+      { value: 'samsung', name: 'Samsung' }
+    ],
+    'headphone': [
+      { value: '', name: 'Tất cả thương hiệu' },
+      { value: 'sony', name: 'Sony' },
+      { value: 'apple', name: 'Apple' },
+      { value: 'jbl', name: 'JBL' },
+      { value: 'sennheiser', name: 'Sennheiser' }
+    ],
+    '': [ { value: '', name: 'Tất cả thương hiệu' } ]
+  };
+
+
   getImageUrl(image: string | null | undefined): string {
     if (!image || image.trim() === '') return '';
     if (image.startsWith('/9j/')) return 'data:image/jpeg;base64,' + image; // base64 JPEG
@@ -58,6 +97,60 @@ export class HomepageComponent implements OnInit, AfterViewInit {
   // Thêm properties cho brands
   searchBrands: any[] = [];
   loadingBrands = false;
+
+  // Lắng nghe thay đổi category để cập nhật brand
+  setupCategoryChangeListener() {
+    this.form.get('category')?.valueChanges.subscribe((category: string) => {
+      if (category) {
+        this.loadBrandsByCategory(category);
+        // Reset brand khi thay đổi category
+        this.form.get('brand')?.setValue('');
+      } else {
+        this.searchBrands = [];
+        this.form.get('brand')?.setValue('');
+      }
+    });
+  }
+
+  loadBrandsByCategory(category: string): void {
+    this.loadingBrands = true;
+    let categoryId: number | undefined;
+    // Map category name or id sang categoryId (cứng)
+    if (category === 'laptop' || category == '21') {
+      categoryId = 21;
+    } else if (category === 'phone' || category == '2') {
+      categoryId = 2;
+    } else if (category === 'charger' || category == '41') {
+      categoryId = 41;
+    } else if (category === 'headphone' || category == '61') {
+      categoryId = 61;
+    }
+    if (!categoryId) {
+      this.searchBrands = [];
+      this.loadingBrands = false;
+      return;
+    }
+    // Nếu muốn lấy brand động từ API, mở comment dưới:
+    // this.productService.getProductsByCategoryId(categoryId).subscribe({
+    //   next: (products: any[]) => {
+    //     const uniqueBrands = [...new Set(products.map(product => product.brand).filter(brand => brand))];
+    //     this.searchBrands = uniqueBrands.map(brand => ({ name: brand, value: brand }));
+    //     this.loadingBrands = false;
+    //   },
+    //   error: () => {
+    //     this.searchBrands = [];
+    //     this.loadingBrands = false;
+    //   }
+    // });
+    // Nếu lấy brand cứng:
+    let key = '';
+    if (categoryId === 21) key = 'laptop';
+    else if (categoryId === 2) key = 'phone';
+    else if (categoryId === 41) key = 'charger';
+    else if (categoryId === 61) key = 'headphone';
+    this.searchBrands = this.brandOptions[key] || this.brandOptions[''];
+    this.loadingBrands = false;
+  }
 
   heroSlides = [
     {
@@ -173,6 +266,15 @@ export class HomepageComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadInitialData();
     this.setupCategoryChangeListener();
+    // Khởi tạo searchBrands ban đầu
+    this.searchBrands = this.brandOptions[''];
+    // Lấy danh mục gốc (không lấy children)
+    this.productService.getAllCategories().subscribe(categories => {
+      // categories là mảng ProductCategory dạng cây, chỉ lấy root
+      if (Array.isArray(categories)) {
+        this.categoryOptions = [{ value: '', name: 'Tất cả danh mục' }, ...categories.map(cat => ({ value: cat.id!, name: cat.categoryName }))];
+      }
+    });
     // Lấy sản phẩm nổi bật từ backend
     this.productService.getFeaturedProducts().subscribe(products => {
       console.log('Featured products:', products);
@@ -268,55 +370,43 @@ export class HomepageComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
     if (this.form.valid) {
-      console.log('Dữ liệu gửi đi:', this.form.value);
       const formData = this.form.value;
-
-      // Xử lý price range để chuyển thành min/max price
-      let minPrice = 0;
-      let maxPrice = 0;
-
+      // Nếu tất cả đều rỗng thì không tìm kiếm
+      if (!formData.category && !formData.brand && !formData.priceRange && !formData.search) {
+        alert('Vui lòng chọn ít nhất một tiêu chí tìm kiếm!');
+        return;
+      }
+      // Xử lý price range
+      let minPrice: number | undefined = undefined;
+      let maxPrice: number | undefined = undefined;
       if (formData.priceRange) {
         switch (formData.priceRange) {
-          case '0-10':
-            minPrice = 0;
-            maxPrice = 10000000; // 10 triệu
-            break;
-          case '10-20':
-            minPrice = 10000000; // 10 triệu
-            maxPrice = 20000000; // 20 triệu
-            break;
-          case '20-30':
-            minPrice = 20000000; // 20 triệu
-            maxPrice = 30000000; // 30 triệu
-            break;
-          case '30+':
-            minPrice = 30000000; // 30 triệu
-            maxPrice = 999999999; // Không giới hạn trên
-            break;
+          case '0-10': minPrice = 0; maxPrice = 10000000; break;
+          case '10-20': minPrice = 10000000; maxPrice = 20000000; break;
+          case '20-30': minPrice = 20000000; maxPrice = 30000000; break;
+          case '30+': minPrice = 30000000; maxPrice = undefined; break;
         }
       }
-
-      // Thêm min/max price vào formData
-      const searchData = {
-        ...formData,
-        minPrice,
-        maxPrice
-      };
-
-      // Chuyển hướng dựa trên category được chọn
-      if (formData.category === 'laptop') {
-        // Lưu dữ liệu tìm kiếm vào sessionStorage để sử dụng ở laptop-list
-        sessionStorage.setItem('searchFormData', JSON.stringify(searchData));
-        this.router.navigate(['/category/laptops']);
-      } else if (formData.category === 'phone') {
-        // Lưu dữ liệu tìm kiếm vào sessionStorage để sử dụng ở phone-list
-        sessionStorage.setItem('searchFormData', JSON.stringify(searchData));
-        this.router.navigate(['/category/phones']);
+      // Đóng gói query params
+      const queryParams: any = {};
+      if (formData.brand) queryParams.brand = formData.brand;
+      if (typeof minPrice === 'number') queryParams.minPrice = minPrice;
+      if (typeof maxPrice === 'number') queryParams.maxPrice = maxPrice;
+      if (formData.search) queryParams.keyword = formData.search;
+      // Điều hướng theo category
+      let route = '';
+      if (formData.category === '21' || formData.category === 21 || formData.category === 'laptop') {
+        route = '/category/laptops';
+      } else if (formData.category === '2' || formData.category === 2 || formData.category === 'phone') {
+        route = '/category/phones';
+      } else if (formData.category === '41' || formData.category === 41 || formData.category === 'charger') {
+        route = '/category/chargers';
+      } else if (formData.category === '61' || formData.category === 61 || formData.category === 'headphone') {
+        route = '/category/headphones';
       } else {
-        // Nếu không chọn category cụ thể, chuyển đến trang tìm kiếm chung
-        sessionStorage.setItem('searchFormData', JSON.stringify(searchData));
-        this.router.navigate(['/homepage/search-field-result']);
+        route = '/homepage/search-field-result';
       }
+      this.router.navigate([route], { queryParams });
     }
   }
 
@@ -381,55 +471,7 @@ export class HomepageComponent implements OnInit, AfterViewInit {
     const prevIndex = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
     this.goToSlide(prevIndex);
   }
+ 
 
-  setupCategoryChangeListener(): void {
-    // Lắng nghe sự thay đổi của category để load brands tương ứng
-    this.form.get('category')?.valueChanges.subscribe(category => {
-      if (category) {
-        this.loadBrandsByCategory(category);
-        // Reset brand khi thay đổi category
-        this.form.get('brand')?.setValue('');
-      } else {
-        this.searchBrands = [];
-        this.form.get('brand')?.setValue('');
-      }
-    });
-  }
-
-  loadBrandsByCategory(category: string): void {
-    this.loadingBrands = true;
-    let categoryId: number;
-
-    // Map category name to category ID
-    if (category === 'laptop') {
-      categoryId = 21; // Laptop category ID
-    } else if (category === 'phone') {
-      categoryId = 2; // Phone category ID
-    } else {
-      this.searchBrands = [];
-      this.loadingBrands = false;
-      return;
-    }
-
-    // Load products by category to extract unique brands
-    this.productService.getProductsByCategoryId(categoryId).subscribe({
-      next: (products: any[]) => {
-        // Extract unique brands from products
-        const uniqueBrands = [...new Set(products.map(product => product.brand).filter(brand => brand))];
-
-        this.searchBrands = uniqueBrands.map(brand => ({
-          name: brand,
-          value: brand
-        }));
-
-        this.loadingBrands = false;
-        console.log('Loaded brands for category', category, ':', this.searchBrands);
-      },
-      error: (error) => {
-        console.error('Error loading brands for category', category, ':', error);
-        this.searchBrands = [];
-        this.loadingBrands = false;
-      }
-    });
-  }
 }
+

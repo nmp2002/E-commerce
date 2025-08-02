@@ -85,6 +85,8 @@ import { OrderConfirmationComponent } from './views/order-confirmation/order-con
 import { SharedModule } from './shared/shared.module';
 import { PaymentResultComponent } from './views/checkout/payment-result/payment-result.component';
 import { OrdersComponent } from './views/orders/orders.component';
+import { ChargerListComponent } from './views/category/charger-list/charger-list.component';
+import { HeadphoneListComponent } from './views/category/headphone-list/headphone-list.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -107,7 +109,7 @@ export function jwtOptionsFactory(tokenService: TokenStorageService) {
 }
 
 @NgModule({
-  declarations: [AppComponent, ...APP_CONTAINERS, RegisterComponent, LaptopListComponent, PhoneListComponent, CartComponent, CheckoutComponent, OrderConfirmationComponent, PaymentResultComponent, OrdersComponent],
+  declarations: [AppComponent, ...APP_CONTAINERS, RegisterComponent, LaptopListComponent, PhoneListComponent, CartComponent, CheckoutComponent, OrderConfirmationComponent, PaymentResultComponent, OrdersComponent, HeadphoneListComponent, ChargerListComponent],
   imports: [
     NgMultiSelectDropDownModule.forRoot(),
     JwtModule.forRoot({

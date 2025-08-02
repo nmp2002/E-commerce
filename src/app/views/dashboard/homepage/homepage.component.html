@@ -120,21 +120,16 @@
             <div class="col-md-4">
               <div class="form-floating">
                 <select class="form-select" formControlName="category">
-                  <option value="">Tất cả danh mục</option>
-                  <option value="laptop">Laptop</option>
-                  <option value="phone">Điện thoại</option>
-                </select>
+  <option *ngFor="let cat of categoryOptions" [value]="cat.value">{{ cat.name }}</option>
+</select>
                 <label><i class="bi bi-grid me-2"></i>Danh Mục</label>
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-floating">
                 <select class="form-select" formControlName="brand" [disabled]="loadingBrands">
-                  <option value="">Tất cả thương hiệu</option>
-                  <option *ngFor="let brand of searchBrands" [value]="brand.value">
-                    {{ brand.name }}
-                  </option>
-                </select>
+  <option *ngFor="let brand of searchBrands" [value]="brand.value">{{ brand.name }}</option>
+</select>
                 <label>
                   <i class="bi bi-tag me-2"></i>
                   <span *ngIf="loadingBrands" class="text-muted">

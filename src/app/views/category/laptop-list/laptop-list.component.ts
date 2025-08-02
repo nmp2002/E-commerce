@@ -64,6 +64,7 @@ export class LaptopListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+  this.isLoggedIn = !!this.tokenStorage.getUser();
     this.isLoggedIn = !!this.tokenStorage.getUser();
     this.loadSearchFilters();
     this.loadLaptops();
@@ -288,6 +289,7 @@ export class LaptopListComponent implements OnInit {
   }
 
   buyNow(product: any): void {
+  console.log('buyNow click', product, this.isLoggedIn, this.tokenStorage.getUser());
     // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
       this.toastr.warning('Vui lòng đăng nhập để mua sản phẩm');
