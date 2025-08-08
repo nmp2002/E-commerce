@@ -48,6 +48,7 @@ import {
   ListGroupModule,
   NavModule,
   ProgressModule,
+  TooltipModule,
   SidebarModule,
   TabsModule,
   UtilitiesModule,
