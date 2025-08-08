@@ -20,8 +20,6 @@ export class ProductEditComponent implements OnInit {
   loading = false;
   productStatus = ProductStatus;
 
-  selectedFile: File | null = null;
-  previewUrl: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -103,10 +101,13 @@ export class ProductEditComponent implements OnInit {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.previewUrl = e.target.result;
+        // Lấy base64, patch vào image
+        const base64result: string = e.target.result.toString().split(',')[1];
+        if (base64result) {
+          this.productForm.patchValue({ image: base64result });
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -115,29 +116,12 @@ export class ProductEditComponent implements OnInit {
   onSubmit(): void {
     if (this.productForm.valid) {
       this.loading = true;
-
-      let request$;
-      if (this.selectedFile) {
-        // Nếu chọn ảnh mới thì gửi FormData
-        const formData = new FormData();
-        const formValue = this.productForm.value;
-        formData.append('productName', formValue.productName);
-        formData.append('categoryId', formValue.categoryId);
-        formData.append('price', formValue.price);
-        formData.append('stockQuantity', formValue.stockQuantity);
-        formData.append('status', formValue.status);
-        formData.append('image', this.selectedFile);
-        request$ = this.productService.updateProduct(this.productId, formData);
-      } else {
-        // Không chọn ảnh mới, giữ ảnh cũ
-        const productData: Product = {
-          ...this.productForm.value,
-          id: this.productId
-        };
-        request$ = this.productService.updateProduct(this.productId, productData);
-      }
-
-      request$.pipe(
+      // Luôn gửi object JSON, image là base64 hoặc giữ nguyên ảnh cũ
+      const productData: Product = {
+        ...this.productForm.value,
+        id: this.productId
+      };
+      this.productService.updateProduct(this.productId, productData).pipe(
         switchMap(() => {
           // Then update the attributes
           if (this.attributes && this.attributes.length > 0) {
