@@ -66,20 +66,26 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   isAvatarDefault = false;
 
   constructor(
+    private router: Router,
     private classToggler: ClassToggleService,
     private notificationService: NotificationService,
     private tokenStorage: TokenStorageService,
     public dialog: MatDialog,
-    private router: Router,
-    private paymentService :PaymentService,
-    private supplierService :SupplierService,
+    private paymentService: PaymentService,
+    private supplierService: SupplierService,
     private cartService: CartService,
     private productService: ProductService,
     private orderService: OrderService,
-    // Inject SidebarService nếu cần, bỏ comment nếu bạn sử dụng
-    // private sidebarService: SidebarService
+    // private sidebarService: SidebarService // Bỏ comment nếu sử dụng
   ) {
     super();
+  }
+
+  /**
+   * Navigate to the homepage
+   */
+  navigateToHome(): void {
+    this.router.navigate(['/homepage']);
   }
 
   ngOnInit(): void {
