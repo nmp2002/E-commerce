@@ -20,6 +20,9 @@ export class ProductEditComponent implements OnInit {
   loading = false;
   productStatus = ProductStatus;
 
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
@@ -97,17 +100,33 @@ export class ProductEditComponent implements OnInit {
     this.attributes.splice(index, 1);
   }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSubmit(): void {
     if (this.productForm.valid) {
       this.loading = true;
-      const productData: Product = {
-        ...this.productForm.value,
-        id: this.productId
-      };
-
-      // First update the product
-      this.productService.updateProduct(this.productId, productData).pipe(
-        switchMap(() => {
+      if (this.selectedFile) {
+        // Nếu chọn ảnh mới thì gửi FormData
+        const formData = new FormData();
+        const formValue = this.productForm.value;
+        formData.append('productName', formValue.productName);
+        formData.append('categoryId', formValue.categoryId);
+        formData.append('price', formValue.price);
+        formData.append('stockQuantity', formValue.stockQuantity);
+        formData.append('status', formValue.status);
+        formData.append('image', this.selectedFile);
+        this.productService.updateProductWithImage(this.productId, formData).pipe(
+          switchMap(() => {
           // Then update the attributes
           if (this.attributes && this.attributes.length > 0) {
             // First, get existing attributes to know which ones to delete
@@ -159,7 +178,7 @@ export class ProductEditComponent implements OnInit {
       );
     }
   }
-
+  }
   goBack(): void {
     this.router.navigate(['/system/product/list']);
   }
