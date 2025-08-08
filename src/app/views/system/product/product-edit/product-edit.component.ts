@@ -115,6 +115,8 @@ export class ProductEditComponent implements OnInit {
   onSubmit(): void {
     if (this.productForm.valid) {
       this.loading = true;
+
+      let request$;
       if (this.selectedFile) {
         // Nếu chọn ảnh mới thì gửi FormData
         const formData = new FormData();
@@ -125,8 +127,18 @@ export class ProductEditComponent implements OnInit {
         formData.append('stockQuantity', formValue.stockQuantity);
         formData.append('status', formValue.status);
         formData.append('image', this.selectedFile);
-        this.productService.updateProductWithImage(this.productId, formData).pipe(
-          switchMap(() => {
+        request$ = this.productService.updateProduct(this.productId, formData);
+      } else {
+        // Không chọn ảnh mới, giữ ảnh cũ
+        const productData: Product = {
+          ...this.productForm.value,
+          id: this.productId
+        };
+        request$ = this.productService.updateProduct(this.productId, productData);
+      }
+
+      request$.pipe(
+        switchMap(() => {
           // Then update the attributes
           if (this.attributes && this.attributes.length > 0) {
             // First, get existing attributes to know which ones to delete
@@ -178,8 +190,8 @@ export class ProductEditComponent implements OnInit {
       );
     }
   }
-  }
   goBack(): void {
     this.router.navigate(['/system/product/list']);
   }
 }
+
