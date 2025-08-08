@@ -67,7 +67,8 @@ export class ProductEditComponent implements OnInit {
           categoryId: product.categoryId,
           price: product.price,
           stockQuantity: product.stockQuantity,
-          status: product.status
+          status: product.status,
+          image: product.image || ''
         });
 
         // Map backend attributes to frontend model
