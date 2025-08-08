@@ -17,7 +17,7 @@ import { iconSubset } from './icons/icon-subset';
     <router-outlet></router-outlet>`
 })
 export class AppComponent implements OnInit {
-  title = 'ACE - Quản lí sân bóng đá';
+  title = 'H-MOBILE';
 
   constructor(
     private router: Router,
