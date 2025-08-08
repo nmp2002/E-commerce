@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { CartService } from '../../../_services/cart.service';
 import { TokenStorageService } from '../../../_services/token-storage.service';
+import Swal from 'sweetalert2';
 
 interface DisplayProduct {
   groupCode: string;
@@ -227,23 +228,38 @@ export class ProductCategoryListComponent implements OnInit {
     });
   }
 
-  addToCart(product: any, quantity: number = 1): void {
+  /**
+   * Thêm sản phẩm vào giỏ hàng
+   * @param product Sản phẩm cần thêm vào giỏ hàng
+   * @param quantity Số lượng sản phẩm (mặc định là 1)
+   */
+  addToCart(product: DisplayProduct, quantity: number = 1): void {
+    // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
-      this.toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-      this.router.navigate(['/login']);
+      this.showLoginRequired('thêm sản phẩm vào giỏ hàng');
       return;
     }
+
+    if (!product || !product.representativeId) {
+      this.toastr.error('Không tìm thấy thông tin sản phẩm', 'Lỗi');
+      return;
+    }
+
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
-      this.toastr.error('Không thể xác định người dùng');
+      this.toastr.error('Không thể xác định người dùng', 'Lỗi');
       return;
     }
+
+    // Gọi API thêm vào giỏ hàng
     this.cartService.addToCart(user.id, product.representativeId, quantity).subscribe({
-      next: () => {
-        this.toastr.success('Đã thêm sản phẩm vào giỏ hàng');
+      next: (response) => {
+        console.log('Added to cart:', response);
+        this.toastr.success('Đã thêm sản phẩm vào giỏ hàng', 'Thành công');
       },
-      error: () => {
-        this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng');
+      error: (error) => {
+        console.error('Error adding to cart:', error);
+        this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng', 'Lỗi');
       }
     });
   }
@@ -256,30 +272,85 @@ export class ProductCategoryListComponent implements OnInit {
     return image;
   }
 
-  buyNow(product: any): void {
+  /**
+   * Xử lý sự kiện mua ngay
+   * @param product Sản phẩm cần mua
+   */
+  buyNow(product: DisplayProduct): void {
+    // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
-      this.toastr.warning('Vui lòng đăng nhập để mua sản phẩm');
-      this.router.navigate(['/login']);
+      this.showLoginRequired('tiến hành mua hàng');
       return;
     }
+
+    if (!product || !product.representativeId) {
+      this.toastr.error('Không tìm thấy thông tin sản phẩm', 'Lỗi');
+      return;
+    }
+
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
-      this.toastr.error('Không thể xác định người dùng');
+      this.toastr.error('Không thể xác định người dùng', 'Lỗi');
       return;
     }
-    const checkoutItem = {
-      id: product.representativeId,
-      name: product.name,
-      image: this.getImageUrl(product.image),
-      quantity: 1,
-      price: product.minPrice,
-      selected: true
-    };
-    this.router.navigate(['/checkout'], {
-      state: { selectedItems: [checkoutItem] }
+
+    // Kiểm tra tồn kho
+    if (product.stockQuantity !== undefined && product.stockQuantity <= 0) {
+      this.toastr.warning('Sản phẩm hiện đã hết hàng', 'Thông báo');
+      return;
+    }
+
+    // Thêm vào giỏ hàng trước khi chuyển đến trang thanh toán
+    this.cartService.addToCart(user.id, product.representativeId, 1).subscribe({
+      next: () => {
+        // Tạo checkout item từ product group
+        const checkoutItem = {
+          id: product.representativeId,
+          name: product.name,
+          image: this.getImageUrl(product.image),
+          quantity: 1,
+          price: product.minPrice, // Sử dụng giá thấp nhất
+          selected: true
+        };
+
+        // Chuyển đến trang checkout với sản phẩm được chọn
+        this.router.navigate(['/checkout'], {
+          state: { selectedItems: [checkoutItem] }
+        });
+      },
+      error: (err) => {
+        console.error('Lỗi khi thêm vào giỏ hàng:', err);
+        this.toastr.error('Có lỗi xảy ra khi xử lý đơn hàng', 'Lỗi');
+      }
     });
   }
 
+  /**
+   * Hiển thị thông báo yêu cầu đăng nhập
+   * @param action Hành động yêu cầu đăng nhập
+   */
+  private showLoginRequired(action: string): void {
+    Swal.fire({
+      title: 'Yêu cầu đăng nhập',
+      text: `Vui lòng đăng nhập để ${action}`,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Đăng nhập',
+      cancelButtonText: 'Hủy',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.router.navigate(['/login'], { 
+          queryParams: { returnUrl: this.router.url }
+        });
+      }
+    });
+  }
+
+  /**
+   * Tải bộ lọc tìm kiếm từ sessionStorage
+   */
   loadSearchFilters(): void {
     const searchData = sessionStorage.getItem('searchFormData');
     if (searchData) {
@@ -294,7 +365,9 @@ export class ProductCategoryListComponent implements OnInit {
         this.minPrice = filters.minPrice || 0;
         this.maxPrice = filters.maxPrice || 0;
         sessionStorage.removeItem('searchFormData');
-      } catch (error) {}
+      } catch (error) {
+        console.error('Lỗi khi tải bộ lọc tìm kiếm:', error);
+      }
     }
   }
 }

@@ -276,22 +276,21 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
     if (!this.currentProduct) return;
-
-    const user = this.tokenStorage.getUser();
-    if (!user?.id) {
-      this.toastr.error('Không thể lấy thông tin người dùng');
+    if (this.quantity > (this.currentProduct.stockQuantity || 0)) {
+      this.toastr.warning('Số lượng vượt quá tồn kho!');
       return;
     }
-
-    this.loading = true;
-    this.cartService.addToCart(user.id, this.currentProduct.id!, this.quantity).subscribe({
-      next: () => {
-        this.loading = false;
-        this.router.navigate(['/cart']);
-      },
-      error: (err) => {
-        this.toastr.error(err.error?.message || 'Không thể xử lý mua ngay');
-        this.loading = false;
+    // Chuyển thẳng sang trang checkout, truyền sản phẩm và số lượng
+    this.router.navigate(['/checkout'], {
+      state: {
+        selectedItems: [{
+          id: this.currentProduct.id,
+          name: this.currentProduct.productName,
+          image: this.getImageSrc(this.currentProduct.image || ''),
+          quantity: this.quantity,
+          price: this.currentProduct.price,
+          selected: true
+        }]
       }
     });
   }
@@ -313,16 +312,26 @@ export class ProductDetailComponent implements OnInit {
   }
 
   // Add quantity management methods
+  onQuantityChange(): void {
+    if (this.quantity < 1) this.quantity = 1;
+    if (this.currentProduct?.stockQuantity && this.quantity > this.currentProduct.stockQuantity) {
+      this.quantity = this.currentProduct.stockQuantity;
+      this.toastr.warning('Số lượng mua không được vượt quá tồn kho!');
+    }
+  }
+
   decreaseQuantity(): void {
     if (this.quantity > 1) {
       this.quantity--;
     }
+    this.onQuantityChange();
   }
 
   increaseQuantity(): void {
-    if (this.quantity < 99) {
+    if (this.quantity < (this.currentProduct?.stockQuantity || 1)) {
       this.quantity++;
     }
+    this.onQuantityChange();
   }
 
   getVariantDisplayOptions(): string[] {

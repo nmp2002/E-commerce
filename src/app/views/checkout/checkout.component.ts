@@ -5,6 +5,9 @@ import { TokenStorageService } from '../../_services/token-storage.service';
 import { CartService } from '../../_services/cart.service';
 import { PaymentService } from '../../_services/payment.service';
 import { OrderService, Order, OrderItem, CreateOrderRequest, OrderResponse } from '../../_services/order.service';
+import { ProductService } from '../../_services/product.service';
+import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 interface CheckoutItem {
   id: number;
@@ -162,7 +165,8 @@ export class CheckoutComponent implements OnInit {
     private tokenStorage: TokenStorageService,
     private cartService: CartService,
     private paymentService: PaymentService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private productService: ProductService
   ) {
     this.checkoutForm = this.fb.group({
       fullname: ['', [Validators.required, Validators.minLength(2)]],
@@ -322,7 +326,33 @@ export class CheckoutComponent implements OnInit {
         }).catch(error => {
           console.error('Error creating order:', error);
           this.loading = false;
-          alert('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.');
+          // Hiển thị thông báo lỗi chi tiết hơn cho người dùng
+          if (error.message && error.message.includes('tồn kho')) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Lỗi tồn kho',
+              html: `
+                <div style="text-align: left;">
+                  <p>${error.message}</p>
+                  <p>Vui lòng kiểm tra lại giỏ hàng của bạn.</p>
+                </div>
+              `,
+              confirmButtonText: 'Về giỏ hàng',
+              confirmButtonColor: '#3085d6',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/cart']);
+              }
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi đặt hàng',
+              text: 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại sau.',
+              confirmButtonText: 'Đã hiểu',
+              confirmButtonColor: '#3085d6',
+            });
+          }
         });
       }
     } else {
@@ -330,7 +360,60 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  createOrder(): Promise<number> {
+  // Kiểm tra số lượng tồn kho trước khi tạo đơn hàng
+  // Hiển thị thông báo lỗi tồn kho bằng SweetAlert2
+  private showStockError(message: string) {
+    return Swal.fire({
+      icon: 'warning',
+      title: 'Cảnh báo tồn kho',
+      html: `
+        <div style="text-align: left;">
+          <p>${message}</p>
+          <p>Vui lòng kiểm tra lại giỏ hàng của bạn.</p>
+        </div>
+      `,
+      confirmButtonText: 'Đã hiểu',
+      confirmButtonColor: '#3085d6',
+    });
+  }
+
+  private async checkStockAvailability(items: CheckoutItem[]): Promise<{valid: boolean, message?: string, hasError?: boolean}> {
+    try {
+      // Lấy thông tin chi tiết sản phẩm để kiểm tra tồn kho
+      for (const item of items) {
+        const product = await firstValueFrom(this.productService.getProductById(item.id));
+        if (!product) {
+          return { valid: false, message: `Sản phẩm ${item.name} không tồn tại` };
+        }
+        
+        if (product.stockQuantity === 0) {
+          return { valid: false, message: `Sản phẩm ${item.name} đã hết hàng` };
+        }
+        
+        if (product.stockQuantity < item.quantity) {
+          return { 
+            valid: false, 
+            message: `Số lượng sản phẩm ${item.name} vượt quá tồn kho (Còn ${product.stockQuantity} sản phẩm)` 
+          };
+        }
+      }
+      return { valid: true };
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra tồn kho:', error);
+      return { valid: false, message: 'Có lỗi xảy ra khi kiểm tra tồn kho. Vui lòng thử lại sau.' };
+    }
+  }
+
+  async createOrder(): Promise<number> {
+    // Kiểm tra tồn kho trước khi tạo đơn hàng
+    const stockCheck = await this.checkStockAvailability(this.selectedItems);
+    if (!stockCheck.valid) {
+      if (stockCheck.message) {
+        await this.showStockError(stockCheck.message);
+      }
+      throw new Error(stockCheck.message || 'Sản phẩm không đủ số lượng tồn kho');
+    }
+
     return new Promise((resolve, reject) => {
       // Tạo địa chỉ giao hàng từ form
       const address = this.checkoutForm.get('address')?.value;

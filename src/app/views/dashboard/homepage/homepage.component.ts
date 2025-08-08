@@ -3,6 +3,7 @@ import { FieldService } from '../../../_services/field.service';
 import { ProductService } from '../../../_services/product.service';
 import { TblCity } from '../../../model/tblCity';
 import { TblDistrict } from '../../../model/tblDistrict';
+import Swal from 'sweetalert2';
 import { TblWard } from '../../../model/tblWard';
 import { TokenStorageService } from '../../../_services/token-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -261,6 +262,57 @@ export class HomepageComponent implements OnInit, AfterViewInit {
       districtId: [''],
       wardId: ['']
     });
+  }
+
+  /**
+   * Handles the 'Buy Now' action for a product
+   * @param product The product to be purchased
+   */
+  buyNow(product: any): void {
+    if (!product || !product.id) {
+      console.error('Invalid product');
+      return;
+    }
+
+    // Check if product is in stock
+    if (product.stockQuantity <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Hết hàng',
+        text: 'Sản phẩm này hiện đã hết hàng. Vui lòng quay lại sau!',
+        confirmButtonText: 'Đã hiểu',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    // Check if user is logged in
+    const isLoggedIn = !!this.tokenService.getToken();
+    
+    if (!isLoggedIn) {
+      // Show login required message
+      Swal.fire({
+        title: 'Yêu cầu đăng nhập',
+        text: 'Vui lòng đăng nhập để tiếp tục mua hàng',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Đăng nhập',
+        cancelButtonText: 'Hủy',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirect to login page with return URL
+          this.router.navigate(['/login'], { 
+            queryParams: { returnUrl: this.router.url }
+          });
+        }
+      });
+      return;
+    }
+
+    // If user is logged in and product is in stock, navigate to product detail
+    this.router.navigate(['/product', product.id]);
   }
 
   ngOnInit(): void {

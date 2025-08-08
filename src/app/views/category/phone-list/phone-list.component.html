@@ -84,8 +84,8 @@
                     (click)="viewProduct(productGroup.representativeId); $event.stopPropagation()">
               Xem chi tiết
             </button>
-            <button class="btn btn-success flex-fill" (click)="addToCart(productGroup); $event.stopPropagation()">Thêm vào giỏ</button>
-            <button class="btn btn-primary flex-fill" (click)="buyNow(productGroup); $event.stopPropagation()">Mua ngay</button>
+            <button class="btn btn-success flex-fill" (click)="addToCart(productGroup, 1, $event)">Thêm vào giỏ</button>
+            <button class="btn btn-primary flex-fill" (click)="buyNow(productGroup, $event)">Mua ngay</button>
           </div>
         </div>
       </div>

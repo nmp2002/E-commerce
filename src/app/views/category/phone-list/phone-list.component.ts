@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { CartService } from '../../../_services/cart.service';
 import { TokenStorageService } from '../../../_services/token-storage.service';
+import Swal from 'sweetalert2';
 
 interface DisplayProduct {
   groupCode: string;
@@ -47,10 +48,17 @@ export class PhoneListComponent implements OnInit {
 
   selectedGroupCode: string | null = null;
 
-  // Thêm các thuộc tính để sửa lỗi
-  isLoggedIn: boolean = false; // Cần cập nhật theo logic đăng nhập thực tế
-  currentProduct: Product | null = null; // Cần gán khi chọn sản phẩm
+  // Thuộc tính component
+  currentProduct: Product | null = null;
   quantity: number = 1; // Số lượng mặc định
+  
+  // Kiểm tra đăng nhập động mỗi lần gọi
+  get isLoggedIn(): boolean {
+    const token = this.tokenStorage.getToken();
+    const isLoggedIn = !!token;
+    console.log('isLoggedIn check - Token exists:', isLoggedIn);
+    return isLoggedIn;
+  }
 
   minPrice: number = 0;
   maxPrice: number = 0;
@@ -64,8 +72,7 @@ export class PhoneListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  this.isLoggedIn = !!this.tokenStorage.getUser();
-    this.isLoggedIn = !!this.tokenStorage.getUser();
+    console.log('Component initialized, isLoggedIn:', this.isLoggedIn);
     this.loadSearchFilters();
     this.loadPhones();
   }
@@ -262,29 +269,45 @@ export class PhoneListComponent implements OnInit {
     });
   }
 
-  addToCart(product: any, quantity: number = 1): void {
+  /**
+   * Thêm sản phẩm vào giỏ hàng
+   * @param product Sản phẩm cần thêm vào giỏ hàng
+   * @param quantity Số lượng sản phẩm (mặc định là 1)
+   */
+  addToCart(product: DisplayProduct, quantity: number = 1, event?: Event): void {
+    console.log('addToCart called', {product, isLoggedIn: this.isLoggedIn});
+    if (event) {
+      event.stopPropagation();
+      console.log('Event stopped from propagating');
+    }
+    
     // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
-      this.toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-      this.router.navigate(['/login']);
+      console.log('User not logged in, showing login required');
+      this.showLoginRequired('thêm sản phẩm vào giỏ hàng');
+      return;
+    }
+
+    if (!product || !product.representativeId) {
+      this.toastr.error('Không tìm thấy thông tin sản phẩm', 'Lỗi');
       return;
     }
 
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
-      this.toastr.error('Không thể xác định người dùng');
+      this.toastr.error('Không thể xác định người dùng', 'Lỗi');
       return;
     }
 
-    // Sử dụng method addToCart với đúng signature
+    // Gọi API thêm vào giỏ hàng
     this.cartService.addToCart(user.id, product.representativeId, quantity).subscribe({
       next: (response) => {
         console.log('Added to cart:', response);
-        this.toastr.success('Đã thêm sản phẩm vào giỏ hàng');
+        this.toastr.success('Đã thêm sản phẩm vào giỏ hàng', 'Thành công');
       },
       error: (error) => {
         console.error('Error adding to cart:', error);
-        this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng');
+        this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng', 'Lỗi');
       }
     });
   }
@@ -297,36 +320,108 @@ export class PhoneListComponent implements OnInit {
     return image;
   }
 
-  buyNow(product: any): void {
-  console.log('buyNow click', product, this.isLoggedIn, this.tokenStorage.getUser());
+  /**
+   * Xử lý sự kiện mua ngay
+   * @param product Sản phẩm cần mua
+   */
+  buyNow(product: DisplayProduct, event?: Event): void {
+    console.log('1. buyNow called', {product, isLoggedIn: this.isLoggedIn});
+    if (event) {
+      event.stopPropagation();
+      console.log('2. Event stopped from propagating');
+    }
+    
     // Kiểm tra đăng nhập
     if (!this.isLoggedIn) {
-      this.toastr.warning('Vui lòng đăng nhập để mua sản phẩm');
-      this.router.navigate(['/login']);
+      console.log('3. User not logged in, showing login required');
+      this.showLoginRequired('tiến hành mua hàng');
+      return;
+    }
+    
+    console.log('4. User is logged in, proceeding with buy now');
+
+    if (!product || !product.representativeId) {
+      this.toastr.error('Không tìm thấy thông tin sản phẩm', 'Lỗi');
       return;
     }
 
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
-      this.toastr.error('Không thể xác định người dùng');
+      this.toastr.error('Không thể xác định người dùng', 'Lỗi');
       return;
     }
 
-    // Tạo checkout item từ product group
-    const checkoutItem = {
-      id: product.representativeId,
-      name: product.name,
-      image: this.getImageUrl(product.image),
-      quantity: 1,
-      price: product.minPrice, // Sử dụng giá thấp nhất
-      selected: true
-    };
+    console.log('7. Before calling cartService.addToCart', {
+      userId: user.id,
+      productId: product.representativeId
+    });
+    
+    // Thêm vào giỏ hàng trước khi chuyển đến trang thanh toán
+    this.cartService.addToCart(user.id, product.representativeId, 1).subscribe({
+      next: () => {
+        // Tạo checkout item từ product group
+        const checkoutItem = {
+          id: product.representativeId,
+          name: product.name,
+          image: this.getImageUrl(product.image),
+          quantity: 1,
+          price: product.minPrice, // Sử dụng giá thấp nhất
+          selected: true
+        };
 
-    console.log('Buy now item:', checkoutItem);
+        // Chuyển đến trang checkout với sản phẩm được chọn
+        this.router.navigate(['/checkout'], {
+          state: { selectedItems: [checkoutItem] }
+        });
+      },
+      error: (err) => {
+        console.error('Lỗi khi thêm vào giỏ hàng:', err);
+        this.toastr.error('Có lỗi xảy ra khi xử lý đơn hàng', 'Lỗi');
+      }
+    });
+  }
 
-    // Chuyển đến trang checkout với sản phẩm được chọn
-    this.router.navigate(['/checkout'], {
-      state: { selectedItems: [checkoutItem] }
+  /**
+   * Hiển thị thông báo yêu cầu đăng nhập
+   * @param action Hành động yêu cầu đăng nhập
+   */
+  private showLoginRequired(action: string): void {
+    console.log('showLoginRequired called with action:', action);
+    
+    Swal.fire({
+      title: '<strong>Yêu cầu đăng nhập</strong>',
+      html: `
+        <div style="text-align: center;">
+          <i class="fas fa-user-lock" style="font-size: 50px; color: #3085d6; margin-bottom: 20px;"></i>
+          <p style="font-size: 18px; margin-bottom: 20px;">
+            Vui lòng đăng nhập để ${action}
+          </p>
+        </div>
+      `,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-sign-in-alt"></i> Đăng nhập',
+      cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      showCloseButton: true,
+      focusConfirm: false,
+      customClass: {
+        popup: 'login-required-popup',
+        confirmButton: 'btn-confirm',
+        cancelButton: 'btn-cancel'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log('User confirmed login');
+        this.router.navigate(['/login'], { 
+          queryParams: { 
+            returnUrl: this.router.routerState.snapshot.url 
+          }
+        });
+      } else {
+        console.log('User cancelled login');
+      }
     });
   }
 }

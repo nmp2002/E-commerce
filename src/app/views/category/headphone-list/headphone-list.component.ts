@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { CartService } from '../../../_services/cart.service';
 import { TokenStorageService } from '../../../_services/token-storage.service';
+import Swal from 'sweetalert2';
 
 interface DisplayProduct {
   groupCode: string;
@@ -29,7 +30,13 @@ interface DisplayProduct {
   styleUrls: ['./headphone-list.component.scss']
 })
 export class HeadphoneListComponent implements OnInit {
-  isLoggedIn: boolean = false;
+  // Kiểm tra đăng nhập động mỗi lần gọi
+  get isLoggedIn(): boolean {
+    const token = this.tokenStorage.getToken();
+    const isLoggedIn = !!token;
+    console.log('isLoggedIn check - Token exists:', isLoggedIn);
+    return isLoggedIn;
+  }
   cartId: number | null = null;
   allHeadphones: Product[] = [];
   displayProducts: DisplayProduct[] = [];
@@ -53,7 +60,7 @@ export class HeadphoneListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  this.isLoggedIn = !!this.tokenStorage.getUser();
+    console.log('Component initialized, isLoggedIn:', this.isLoggedIn);
     this.loadHeadphones();
   }
 
@@ -144,48 +151,156 @@ export class HeadphoneListComponent implements OnInit {
     }
   }
 
-  addToCart(product: any, quantity: number = 1): void {
-    if (!this.tokenStorage.getUser()) {
-      this.toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-      this.router.navigate(['/login']);
+  /**
+   * Thêm sản phẩm vào giỏ hàng
+   * @param product Sản phẩm cần thêm vào giỏ hàng
+   * @param quantity Số lượng sản phẩm (mặc định là 1)
+   */
+  addToCart(product: DisplayProduct, quantity: number = 1, event?: Event): void {
+    console.log('addToCart called', {product, isLoggedIn: this.isLoggedIn});
+    if (event) {
+      event.stopPropagation();
+      console.log('Event stopped from propagating');
+    }
+    
+    // Kiểm tra đăng nhập
+    if (!this.isLoggedIn) {
+      console.log('User not logged in, showing login required');
+      this.showLoginRequired('thêm sản phẩm vào giỏ hàng');
       return;
     }
+
+    if (!product || !product.representativeId) {
+      this.toastr.error('Không tìm thấy thông tin sản phẩm', 'Lỗi');
+      return;
+    }
+
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
-      this.toastr.error('Không thể xác định người dùng');
+      this.toastr.error('Không thể xác định người dùng', 'Lỗi');
       return;
     }
+
+    // Gọi API thêm vào giỏ hàng
     this.cartService.addToCart(user.id, product.representativeId, quantity).subscribe({
-      next: () => {
-        this.toastr.success('Đã thêm sản phẩm vào giỏ hàng');
+      next: (response) => {
+        console.log('Added to cart:', response);
+        this.toastr.success('Đã thêm sản phẩm vào giỏ hàng', 'Thành công');
       },
-      error: () => {
-        this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng');
+      error: (error) => {
+        console.error('Error adding to cart:', error);
+        this.toastr.error('Không thể thêm sản phẩm vào giỏ hàng', 'Lỗi');
       }
     });
   }
 
-  buyNow(product: any): void {
-    if (!this.tokenStorage.getUser()) {
-      this.toastr.warning('Vui lòng đăng nhập để mua sản phẩm');
-      this.router.navigate(['/login']);
+  /**
+   * Xử lý sự kiện mua ngay
+   * @param product Sản phẩm cần mua
+   */
+  buyNow(product: DisplayProduct, event?: Event): void {
+    console.log('buyNow called', {product, isLoggedIn: this.isLoggedIn});
+    if (event) {
+      event.stopPropagation();
+      console.log('Event stopped from propagating');
+    }
+    
+    // Kiểm tra đăng nhập
+    if (!this.isLoggedIn) {
+      console.log('User not logged in, showing login required');
+      this.showLoginRequired('tiến hành mua hàng');
       return;
     }
+
+    if (!product || !product.representativeId) {
+      this.toastr.error('Không tìm thấy thông tin sản phẩm', 'Lỗi');
+      return;
+    }
+
     const user = this.tokenStorage.getUser();
     if (!user || !user.id) {
-      this.toastr.error('Không thể xác định người dùng');
+      this.toastr.error('Không thể xác định người dùng', 'Lỗi');
       return;
     }
-    const checkoutItem = {
-      id: product.representativeId,
-      name: product.name,
-      image: product.image,
-      quantity: 1,
-      price: product.minPrice,
-      selected: true
-    };
-    this.router.navigate(['/checkout'], {
-      state: { selectedItems: [checkoutItem] }
+
+    // Thêm vào giỏ hàng trước khi chuyển đến trang thanh toán
+    this.cartService.addToCart(user.id, product.representativeId, 1).subscribe({
+      next: () => {
+        // Tạo checkout item từ product group
+        const checkoutItem = {
+          id: product.representativeId,
+          name: product.name,
+          image: this.getImageUrl(product.image),
+          quantity: 1,
+          price: product.minPrice, // Sử dụng giá thấp nhất
+          selected: true
+        };
+
+        // Chuyển đến trang checkout với sản phẩm được chọn
+        this.router.navigate(['/checkout'], {
+          state: { selectedItems: [checkoutItem] }
+        });
+      },
+      error: (err) => {
+        console.error('Lỗi khi thêm vào giỏ hàng:', err);
+        this.toastr.error('Có lỗi xảy ra khi xử lý đơn hàng', 'Lỗi');
+      }
+    });
+  }
+
+  /**
+   * Lấy URL hình ảnh đầy đủ
+   * @param image Đường dẫn ảnh hoặc base64
+   */
+  getImageUrl(image: string | null | undefined): string {
+    if (!image || image.trim() === '') return '';
+    if (image.startsWith('/9j/')) return 'data:image/jpeg;base64,' + image; // base64 JPEG
+    if (image.startsWith('http')) return image;
+    if (image.startsWith('/')) return 'http://localhost:8080' + image;
+    return image;
+  }
+
+  /**
+   * Hiển thị thông báo yêu cầu đăng nhập
+   * @param action Hành động yêu cầu đăng nhập
+   */
+  private showLoginRequired(action: string): void {
+    console.log('showLoginRequired called with action:', action);
+    
+    Swal.fire({
+      title: '<strong>Yêu cầu đăng nhập</strong>',
+      html: `
+        <div style="text-align: center;">
+          <i class="fas fa-user-lock" style="font-size: 50px; color: #3085d6; margin-bottom: 20px;"></i>
+          <p style="font-size: 18px; margin-bottom: 20px;">
+            Vui lòng đăng nhập để ${action}
+          </p>
+        </div>
+      `,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-sign-in-alt"></i> Đăng nhập',
+      cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      showCloseButton: true,
+      focusConfirm: false,
+      customClass: {
+        popup: 'login-required-popup',
+        confirmButton: 'btn-confirm',
+        cancelButton: 'btn-cancel'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log('User confirmed login');
+        this.router.navigate(['/login'], { 
+          queryParams: { 
+            returnUrl: this.router.routerState.snapshot.url 
+          }
+        });
+      } else {
+        console.log('User cancelled login');
+      }
     });
   }
 }

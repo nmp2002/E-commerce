@@ -88,17 +88,26 @@
               </div>
             </div>
 
-            <!-- Stock Status -->
+            <!-- Stock Status & Quantity & Actions (UNIFIED) -->
             <div class="stock-status mb-4">
-              <div *ngIf="currentProduct.stockQuantity! > 0" class="in-stock">
+              <div *ngIf="(currentProduct?.stockQuantity ?? 0) > 0" class="in-stock">
                 <i class="cil-check-circle"></i>
                 <span>Còn hàng - Giao hàng trong 2-4 giờ</span>
               </div>
-              <div *ngIf="currentProduct.stockQuantity! <= 0" class="out-of-stock">
+              <div *ngIf="(currentProduct?.stockQuantity ?? 0) <= 0" class="out-of-stock">
                 <i class="cil-x-circle"></i>
                 <span>Hết hàng</span>
               </div>
             </div>
+            <div class="mb-3">
+              <div *ngIf="(currentProduct?.stockQuantity ?? 0) > 0" class="text-muted mt-1" style="font-size: 1.3em; font-weight: 500;">
+                Tồn kho: {{ currentProduct?.stockQuantity ?? 0 }}
+              </div>
+              <div *ngIf="(currentProduct?.stockQuantity ?? 0) <= 0" class="text-danger mt-1">
+                Hết hàng
+              </div>
+            </div>
+        
 
             <!-- Variant Selection -->
             <div class="variant-section">
