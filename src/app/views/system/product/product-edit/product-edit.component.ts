@@ -146,7 +146,7 @@ export class ProductEditComponent implements OnInit {
       ).subscribe(
         () => {
           this.toastr.success('Cập nhật sản phẩm thành công');
-          this.router.navigate(['/system/product/list']);
+          this.router.navigate(['/product/list']);
         },
         (error) => {
           console.error('Error updating product:', error);
