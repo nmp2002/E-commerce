@@ -33,7 +33,8 @@ export class ProductEditComponent implements OnInit {
       categoryId: ['', [Validators.required]],
       price: ['', [Validators.required, Validators.min(0)]],
       stockQuantity: ['', [Validators.required, Validators.min(0)]],
-      status: [ProductStatus.ACTIVE, [Validators.required]]
+      status: [ProductStatus.ACTIVE, [Validators.required]],
+      image: ['', [Validators.required]]
     });
   }
 
@@ -70,6 +71,8 @@ export class ProductEditComponent implements OnInit {
           status: product.status,
           image: product.image || ''
         });
+        console.log('Image from backend:', product.image);
+        console.log('Form value image:', this.productForm.value.image);
 
         // Map backend attributes to frontend model
         this.attributes = attributes.map((attr: ProductAttributePayload) => ({
