@@ -45,6 +45,11 @@ export class ProductService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  // Lấy sản phẩm thường mua cùng (suggestion)
+  getSuggestedProducts(productId: number): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}/${productId}/suggestions`);
+  }
+
   // Lấy sản phẩm và các phiên bản của nó
   getProductAndVariants(productId: number): Observable<{ mainProduct: Product | null, variants: Product[] }> {
     return this.getProductById(productId).pipe(

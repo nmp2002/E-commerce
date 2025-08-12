@@ -181,6 +181,42 @@
         </div>
       </div>
 
+      <!-- Sản phẩm thường mua cùng -->
+      <div *ngIf="suggestedProducts.length > 0" class="suggested-products">
+        <div class="container-fluid px-0">
+          <h5 class="mb-4">Sản phẩm thường mua cùng</h5>
+          <div class="row">
+            <div class="col-md-3" *ngFor="let prod of suggestedProducts">
+              <div class="card h-100">
+                <div class="position-relative" style="min-height: 180px; background: #f8fafc;">
+                  <img 
+                    [src]="getImageSrc(prod.image)" 
+                    class="card-img-top" 
+                    [alt]="prod.productName"
+                    *ngIf="prod.image"
+                    style="max-height: 180px; width: auto; margin: 0 auto; display: block;"
+                  >
+                  <div *ngIf="!prod.image" class="d-flex align-items-center justify-content-center" style="height: 180px;">
+                    <i class="cil-image-broken" style="font-size: 2rem; color: #cbd5e0;"></i>
+                  </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                  <h6 class="card-title mb-2">{{prod.productName}}</h6>
+                  <p class="card-text text-danger fw-bold mb-3">{{prod.price | number}} đ</p>
+                  <a 
+                    [routerLink]="['/product', prod.id]" 
+                    class="btn btn-sm mt-auto"
+                    style="transition: all 0.2s ease;"
+                  >
+                    <i class="cil-search me-1"></i> Xem chi tiết
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Product Details Tabs -->
       <div class="product-details-section mt-5">
         <div class="container-fluid">

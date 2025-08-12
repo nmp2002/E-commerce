@@ -26,6 +26,7 @@ export class ProductDetailComponent implements OnInit {
   currentProduct: Product | null = null;
   allVariants: Product[] = []; // All products in the same group
 
+  suggestedProducts: Product[] = [];
   // Options available for selection, e.g., "Color" -> [{value: "Red", productId: 1}, {value: "Blue", productId: 2}]
   variantOptions = new Map<string, VariantOption[]>();
 
@@ -144,6 +145,10 @@ export class ProductDetailComponent implements OnInit {
         console.log("Attributes length:", this.currentProduct?.attributes?.length);
 
         this.extractAndSetVariantOptions();
+        // Gọi API suggestion
+        this.productService.getSuggestedProducts(this.currentProduct.id!).subscribe(list => {
+          this.suggestedProducts = list;
+        });
       } else {
         if (!this.loading) {
           this.toastr.error('Không tìm thấy thông tin sản phẩm.');
